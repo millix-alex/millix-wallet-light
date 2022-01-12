@@ -141,7 +141,7 @@ class Sidebar extends Component {
                     </NavItem>
                 </SideNav.Nav>
                 <div className='nav-info'>
-                     <span>v. {props.node.node_version}</span>
+                     <span>version {props.node.node_version}</span>
                      </div>
             </SideNav>
         </aside>);
