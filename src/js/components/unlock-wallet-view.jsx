@@ -1,11 +1,11 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {connect} from 'react-redux';
-import {Redirect, withRouter} from 'react-router-dom';
-import {Button, Col, Container, FormControl, Row, Tabs, Tab, Nav} from 'react-bootstrap';
+import {Redirect} from 'react-router-dom';
+import {Button, Col, Container, FormControl, Nav, Row, Tab} from 'react-bootstrap';
 import store from '../redux/store';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import API from '../api/index';
-import {unlockWallet, walletReady, walletUpdateAddresses, walletUpdateBalance} from '../redux/actions';
+import {unlockWallet, walletReady} from '../redux/actions';
 
 const styles           = {
     centered: {
@@ -45,8 +45,8 @@ const UnlockWalletView = (props) => {
             paddingLeft: 25
         }}>
             <div className="container-center lg" style={{marginTop: '5%'}}>
-                <div className="cols-xs-12 col-lg-12">
-                    <div className="panel-body view-header">
+                <div className="cols-xs-12 col-lg-12 hpanel">
+                    <div className="panel-body view-header tab">
                         <Tab.Container defaultActiveKey={1}>
                             <Row>
                                 <Col xs={12}>
@@ -54,48 +54,34 @@ const UnlockWalletView = (props) => {
                                         <Nav.Item className="col-lg-4">
                                             <Nav.Link className="col-lg-12"
                                                       eventKey={1}>
-                                                <div
-                                                    className="page_subtitle labeled row">
-                                                    <div
-                                                        className="header-icon col-lg-2">
-                                                        <FontAwesomeIcon
-                                                            icon="sign-in-alt"
-                                                            size="3x"/>
-                                                    </div>
-                                                    <h3 className="col-lg-7">login</h3>
-                                                </div>
+                                                <h5 className="page_subtitle labeled">
+                                                    <FontAwesomeIcon
+                                                        className="fal"
+                                                        icon="sign-in-alt"/>
+                                                    login
+                                                </h5>
                                             </Nav.Link>
                                         </Nav.Item>
                                         <Nav.Item className="col-lg-4">
                                             <Nav.Link className="col-lg-12"
                                                       eventKey={2}>
-                                                <div
-                                                    className="page_subtitle labeled row">
-                                                    <div
-                                                        className="header-icon col-lg-2">
-                                                        <FontAwesomeIcon
-                                                            icon="plus"
-                                                            size="3x"/>
-                                                    </div>
-                                                    <h3 className="col-lg-7">generate
-                                                        wallet</h3>
-                                                </div>
+                                                <h5 className="page_subtitle labeled">
+                                                    <FontAwesomeIcon
+                                                        className="fal"
+                                                        icon="plus"/>
+                                                    generate wallet
+                                                </h5>
                                             </Nav.Link>
                                         </Nav.Item>
                                         <Nav.Item className="col-lg-4">
                                             <Nav.Link className="col-lg-12"
                                                       eventKey={3}>
-                                                <div
-                                                    className="page_subtitle labeled row">
-                                                    <div
-                                                        className="header-icon col-lg-2">
-                                                        <FontAwesomeIcon
-                                                            icon="file-import"
-                                                            size="3x"/>
-                                                    </div>
-                                                    <h3 className="col-lg-7">import
-                                                        wallet</h3>
-                                                </div>
+                                                <h5 className="page_subtitle labeled">
+                                                    <FontAwesomeIcon
+                                                        className="fal"
+                                                        icon="file-import"/>
+                                                    import wallet
+                                                </h5>
                                             </Nav.Link>
                                         </Nav.Item>
                                     </Nav>
@@ -133,12 +119,11 @@ const UnlockWalletView = (props) => {
                                                         </div>
                                                         <div className="pb-3">
                                                             <div
-                                                                className="d-grid gap-2">
+                                                                className="d-grid gap-2 mt-4">
                                                                 <Button
-                                                                    variant="primary"
+                                                                    variant="outline-primary"
                                                                     size="lg"
-                                                                    className={'btn btn-primary form-control btn-w-md col-lg-12  col-xs-12'}
-                                                                    onClick={() => walletUnlockWithPassword(passphraseRef.value)}> login </Button>
+                                                                    onClick={() => walletUnlockWithPassword(passphraseRef.value)}>continue</Button>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -148,23 +133,20 @@ const UnlockWalletView = (props) => {
                                         <Tab.Pane eventKey={2}>
                                             <div className="panel panel-filled">
                                                 <div className="panel-body">
-                                                    <div
-                                                        className="alert alert-danger"
-                                                        role="alert">
-                                                        this process will
+                                                    <p className="mt-5">this
+                                                        process will
                                                         replace your current
                                                         private_key at the
                                                         following
                                                         location <span>{store.getState().config['NODE_KEY_PATH']}</span>
-                                                    </div>
+                                                    </p>
                                                     <div className="pb-3">
                                                         <div
-                                                            className="d-grid gap-2">
+                                                            className="d-grid gap-2 mt-4">
                                                             <Button
-                                                                variant="primary"
+                                                                variant="outline-primary"
                                                                 size="lg"
-                                                                className={'btn btn-primary form-control btn-w-md col-lg-12  col-xs-12'}
-                                                                onClick={() => props.history.push('/new-wallet/')}> generate </Button>
+                                                                onClick={() => props.history.push('/new-wallet/')}>continue</Button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -173,23 +155,20 @@ const UnlockWalletView = (props) => {
                                         <Tab.Pane eventKey={3}>
                                             <div className="panel panel-filled">
                                                 <div className="panel-body">
-                                                    <div
-                                                        className="alert alert-danger"
-                                                        role="alert">
-                                                        this process will
+                                                    <p className="mt-5">this
+                                                        process will
                                                         replace your current
                                                         private_key at the
                                                         following
                                                         location <span>{store.getState().config['NODE_KEY_PATH']}</span>
-                                                    </div>
+                                                    </p>
                                                     <div className="pb-3">
                                                         <div
-                                                            className="d-grid gap-2">
+                                                            className="d-grid gap-2 mt-4">
                                                             <Button
-                                                                variant="primary"
+                                                                variant="outline-primary"
                                                                 size="lg"
-                                                                className={'btn btn-primary form-control btn-w-md col-lg-12  col-xs-12'}
-                                                                onClick={() => props.history.push('/import-wallet/')}> import </Button>
+                                                                onClick={() => props.history.push('/import-wallet/')}>continue</Button>
                                                         </div>
                                                     </div>
                                                 </div>

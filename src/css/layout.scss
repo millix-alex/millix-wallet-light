@@ -8,6 +8,17 @@ a {
   cursor: pointer;
 }
 
+body {
+  .page_subtitle {
+    font-size: 1.4rem;
+    font-weight: 400;
+  }
+}
+
+.fal {
+  font-weight: 300;
+}
+
 
 body.nav-toggle .navigation {
   left: -$sidebar-width;

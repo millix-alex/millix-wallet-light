@@ -55,21 +55,40 @@
   }
 }
 
+.tab-pane {
+  .panel-body {
+    border: 1px solid $color-panel-header-border !important;
+    border-top: 1px solid $color-panel-filed-background !important;
+    min-height: 13rem;
+  }
+}
+
 .nav-tabs {
-  border: none;
+  border-bottom: 1px solid $color-panel-header-border;
 
   .nav-link {
+    color: $color-font-left-nav-base;
+    border-color: $color-panel-header-border;
     border: none;
+
+    .page_subtitle {
+      text-align: center;
+    }
   }
 
-  .nav-link:hover {
-    background-color: $color-tab-hover !important;
+  :focus, .nav-link:hover {
+    border: none;
+    color: $color-font-left-nav-hover !important;
+    outline: none !important;
+    box-shadow: none !important;
+    border-color: $color-panel-filed-background;
   }
 
   .nav-link.active, .nav-item.show .nav-link {
-    border-bottom: none;
-    color: $color-body-font !important;
+    border: 1px solid $color-panel-header-border !important;
+    border-bottom: 1px solid $color-panel-filed-background !important;
+    color: $color-font-left-nav-hover !important;
     background-color: $color-panel-filed-background !important;
-
+    cursor: default;
   }
 }
