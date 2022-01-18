@@ -130,7 +130,6 @@ const getNodeAboutAttribute = () => {
 };
 
 const getNodeConfig = () => {
-    console.log('get node config', store.getState().config);
     if (Object.keys(store.getState().config).length === 0) {
         API.getNodeConfig()
            .then(configList => {

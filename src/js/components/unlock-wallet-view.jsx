@@ -1,10 +1,11 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {connect} from 'react-redux';
 import {Redirect} from 'react-router-dom';
 import {Button, Col, Container, FormControl, Row} from 'react-bootstrap';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import API from '../api/index';
 import {unlockWallet, walletReady} from '../redux/actions';
+import ErrorHandler from './utils/error_handler';
 
 const styles           = {
     centered: {
@@ -13,6 +14,7 @@ const styles           = {
     }
 };
 const UnlockWalletView = (props) => {
+    let error_list = [];
     if (props.wallet.unlocked) {
         const {from} = props.location.state || {from: {pathname: '/'}};
         return <Redirect to={from}/>;
@@ -38,6 +40,16 @@ const UnlockWalletView = (props) => {
            }).catch(_ => props.walletReady({authenticationError: true}));
     };
 
+    if (props.wallet.authenticationError) {
+        console.log('if auth error');
+        error_list.push({
+            name   : 'auth_error_name',
+            message: <span className="help-block small">there was a problem authenticating your key file. retry your password or <a
+                style={{cursor: 'pointer'}}
+                onClick={() => props.history.push('import-wallet')}> click here to load your key.</a></span>
+        });
+    }
+
     return (
         <Container style={{
             marginTop  : 50,
@@ -58,6 +70,7 @@ const UnlockWalletView = (props) => {
 
                 <div className="panel panel-filled">
                     <div className="panel-body">
+                        <ErrorHandler error_list={error_list}/>
 
                         <div className="form-group">
                             <label htmlFor="password">password</label>
@@ -73,11 +86,7 @@ const UnlockWalletView = (props) => {
                                     }
                                 }}
                             />
-                            {props.wallet.authenticationError ? (
-                                <span className="help-block small">there was a problem authenticating your key file. retry your password or <a
-                                    style={{cursor: 'pointer'}}
-                                    onClick={() => props.history.push('/import-wallet/')}> click here to load your key.</a></span>) : (
-                                 <span className="help-block small">Your strong password</span>)}
+                            <span className="help-block small">Your strong password</span>
                         </div>
                         <Row>
                             <Col style={styles.centered}>
