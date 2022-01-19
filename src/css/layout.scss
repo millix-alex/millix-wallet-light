@@ -4,6 +4,7 @@
 @import 'form';
 @import 'table';
 @import 'datatable';
+@import 'dropdown';
 
 a {
   cursor: pointer;
@@ -51,4 +52,9 @@ body.nav-toggle .content {
 
 .content > div {
   padding: $content-spacing;
+}
+
+body .widget_title,
+body .section_subtitle {
+  color: $color-white;
 }
