@@ -40,10 +40,7 @@ const UnlockWalletView = (props) => {
     };
 
     return (
-        <Container style={{
-            marginTop  : 50,
-            paddingLeft: 25
-        }}>
+        <Container>
             <div className="container-center lg" style={{marginTop: '5%'}}>
                 <div className="cols-xs-12 col-lg-12 hpanel">
                     <div className="panel-body view-header tab">
