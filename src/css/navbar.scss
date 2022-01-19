@@ -55,14 +55,14 @@
 
 .tab-pane {
   .panel-body {
-    border: 1px solid $color-panel-header-border !important;
-    border-top: 1px solid $color-panel-filed-background !important;
+    border: $border-width solid $color-panel-header-border !important;
+    border-top: $border-width solid $color-panel-filed-background !important;
     min-height: 13rem;
   }
 }
 
 .nav-tabs {
-  border-bottom: 1px solid $color-panel-header-border;
+  border-bottom: $border-width solid $color-panel-header-border;
 
   .nav-link {
     color: $color-font-left-nav-base;
@@ -83,8 +83,8 @@
   }
 
   .nav-link.active, .nav-item.show .nav-link {
-    border: 1px solid $color-panel-header-border !important;
-    border-bottom: 1px solid $color-panel-filed-background !important;
+    border: $border-width solid $color-panel-header-border !important;
+    border-bottom: $border-width solid $color-panel-filed-background !important;
     color: $color-font-left-nav-hover !important;
     background-color: $color-panel-filed-background !important;
     cursor: default;
