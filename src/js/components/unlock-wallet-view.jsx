@@ -6,7 +6,7 @@ import store from '../redux/store';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import API from '../api/index';
 import {unlockWallet, walletReady} from '../redux/actions';
-import ErrorHandler from './utils/error-list-view';
+import ErrorList from './utils/error-list-view';
 
 const styles           = {
     centered: {
@@ -55,7 +55,7 @@ const UnlockWalletView = (props) => {
             <div className="container-center lg" style={{marginTop: '5%'}}>
                 <div className="cols-xs-12 col-lg-12 hpanel">
                     <div className="panel-body view-header tab">
-                        <ErrorHandler error_list={error_list}/>
+                        <ErrorList error_list={error_list}/>
                         <Tab.Container defaultActiveKey={1}>
                             <Row>
                                 <Col xs={12}>

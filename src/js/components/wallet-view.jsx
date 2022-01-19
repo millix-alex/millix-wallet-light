@@ -7,7 +7,7 @@ import DatatableView from './utils/datatable-view';
 import API from '../api/index';
 import _ from 'lodash';
 import moment from 'moment';
-import ErrorHandler from './utils/error-list-view';
+import ErrorList from './utils/error-list-view';
 
 const styles = {
     centered: {
@@ -272,7 +272,7 @@ class WalletView extends Component {
                         <div className={'panel panel-filled'}>
                             <div className={'panel-heading bordered'}>send</div>
                             <div className={'panel-body'}>
-                                <ErrorHandler
+                                <ErrorList
                                     error_list={this.state.error_list}/>
                                 <Row className="mb-3">
                                     <Form>

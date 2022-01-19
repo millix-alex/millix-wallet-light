@@ -1,20 +1,13 @@
 import React from 'react';
 
 
-class ErrorHandler extends React.Component {
+class ErrorList extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {error_list: []};
-    }
-
-    componentWillReceiveProps(newProps) {
-        if (newProps.error_list != this.props.error_list) {
-            this.setState({error_list: newProps.error_list});
-        }
     }
 
     render() {
-        let error_list = this.state.error_list;
+        let error_list = this.props.error_list;
         if (Object.keys(error_list).length > 0) {
             return (
                 <div className="alert alert-danger" role="alert">
@@ -34,4 +27,4 @@ class ErrorHandler extends React.Component {
 }
 
 
-export default ErrorHandler;
+export default ErrorList;
