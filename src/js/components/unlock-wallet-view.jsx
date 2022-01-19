@@ -41,7 +41,6 @@ const UnlockWalletView = (props) => {
     };
 
     if (props.wallet.authenticationError) {
-        console.log('if auth error');
         error_list.push({
             name   : 'auth_error_name',
             message: <span className="help-block small">there was a problem authenticating your key file. retry your password or <a

@@ -8,6 +8,7 @@ import {Column} from 'primereact/column';
 import API from '../api/index';
 import _ from 'lodash';
 import moment from 'moment';
+import ErrorHandler from './utils/error_handler';
 
 const styles = {
     centered: {
@@ -26,7 +27,8 @@ class WalletView extends Component {
         super(props);
         this.state = {
             feesLocked : true,
-            addressList: []
+            addressList: [],
+            error_list : []
         };
     }
 
@@ -72,7 +74,7 @@ class WalletView extends Component {
     }
 
     send() {
-
+        let error_list = [];
         if (this.state.sending) {
             API.interruptTransaction().then(_ => _);
             this.setState({
@@ -89,7 +91,11 @@ class WalletView extends Component {
         API.verifyAddress(this.destinationAddress.value.trim())
            .then(data => {
                if (!data.is_valid) {
-                   this.setState({addressError: true});
+                   error_list.push({
+                       name   : 'address_error',
+                       message: <span className="form-input-error">invalid address. please, set a correct value.</span>
+                   });
+                   this.setState({error_list: error_list});
                    return Promise.reject('invalid transaction');
                }
 
@@ -104,9 +110,12 @@ class WalletView extends Component {
                    amount = this._getAmount(this.amount.value);
                }
                catch (e) {
+                   error_list.push({
+                       name   : 'amountError',
+                       message: <span className="form-input-error">invalid amount. please, set a correct value.</span>
+                   });
                    this.setState({
-                       amountError : true,
-                       addressError: false
+                       error_list: error_list
                    });
                    return Promise.reject('invalid transaction');
                }
@@ -116,19 +125,19 @@ class WalletView extends Component {
                    fees = this._getAmount(this.fees.value, true);
                }
                catch (e) {
+                   error_list.push({
+                       name   : 'feeError',
+                       message: <span className="form-input-error">invalid fee. please, set a correct value.</span>
+                   });
                    this.setState({
-                       feeError    : true,
-                       amountError : false,
-                       addressError: false
+                       error_list: error_list
                    });
                    return Promise.reject('invalid transaction');
                }
 
                this.setState({
-                   addressError: false,
-                   amountError : false,
-                   feeError    : false,
-                   sending     : true
+                   error_list: [],
+                   sending   : true
                });
 
                return API.sendTransaction({
@@ -145,7 +154,6 @@ class WalletView extends Component {
                        amount  : fees
                    }
                }).then(data => {
-                   console.log(data);
                    if (data.api_status === 'fail') {
                        return Promise.reject(data);
                    }
@@ -178,13 +186,11 @@ class WalletView extends Component {
                    sendTransactionErrorMessage = `your transaction could not be sent: (${e.message || e.api_message || e})`;
                }
 
-               console.log(e);
-               this.setState({
-                   sendTransactionError: true,
-                   sending             : false,
-                   canceling           : false,
-                   sendTransactionErrorMessage
+               error_list.push({
+                   name   : 'sendTransactionError',
+                   message: sendTransactionErrorMessage
                });
+               this.setState({error_list: error_list});
            });
     }
 
@@ -267,6 +273,8 @@ class WalletView extends Component {
                         <div className={'panel panel-filled'}>
                             <div className={'panel-heading bordered'}>send</div>
                             <div className={'panel-body'}>
+                                <ErrorHandler
+                                    error_list={this.state.error_list}/>
                                 <Row className="mb-3">
                                     <Form>
                                         <Col style={styles.centered}>
@@ -281,12 +289,6 @@ class WalletView extends Component {
                                                 <Form.Control type="text"
                                                               placeholder="address"
                                                               ref={c => this.destinationAddress = c}/>
-                                                {this.state.addressError && (
-                                                    <span
-                                                        className="form-input-error">invalid
-                                                        address.
-                                                        please, set a correct
-                                                        value.</span>)}
                                             </Form.Group>
                                         </Col>
                                         <Col>
@@ -297,12 +299,6 @@ class WalletView extends Component {
                                                               pattern="[0-9]+([,][0-9]{1,2})?"
                                                               ref={c => this.amount = c}
                                                               onChange={this.handleAmountValueChange.bind(this)}/>
-                                                {this.state.amountError && (
-                                                    <span
-                                                        className="form-input-error">invalid
-                                                        amount.
-                                                        please, set a correct
-                                                        value.</span>)}
                                             </Form.Group>
                                         </Col>
                                         <Col>
@@ -332,12 +328,6 @@ class WalletView extends Component {
                                                     </button>
 
                                                 </Col>
-                                                {this.state.feeError && (
-                                                    <span
-                                                        className="form-input-error">invalid
-                                                        fee.
-                                                        please, set a correct
-                                                        value.</span>)}
                                             </Form.Group>
                                         </Col>
                                         <Col style={styles.centered}>
