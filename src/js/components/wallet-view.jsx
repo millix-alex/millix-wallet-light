@@ -92,7 +92,7 @@ class WalletView extends Component {
                if (!data.is_valid) {
                    error_list.push({
                        name   : 'address_error',
-                       message: <span className="form-input-error">invalid address. please, set a correct value.</span>
+                       message: 'invalid address. please, set a correct value.'
                    });
                    this.setState({error_list: error_list});
                    return Promise.reject('invalid transaction');
@@ -111,7 +111,7 @@ class WalletView extends Component {
                catch (e) {
                    error_list.push({
                        name   : 'amountError',
-                       message: <span className="form-input-error">invalid amount. please, set a correct value.</span>
+                       message: 'invalid amount. please, set a correct value.'
                    });
                    this.setState({
                        error_list: error_list
@@ -126,7 +126,7 @@ class WalletView extends Component {
                catch (e) {
                    error_list.push({
                        name   : 'feeError',
-                       message: <span className="form-input-error">invalid fee. please, set a correct value.</span>
+                       message: 'invalid fee. please, set a correct value.'
                    });
                    this.setState({
                        error_list: error_list

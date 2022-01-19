@@ -44,7 +44,7 @@ const UnlockWalletView = (props) => {
     if (props.wallet.authenticationError) {
         error_list.push({
             name   : 'auth_error_name',
-            message: <span className="help-block small">there was a problem authenticating your key file. retry your password or <a
+            message: <span>there was a problem authenticating your key file. retry your password or <a
                 style={{cursor: 'pointer'}}
                 onClick={() => props.history.push('import-wallet')}> click here to load your key.</a></span>
         });

@@ -1,30 +1,23 @@
 import React from 'react';
 
+const ErrorList = (props) => {
+    let error_list = props.error_list;
 
-class ErrorList extends React.Component {
-    constructor(props) {
-        super(props);
+    if (Object.keys(error_list).length > 0) {
+        return (
+            <div className="alert alert-danger" role="alert">
+                <ul>
+                    {error_list.map((error, idx) =>
+                        <li key={'message_' + idx}>
+                            {error.message}
+                        </li>
+                    )}
+                </ul>
+            </div>
+        );
     }
 
-    render() {
-        let error_list = this.props.error_list;
-        if (Object.keys(error_list).length > 0) {
-            return (
-                <div className="alert alert-danger" role="alert">
-                    <ul>
-                        {error_list.map((error, idx) =>
-                            <li key={'message_' + idx}>
-                                {error.message}
-                            </li>
-                        )}
-                    </ul>
-                </div>
-            );
-        }
-
-        return '';
-    }
-}
-
+    return '';
+};
 
 export default ErrorList;
