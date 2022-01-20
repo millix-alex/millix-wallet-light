@@ -22,8 +22,9 @@ class UnspentTransactionOutputView extends Component {
 
     componentDidMount() {
         moment.relativeTimeThreshold('ss', -1); // required to get diff in
-                                                // seconds instead of "a few
-                                                // seconds ago"
+        // seconds instead of "a few
+        // seconds ago"
+
         const stable_value_new = this.getStableFromUrl();
         this.setState({
             stable: stable_value_new

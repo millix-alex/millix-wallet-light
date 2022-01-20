@@ -24,44 +24,36 @@ class ListAdView extends Component {
 
     getStatusLabel(status) {
         let label = 'inactive';
-        if (status == '1') {
+        if (status === 1) {
             label = 'active';
         }
+
         return label;
     }
 
     async toggleAdStatus(advertisement_guid) {
         API.toggleAdStatus(advertisement_guid).then(data => {
             if (typeof data.api_status != 'undefined' && data.api_status === 'ok') {
-                let updated = data.advertisement;
-                let rows    = this.state.ad_list;
-                rows.forEach((item, idx) => {
-                    if (item.advertisement_guid === updated.advertisement_guid) {
-                        updated.advertisement_type     = this.getAdType(updated);
-                        updated.advertisement_category = this.getAdCategory(updated);
-                        updated.status_button          = this.getStatusButton(updated);
-                        updated.create_date            = this.getFormattedDate(updated);
-                        rows[idx]                      = updated;
-                    }
-                });
-                this.setState({
-                    ad_list: rows
-                });
+                this.reloadDatatable();
             }
         });
     }
 
     getFormattedDate(item) {
-        let date = new Date(item.create_date * 1000);
-        return date.toLocaleString();
+        return moment.utc(item.create_date * 1000).format('YYYY-MM-DD HH:mm:ss');
     }
 
     getStatusButton(item) {
-        let active = item.status === 1 ? 'active' : '';
-        return <Button variant="outline-primary"
-                       className={active}
-                       id={item.advertisement_guid}
-                       onClick={() => this.toggleAdStatus(item.advertisement_guid)}>{this.getStatusLabel(item.status)}</Button>;
+        let icon = item.status === 1 ? 'pause' : 'play';
+        return <Button
+            id={item.advertisement_guid}
+            variant="outline-default"
+            className={'btn-xs icon_only ms-auto'}
+            onClick={() => this.toggleAdStatus(item.advertisement_guid)}>
+            <FontAwesomeIcon
+                icon={icon}
+                size="1x"/>
+        </Button>;
 
     }
 
@@ -104,10 +96,7 @@ class ListAdView extends Component {
     async reloadDatatable() {
         API.listAds().then(data => {
             if (typeof data.api_status != 'undefined' && data.api_status === 'ok') {
-
-                let ad_list    = [];
-                let table_list = this.state.ad_list;
-
+                let ad_list = [];
                 if (typeof data.advertisement_list != 'undefined') {
                     data.advertisement_list.forEach((item, idx) => {
                         ad_list.push({
@@ -125,7 +114,7 @@ class ListAdView extends Component {
                             bid_impression_usd         : item.bid_impression_usd.toLocaleString('en-US'),
                             bid_impression_mlx         : item.bid_impression_mlx.toLocaleString('en-US'),
                             expiration                 : item.expiration,
-                            status                     : item.status,
+                            status                     : this.getStatusLabel(item.status),
                             action                     : this.getStatusButton(item),
                             create_date                : this.getFormattedDate(item)
                         });
@@ -141,9 +130,14 @@ class ListAdView extends Component {
     }
 
     componentDidMount() {
+        moment.relativeTimeThreshold('ss', -1); // required to get diff in
+        // seconds instead of "a few
+        // seconds ago"
+
         this.getCategories();
         this.getTypes();
-        this.adListUpdateHandler = setInterval(() => this.reloadDatatable(), 5000);
+        this.reloadDatatable();
+        this.adListUpdateHandler = setInterval(() => this.reloadDatatable(), 60000);
     }
 
     componentWillUnmount() {
@@ -157,13 +151,16 @@ class ListAdView extends Component {
                     <div className={'panel-heading bordered'}>advertisements
                     </div>
                     <div className={'panel-body'}>
-                        <div className={'form-group'}>
+                        <div>
                             the tangled ad platform allows anyone to create an
                             advertisement without approvals or permission. when
                             your ad is created it will appear to other tangled
                             browser users. the amount that you choose to pay for
                             the ad to appear is paid directly to the consumer
                             that views the ad.
+                        </div>
+                        <div className={'form-group'}>
+                            at the moment you can not edit advertisements. you can pause existing and create a new one instead.
                         </div>
                         <div className={'datatable_action_row'}>
                             <Col md={4}>
@@ -201,18 +198,13 @@ class ListAdView extends Component {
                                 showActionColumn={true}
                                 resultColumn={[
                                     {
-                                        'field'   : 'advertisement_type',
-                                        'header'  : 'type',
+                                        'field'   : 'advertisement_name',
+                                        'header'  : 'name',
                                         'sortable': true
                                     },
                                     {
                                         'field'   : 'advertisement_category',
                                         'header'  : 'category',
-                                        'sortable': true
-                                    },
-                                    {
-                                        'field'   : 'advertisement_name',
-                                        'header'  : 'name',
                                         'sortable': true
                                     },
                                     {

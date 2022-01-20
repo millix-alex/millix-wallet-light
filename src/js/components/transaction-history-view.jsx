@@ -20,6 +20,10 @@ class TransactionHistoryView extends Component {
     }
 
     componentDidMount() {
+        moment.relativeTimeThreshold('ss', -1); // required to get diff in
+                                                // seconds instead of "a few
+                                                // seconds ago"
+
         this.reloadDatatable();
         this.transactionHistoryUpdateHandler = setInterval(() => this.reloadDatatable, 60000);
     }
@@ -29,9 +33,9 @@ class TransactionHistoryView extends Component {
     }
 
     reloadDatatable() {
-        return API.getTransactionHistory(this.props.wallet.address_key_identifier).then(() => {
-            const rows = this.props.wallet.transactions.map((transaction, idx) => ({
-                idx        : this.props.wallet.transactions.length - idx,
+        return API.getTransactionHistory(this.props.wallet.address_key_identifier).then(data => {
+            const rows = data.map((transaction, idx) => ({
+                idx        : data.length - idx,
                 date       : moment.utc(transaction.transaction_date * 1000).format('YYYY-MM-DD HH:mm:ss'),
                 amount     : transaction.amount.toLocaleString('en-US'),
                 txid       : transaction.transaction_id,

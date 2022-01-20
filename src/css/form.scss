@@ -22,9 +22,13 @@ label {
 .btn-outline-default,
 .btn-outline-input-group-addon {
   @include button-outline-default();
+
+  &:focus {
+    box-shadow: none;
+  }
 }
 
-.btn {
+.btn:not(.icon_only) {
   > .svg-inline--fa {
     margin-right: 0.3em;
   }

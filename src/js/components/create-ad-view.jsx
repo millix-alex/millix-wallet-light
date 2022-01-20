@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {Button, Col, Container, Form, FormControl, FormGroup, Row, Modal} from 'react-bootstrap';
 import API from '../api/index';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import ErrorList from './utils/error-list-view';
 import {walletUpdateAddresses, walletUpdateBalance} from '../redux/actions/index';
 import {withRouter} from 'react-router-dom';
 
@@ -13,7 +13,7 @@ class CreateAdView extends Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.state        = {
             submitData       : {},
-            errors           : {},
+            error_list       : [],
             fields           : {
                 creative_name          : '',
                 category               : '',
@@ -129,66 +129,66 @@ class CreateAdView extends Component {
 
     handleValidation() {
         let fields      = this.state.fields;
-        let errors      = {};
+        let error_list  = [];
         let formIsValid = true;
 
         if (!fields['creative_name']) {
-            formIsValid             = false;
-            errors['creative_name'] = 'this field is required, please provide a value';
+            formIsValid = false;
+            error_list.push('creative_name is required');
         }
 
         if (!fields['headline']) {
-            formIsValid        = false;
-            errors['headline'] = 'this field is required, please provide a value';
+            formIsValid = false;
+            error_list.push('headline is required');
         }
 
         if (!fields['deck']) {
-            formIsValid    = false;
-            errors['deck'] = 'this field is required, please provide a value';
+            formIsValid = false;
+            error_list.push('deck is required');
         }
 
         if (!fields['url']) {
-            formIsValid   = false;
-            errors['url'] = 'this field is required, please provide a value';
+            formIsValid = false;
+            error_list.push('url is required');
         }
 
 
         if (!fields['daily_budget_mlx']) {
-            formIsValid                = false;
-            errors['daily_budget_mlx'] = 'this field is required, please provide a value';
+            formIsValid = false;
+            error_list.push('daily budget is required');
         }
 
         if (typeof fields['daily_budget_mlx'] !== 'undefined' && (typeof fields['daily_budget_mlx']) == 'string') {
             if (!fields['daily_budget_mlx'].match(/^[0-9]+$/)) {
-                formIsValid                = false;
-                errors['daily_budget_mlx'] = 'this field only accepts numbers';
+                formIsValid = false;
+                error_list.push('daily budget must be a number');
             }
         }
 
         if (!fields['bid_per_impressions_mlx']) {
-            formIsValid                       = false;
-            errors['bid_per_impressions_mlx'] = 'this field is required, please provide a value';
+            formIsValid = false;
+            error_list.push('bid per impressio is required');
         }
 
         if (typeof fields['bid_per_impressions_mlx'] !== 'undefined' && (typeof fields['daily_budget_mlx']) == 'string') {
             if (!fields['bid_per_impressions_mlx'].match(/^[0-9]+$/)) {
-                formIsValid                       = false;
-                errors['bid_per_impressions_mlx'] = 'this field only accepts numbers';
+                formIsValid = false;
+                error_list.push('bid per impression must be a number');
             }
         }
 
         if (parseFloat(fields['bid_per_impressions_mlx']) > parseFloat(fields['daily_budget_mlx'])) {
-            formIsValid                       = false;
-            errors['bid_per_impressions_mlx'] = 'the bid per impression cannot exceed the daily budget';
+            formIsValid = false;
+            error_list.push('bid per impression cannot exceed the daily budget');
         }
 
         if (parseFloat(fields['daily_budget_mlx']) > parseFloat(this.props.wallet.balance_stable)) {
-            formIsValid                = false;
-            errors['daily_budget_mlx'] = 'please add funds to enable this ad campaign';
+            formIsValid = false;
+            error_list.push('please add funds to enable this ad campaign');
         }
 
 
-        this.setState({errors: errors});
+        this.setState({error_list: error_list});
         return formIsValid;
     }
 
@@ -197,7 +197,17 @@ class CreateAdView extends Component {
         if (this.handleValidation()) {
             API.submitAdForm(this.state.fields).then(data => {
                 this.setState({submitData: data});
-                this.flushForm();
+
+                if (typeof (data.api_status) !== 'undefined' && data.api_status === 'ok') {
+                    // todo: redirect to list
+                    this.flushForm();
+                    this.props.history.push('/advertisement-list');
+                }
+                else {
+                    let error_list = [];
+                    error_list.push(data.api_message);
+                    this.setState({error_list: error_list});
+                }
             });
         }
     }
@@ -275,18 +285,6 @@ class CreateAdView extends Component {
     }
 
     render() {
-        const renderErrorDock     = (name) => {
-            return <span
-                style={{color: 'red'}}>{this.state.errors[name]}</span>;
-        };
-        const renderSubmitMessage = () => {
-            const data = this.state.submitData;
-            if (typeof data.api_status != 'undefined') {
-                return <div
-                    className={data.api_status === 'ok' ? 'success' : 'error'}>{data.api_message}</div>;
-            }
-        };
-
         return (
             <div>
                 <Modal show={this.state.addFundsModalShow}
@@ -320,9 +318,10 @@ class CreateAdView extends Component {
                         advertisement
                     </div>
                     <div className="panel-body">
-                        {renderSubmitMessage()}
                         <div className="section_subtitle">creative</div>
                         <Form onSubmit={this.handleSubmit.bind(this)}>
+                            <ErrorList
+                                error_list={this.state.error_list}/>
                             <FormGroup controlId="creative_name"
                                        className={'form-group'}>
                                 <Form.Label>
@@ -333,7 +332,6 @@ class CreateAdView extends Component {
                                     value={this.state.fields['creative_name']}
                                     onChange={this.handleInputChange.bind(this, 'creative_name')}
                                     placeholder=""/>
-                                {renderErrorDock('creative_name')}
                             </FormGroup>
 
                             <FormGroup controlId="category"
@@ -365,7 +363,6 @@ class CreateAdView extends Component {
                                     value={this.state.fields['headline']}
                                     onChange={this.handleInputChange.bind(this, 'headline')}
                                     placeholder=""/>
-                                {renderErrorDock('headline')}
                             </FormGroup>
 
                             <FormGroup controlId="deck"
@@ -378,7 +375,6 @@ class CreateAdView extends Component {
                                     value={this.state.fields['deck']}
                                     onChange={this.handleInputChange.bind(this, 'deck')}
                                     placeholder=""/>
-                                {renderErrorDock('deck')}
                             </FormGroup>
 
                             <FormGroup controlId="url" className={'form-group'}>
@@ -389,7 +385,6 @@ class CreateAdView extends Component {
                                               value={this.state.fields['url']}
                                               onChange={this.handleInputChange.bind(this, 'url')}
                                               placeholder=""/>
-                                {renderErrorDock('url')}
                             </FormGroup>
 
                             <FormGroup className="ad-preview form-group"
@@ -551,15 +546,17 @@ class CreateAdView extends Component {
                                 <Form.Label>
                                     balance
                                 </Form.Label>
-                                <Col sm="9">
-                                    {this.props.wallet.balance_stable.toLocaleString('en-US')} millix
-                                </Col>
-                                <Col sm="3">
+                                <div>
+                                    <span>
+                                        {this.props.wallet.balance_stable.toLocaleString('en-US')} mlx
+                                    </span>
                                     <Button
                                         variant="outline-primary"
+                                        size={'sm'}
+                                        className={'ms-3'}
                                         onClick={this.handleAddFundsModalShow}
                                     >add funds</Button>
-                                </Col>
+                                </div>
                             </Form.Group>
 
                             <Form.Group controlId="daliy-budget"
@@ -591,7 +588,6 @@ class CreateAdView extends Component {
                                     }}
                                     placeholder=""
                                 />
-                                {renderErrorDock('daily_budget_mlx')}
                             </Form.Group>
 
                             <Form.Group controlId="bid-per-impression"
@@ -626,7 +622,6 @@ class CreateAdView extends Component {
                                         }}
                                         placeholder=""
                                     />
-                                    {renderErrorDock('bid_per_impressions_mlx')}
                                     {/*<Col sm="3">
                                      <Button
                                      className="{btn btn-w-md btn-accent}"
@@ -646,10 +641,10 @@ class CreateAdView extends Component {
                                  </div>*/}
                             </Form.Group>
                             <div
-                                 style={{
-                                     display       : 'flex',
-                                     justifyContent: 'center'
-                                 }}>
+                                style={{
+                                    display       : 'flex',
+                                    justifyContent: 'center'
+                                }}>
                                 <Button
                                     variant="outline-primary"
                                     type="submit">continue</Button>
