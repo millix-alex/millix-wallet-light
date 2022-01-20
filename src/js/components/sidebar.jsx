@@ -9,11 +9,11 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 class Sidebar extends Component {
     constructor(props) {
         super(props);
-        let now            = Date.now();
-        this.state         = {
+        let now    = Date.now();
+        this.state = {
             fileKeyExport: 'export_' + now,
             fileKeyImport: 'import_' + now,
-            date: new Date()
+            date         : new Date()
         };
     }
 
@@ -36,17 +36,50 @@ class Sidebar extends Component {
 
     highlightSelected(defaultSelected) {
 
-        if (defaultSelected.startsWith('/transaction/')) {
-            defaultSelected = '/history';
-        }
-        else if (defaultSelected === '/') {
+        if (defaultSelected === '/') {
             defaultSelected = '/wallet';
-        }
-        else if (defaultSelected.startsWith('/peer/')) {
-            defaultSelected = '/peers';
         }
 
         return defaultSelected;
+    }
+
+    isExpanded(section, defaultSelected) {
+
+        let result = false;
+        if (section === 'transaction' &&
+            (
+                (defaultSelected === '/unspent-transaction-output-list/pending') ||
+                (defaultSelected === '/unspent-transaction-output-list/stable')
+            )
+        ) {
+            result = true;
+        }
+        else if (section === 'status' &&
+                 (
+                     (defaultSelected === '/status-summary') ||
+                     (defaultSelected === '/peers')
+                 )
+        ) {
+            result = true;
+        }
+        else if (section === 'ads' &&
+                 (
+                     (defaultSelected === '/ad-create') ||
+                     (defaultSelected === '/ad-list')
+                 )
+        ) {
+            result = true;
+        }
+        else if (section === 'help' &&
+                 (
+                     (defaultSelected === '/faq') ||
+                     (defaultSelected === '/report-issue')
+                 )
+        ) {
+            result = true;
+        }
+
+        return result;
     }
 
     render() {
@@ -57,7 +90,6 @@ class Sidebar extends Component {
             minHeight: '100vh'
         }}>
             <SideNav
-                expanded={true}
                 onToggle={() => {
                 }}
                 onSelect={(selected) => {
@@ -71,6 +103,7 @@ class Sidebar extends Component {
                             props.history.push(selected);
                     }
                 }}
+                expanded={true}
             >
                 <div className="nav-utc_clock">
                     <span>{moment.utc(this.state.date).format('YYYY-MM-DD HH:mm:ss')} utc</span>
@@ -84,7 +117,10 @@ class Sidebar extends Component {
                         </NavText>
                     </NavItem>
 
-                    <NavItem eventKey="transaction">
+                    <NavItem
+                        eventKey="transaction"
+                        expanded={this.isExpanded('transaction', defaultSelected)}
+                    >
                         <NavText>
                             transactions <FontAwesomeIcon className={'icon'}
                                                           icon="chevron-down"
@@ -132,7 +168,10 @@ class Sidebar extends Component {
                     </NavItem>
 
 
-                    <NavItem eventKey="status">
+                    <NavItem
+                        eventKey="status"
+                        expanded={this.isExpanded('status', defaultSelected)}
+                    >
                         <NavText>
                             status <FontAwesomeIcon className={'icon'}
                                                     icon="chevron-down"
@@ -155,7 +194,10 @@ class Sidebar extends Component {
                     </NavItem>
 
 
-                    <NavItem eventKey="ads">
+                    <NavItem
+                        eventKey="ads"
+                        expanded={this.isExpanded('ads', defaultSelected)}
+                    >
                         <NavText>
                             ads <FontAwesomeIcon className={'icon'}
                                                  icon="chevron-down"
@@ -176,7 +218,10 @@ class Sidebar extends Component {
                         </NavItem>
                     </NavItem>
 
-                    <NavItem eventKey="help">
+                    <NavItem
+                        eventKey="help"
+                        expanded={this.isExpanded('help', defaultSelected)}
+                    >
                         <NavText>
                             help <FontAwesomeIcon className={'icon'}
                                                   icon="chevron-down"
