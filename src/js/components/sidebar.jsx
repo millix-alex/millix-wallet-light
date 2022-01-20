@@ -39,7 +39,7 @@ class Sidebar extends Component {
         if (defaultSelected.startsWith('/transaction/')) {
             defaultSelected = '/history';
         }
-        else if (defaultSelected.startsWith('/utxo/') || defaultSelected === '/') {
+        else if (defaultSelected === '/') {
             defaultSelected = '/wallet';
         }
         else if (defaultSelected.startsWith('/peer/')) {
