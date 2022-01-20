@@ -4,6 +4,7 @@
   color: $color-body-font;
 }
 
+.form-label,
 label {
   color: $color-white;
   margin-bottom: .3rem;
@@ -21,4 +22,10 @@ label {
 .btn-outline-default,
 .btn-outline-input-group-addon {
   @include button-outline-default();
+}
+
+.btn {
+  > .svg-inline--fa {
+    margin-right: 0.3em;
+  }
 }

@@ -278,7 +278,7 @@ class WalletView extends Component {
                             <div className={'panel-body'}>
                                 <ErrorList
                                     error_list={this.state.error_list}/>
-                                <Row className="mb-3">
+                                <Row>
                                     <Form>
                                         <Col style={styles.centered}>
                                             {this.state.sendTransactionError && (
@@ -334,8 +334,7 @@ class WalletView extends Component {
                                             </Form.Group>
                                         </Col>
                                         <Col style={styles.centered}>
-                                            <Form.Group as={Row}
-                                                        className={'submit-row'}>
+                                            <Form.Group as={Row}>
                                                 <Button
                                                     variant="outline-primary"
                                                     onClick={this.send.bind(this)}
@@ -360,18 +359,15 @@ class WalletView extends Component {
                             <div className={'panel-heading bordered'}>addresses
                             </div>
                             <div className={'panel-body'}>
-                                <Row className="mb-3 mt-3">
-                                    <Col className="pr-0" style={{
-                                        display       : 'flex',
-                                        justifyContent: 'flex-end'
-                                    }}>
-                                        <Button variant="outline-primary"
-                                                className={'btn-xs'}
-                                                onClick={() => this.getNextAddress()}>
-                                            generate address
-                                        </Button>
-                                    </Col>
-                                </Row>
+                                <div className={'datatable_action_row'}>
+                                    <Button variant="outline-primary"
+                                            className={'btn-sm create_button'}
+                                            onClick={() => this.getNextAddress()}>
+                                        <FontAwesomeIcon
+                                            icon={'plus-circle'}
+                                            size="1x"/>generate address
+                                    </Button>
+                                </div>
                                 <Row>
                                     <DatatableView
                                         value={this.state.addressList}

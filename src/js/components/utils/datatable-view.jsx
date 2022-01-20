@@ -145,7 +145,8 @@ DatatableView.propTypes = {
     resultColumn    : PropTypes.array.isRequired,
     sortField       : PropTypes.string,
     sortOrder       : PropTypes.number,
-    showActionColumn: PropTypes.bool
+    showActionColumn: PropTypes.bool,
+    reload_timestamp: PropTypes.any
 };
 
 

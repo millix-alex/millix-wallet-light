@@ -20,7 +20,7 @@ class Sidebar extends Component {
         this.state         = {
             fileKeyExport: 'export_' + now,
             fileKeyImport: 'import_' + now,
-            date: new Date()
+            date         : new Date()
         };
     }
 
@@ -158,25 +158,10 @@ class Sidebar extends Component {
                     </NavItem>
 
 
-                    <NavItem eventKey="ads">
+                    <NavItem key={'advertisement-list'} eventKey="/advertisement-list">
                         <NavText>
-                            ads <FontAwesomeIcon className={'icon'}
-                                                 icon="chevron-down"
-                                                 size="1x"/>
-                            <FontAwesomeIcon className={'icon hidden'}
-                                             icon="chevron-up"
-                                             size="1x"/>
+                            advertisements
                         </NavText>
-                        <NavItem key={'ad-create'} eventKey="/ad-create">
-                            <NavText>
-                                create
-                            </NavText>
-                        </NavItem>
-                        <NavItem key={'ad-list'} eventKey="/ad-list">
-                            <NavText>
-                                list
-                            </NavText>
-                        </NavItem>
                     </NavItem>
 
                     <NavItem eventKey="help">

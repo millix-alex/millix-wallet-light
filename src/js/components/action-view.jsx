@@ -184,9 +184,8 @@ class ActionView extends Component {
                                     </ul>
                                 </div>
 
-                                <Row className="mb-3">
-                                    <Col style={styles.centered}
-                                         className={'submit-row'}>
+                                <Row>
+                                    <Col style={styles.centered}>
                                         <Button
                                             variant="outline-primary"
                                             onClick={() => this.resetTransactionValidation()}>

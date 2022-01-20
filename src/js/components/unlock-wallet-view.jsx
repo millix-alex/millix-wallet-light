@@ -100,7 +100,8 @@ const UnlockWalletView = (props) => {
                                                 <div
                                                     className="panel panel-filled">
                                                     <div className="panel-body">
-                                                        <ErrorList error_list={error_list}/>
+                                                        <ErrorList
+                                                            error_list={error_list}/>
                                                         <div
                                                             className="form-group">
                                                             <label
@@ -119,15 +120,10 @@ const UnlockWalletView = (props) => {
                                                                 }}
                                                             />
                                                         </div>
-                                                        <div className="pb-3">
-                                                            <div
-                                                                className="d-grid gap-2 mt-4">
-                                                                <Button
-                                                                    variant="outline-primary"
-                                                                    size="lg"
-                                                                    onClick={() => walletUnlockWithPassword(passphraseRef.value)}>continue</Button>
-                                                            </div>
-                                                        </div>
+                                                        <Button
+                                                            variant="outline-primary"
+                                                            className={'w-100'}
+                                                            onClick={() => walletUnlockWithPassword(passphraseRef.value)}>continue</Button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -159,13 +155,10 @@ const UnlockWalletView = (props) => {
                                                             place before proceed
                                                         </div>
                                                     </div>
-                                                    <div
-                                                        className={'submit-row'}>
-                                                        <Button
-                                                            className={'w-100'}
-                                                            variant="outline-primary"
-                                                            onClick={() => props.history.push('/new-wallet/')}>continue</Button>
-                                                    </div>
+                                                    <Button
+                                                        className={'w-100'}
+                                                        variant="outline-primary"
+                                                        onClick={() => props.history.push('/new-wallet/')}>continue</Button>
                                                 </div>
                                             </div>
                                         </Tab.Pane>
@@ -196,13 +189,10 @@ const UnlockWalletView = (props) => {
                                                             place before proceed
                                                         </div>
                                                     </div>
-                                                    <div
-                                                        className={'form-group'}>
-                                                        <Button
-                                                            className={'w-100'}
-                                                            variant="outline-primary"
-                                                            onClick={() => props.history.push('/import-wallet/')}>continue</Button>
-                                                    </div>
+                                                    <Button
+                                                        className={'w-100'}
+                                                        variant="outline-primary"
+                                                        onClick={() => props.history.push('/import-wallet/')}>continue</Button>
                                                 </div>
                                             </div>
                                         </Tab.Pane>
