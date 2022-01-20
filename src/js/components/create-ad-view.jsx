@@ -5,6 +5,7 @@ import API from '../api/index';
 import ErrorList from './utils/error-list-view';
 import {walletUpdateAddresses, walletUpdateBalance} from '../redux/actions/index';
 import {withRouter} from 'react-router-dom';
+import ModalView from './utils/modal-view';
 
 
 class CreateAdView extends Component {
@@ -12,9 +13,9 @@ class CreateAdView extends Component {
         super(props);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.state        = {
-            submitData       : {},
-            error_list       : [],
-            fields           : {
+            submitData   : {},
+            error_list   : [],
+            fields       : {
                 creative_name          : '',
                 category               : '',
                 headline               : '',
@@ -25,16 +26,16 @@ class CreateAdView extends Component {
                 daily_budget_mlx       : '',
                 bid_per_impressions_mlx: ''
             },
-            categories       : [],
-            languages        : [],
-            countries        : [
+            categories   : [],
+            languages    : [],
+            countries    : [
                 //todo: replace me
                 'united states',
                 'antigua and barbuda',
                 'barbados',
                 'czech republic'
             ],
-            regions          : [
+            regions      : [
                 //todo: replace me
                 'alaska',
                 'california',
@@ -56,7 +57,7 @@ class CreateAdView extends Component {
                 'moravian-silesia',
                 'pardubice'
             ],
-            cities           : [
+            cities       : [
                 //todo: replace me
                 'new york',
                 'los angeles',
@@ -78,13 +79,13 @@ class CreateAdView extends Component {
                 'ostrava',
                 'plzeň'
             ],
-            searchphrases    : [
+            searchphrases: [
                 //todo: replace me
                 'car insurance',
                 'auto insurance',
                 'honda insurance'
             ],
-            addFundsModalShow: false
+            modalShow    : false
         };
     }
 
@@ -261,13 +262,6 @@ class CreateAdView extends Component {
         this.setState({fields});
     }
 
-    setAddFundsModalShow(show) {
-        this.setState({addFundsModalShow: show});
-    }
-
-    handleAddFundsModalClose = () => this.setAddFundsModalShow(false);
-    handleAddFundsModalShow  = () => this.setAddFundsModalShow(true);
-
     getDomain(url) {
         let domain;
         try {
@@ -284,34 +278,51 @@ class CreateAdView extends Component {
         return domain;
     }
 
+    changeModalShow(value = true) {
+        this.setState({
+            modalShow: value
+        });
+    }
+
     render() {
         return (
             <div>
-                <Modal show={this.state.addFundsModalShow}
-                       onHide={this.handleAddFundsModalClose}
-                       className="addFundsModal">
-                    <Modal.Header closeButton>
-                        <Modal.Title className="col-lg-10">add
-                            funds</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body style={{
-                        paddingBottom: '90px',
-                        paddingLeft  : '0px',
-                        paddingRight : '0px'
-                    }}>
-                        <div className="col-lg-12">
-                            <span className="col-lg-12 center-text">fund your campaign by sending millix to the address below</span>
-                            <span
-                                className="col-lg-12 center-text">{this.props.wallet.address}</span>
-                        </div>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="outline-primary"
-                                onClick={this.handleAddFundsModalClose}>
-                            Close
-                        </Button>
-                    </Modal.Footer>
-                </Modal>
+                <ModalView show={this.state.modalShow}
+                           size={'lg'}
+                           on_hide={() => this.changeModalShow(false)}
+                           heading={'add funds'}
+                           body={<div>
+                               <div>fund your campaign by sending millix to the
+                                   address below
+                               </div>
+                               <span>{this.props.wallet.address}</span>
+                           </div>}/>
+
+                {/*<Modal show={this.state.addFundsModalShow}*/}
+                {/*       onHide={this.handleAddFundsModalClose}*/}
+                {/*       className="addFundsModal">*/}
+                {/*    <Modal.Header closeButton>*/}
+                {/*        <Modal.Title className="col-lg-10">add*/}
+                {/*            funds</Modal.Title>*/}
+                {/*    </Modal.Header>*/}
+                {/*    <Modal.Body style={{*/}
+                {/*        paddingBottom: '90px',*/}
+                {/*        paddingLeft  : '0px',*/}
+                {/*        paddingRight : '0px'*/}
+                {/*    }}>*/}
+                <div className="col-lg-12">
+                    <span className="col-lg-12 center-text">fund your campaign by sending millix to the address below</span>
+                    <span
+                        className="col-lg-12 center-text">{this.props.wallet.address}</span>
+                </div>
+                {/*    </Modal.Body>*/}
+                {/*    <Modal.Footer>*/}
+                {/*        <Button variant="outline-primary"*/}
+                {/*                onClick={this.handleAddFundsModalClose}>*/}
+                {/*            Close*/}
+                {/*        </Button>*/}
+                {/*    </Modal.Footer>*/}
+                {/*</Modal>*/}
 
                 <div className="panel panel-filled">
                     <div className={'panel-heading bordered'}>create
@@ -554,7 +565,7 @@ class CreateAdView extends Component {
                                         variant="outline-primary"
                                         size={'sm'}
                                         className={'ms-3'}
-                                        onClick={this.handleAddFundsModalShow}
+                                        onClick={() => this.changeModalShow()}
                                     >add funds</Button>
                                 </div>
                             </Form.Group>

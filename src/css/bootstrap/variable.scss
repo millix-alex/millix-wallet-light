@@ -32,3 +32,14 @@ $table-hover-bg: #494b54;
 
 $modal-header-color-bg: #1d1f24;
 $modal-color-bg: #21242a;
+
+$modal-content-bg: $modal-color-bg;
+$modal-content-border-color: $border-color;
+
+$modal-header-border-color: #3d404c;
+$modal-header-color-font: $color-white;
+
+$btn-close-color: $color-secondary;
+
+$modal-backdrop-bg:                 $color-body-font;
+$modal-backdrop-opacity:            .1;
