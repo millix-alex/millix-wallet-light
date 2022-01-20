@@ -50,14 +50,8 @@ class Sidebar extends Component {
     }
 
     render() {
-        const stateParam = {
-            '/unspent-transaction-output-list/stable' : {stable: 1},
-            '/unspent-transaction-output-list/pending': {stable: 0}
-        };
-
         let props           = this.props;
         let defaultSelected = this.highlightSelected(props.location.pathname);
-
         return (<aside className={'navigation'} style={{
             height   : '100%',
             minHeight: '100vh'
@@ -74,16 +68,7 @@ class Sidebar extends Component {
                         case 'resetValidation':
                             break;
                         default:
-                            if (typeof (stateParam[selected] !== 'undefined')) {
-                                props.history.push(selected, stateParam[selected]);
-                            }
-                            else {
-                                props.history.push(selected);
-                            }
-                    }
-
-                    if (props.location.pathname !== selected) {
-                        props.history.push(selected);
+                            props.history.push(selected);
                     }
                 }}
             >
@@ -128,11 +113,6 @@ class Sidebar extends Component {
                         </NavItem>
                     </NavItem>
 
-                    <NavItem key={'peers'} eventKey="/peers">
-                        <NavText>
-                            peers
-                        </NavText>
-                    </NavItem>
                     {/*
                      <NavItem key={'log'} eventKey="/log">
                      <NavText>
@@ -150,11 +130,31 @@ class Sidebar extends Component {
                             actions
                         </NavText>
                     </NavItem>
-                    <NavItem key={'status'} eventKey="/status">
+
+
+                    <NavItem eventKey="status">
                         <NavText>
-                            status
+                            status <FontAwesomeIcon className={'icon'}
+                                                    icon="chevron-down"
+                                                    size="1x"/>
+                            <FontAwesomeIcon className={'icon hidden'}
+                                             icon="chevron-up"
+                                             size="1x"/>
                         </NavText>
+                        <NavItem key={'status-summary'}
+                                 eventKey="/status-summary">
+                            <NavText>
+                                summary
+                            </NavText>
+                        </NavItem>
+                        <NavItem key={'peers'} eventKey="/peers">
+                            <NavText>
+                                peers
+                            </NavText>
+                        </NavItem>
                     </NavItem>
+
+
                     <NavItem eventKey="ads">
                         <NavText>
                             ads <FontAwesomeIcon className={'icon'}
