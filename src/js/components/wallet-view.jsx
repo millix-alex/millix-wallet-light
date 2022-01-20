@@ -92,10 +92,10 @@ class WalletView extends Component {
                if (!data.is_valid) {
                    error_list.push({
                        name   : 'address_error',
-                       message: 'invalid address. please, set a correct value.'
+                       message: 'invalid address'
                    });
                    this.setState({error_list: error_list});
-                   return Promise.reject('invalid transaction');
+                   return Promise.reject('handled_error');
                }
 
                const {
@@ -107,16 +107,17 @@ class WalletView extends Component {
                let amount;
                try {
                    amount = this._getAmount(this.amount.value);
+                   console.log(amount);
                }
                catch (e) {
                    error_list.push({
                        name   : 'amountError',
-                       message: 'invalid amount. please, set a correct value.'
+                       message: 'invalid amount'
                    });
                    this.setState({
                        error_list: error_list
                    });
-                   return Promise.reject('invalid transaction');
+                   return Promise.reject('handled_error');
                }
 
                let fees;
@@ -131,7 +132,7 @@ class WalletView extends Component {
                    this.setState({
                        error_list: error_list
                    });
-                   return Promise.reject('invalid transaction');
+                   return Promise.reject('handled_error');
                }
 
                this.setState({
@@ -171,24 +172,27 @@ class WalletView extends Component {
            })
            .catch((e) => {
                let sendTransactionErrorMessage;
-               if (e.api_message) {
-                   const match                 = /unexpected generic api error: \((?<message>.*)\)/.exec(e.api_message);
-                   sendTransactionErrorMessage = `your transaction could not be sent: (${match.groups.message})`;
-               }
-               else if (e === 'insufficient_balance') {
-                   sendTransactionErrorMessage = 'your transaction could not be sent: insufficient millix balance';
-               }
-               else if (e === 'transaction_send_interrupt') {
-                   sendTransactionErrorMessage = 'your transaction could not be sent: your transaction was canceled';
-               }
-               else {
-                   sendTransactionErrorMessage = `your transaction could not be sent: (${e.message || e.api_message || e})`;
-               }
 
-               error_list.push({
-                   name   : 'sendTransactionError',
-                   message: sendTransactionErrorMessage
-               });
+               if (e !== 'handled_error') {
+                   if (e.api_message) {
+                       const match                 = /unexpected generic api error: \((?<message>.*)\)/.exec(e.api_message);
+                       sendTransactionErrorMessage = `your transaction could not be sent: (${match.groups.message})`;
+                   }
+                   else if (e === 'insufficient_balance') {
+                       sendTransactionErrorMessage = 'your transaction could not be sent: insufficient millix balance';
+                   }
+                   else if (e === 'transaction_send_interrupt') {
+                       sendTransactionErrorMessage = 'your transaction could not be sent: your transaction was canceled';
+                   }
+                   else {
+                       sendTransactionErrorMessage = `your transaction could not be sent: (${e.message || e.api_message || e})`;
+                   }
+
+                   error_list.push({
+                       name   : 'sendTransactionError',
+                       message: sendTransactionErrorMessage
+                   });
+               }
                this.setState({error_list: error_list});
            });
     }
