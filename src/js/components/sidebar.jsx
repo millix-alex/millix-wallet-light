@@ -9,13 +9,6 @@ class Sidebar extends Component {
     constructor(props) {
         super(props);
         let now            = Date.now();
-        this.walletScreens = [
-            '/history',
-            '/log',
-            '/config',
-            '/transaction',
-            '/peer'
-        ];
         this.state         = {
             fileKeyExport: 'export_' + now,
             fileKeyImport: 'import_' + now,
@@ -29,32 +22,36 @@ class Sidebar extends Component {
             1000
         );
     }
-    
+
     componentWillUnmount() {
         clearInterval(this.timerID);
     }
-    
+
     tick() {
         this.setState({
             date: new Date()
         });
     }
-     
-    isWalletScreen(pathName) {
-        if (!pathName) {
-            return false;
+
+    highlightSelected(defaultSelected) {
+
+        if (defaultSelected.startsWith('/transaction/')) {
+            defaultSelected = '/history';
+        }
+        else if (defaultSelected.startsWith('/utxo/') || defaultSelected === '/') {
+            defaultSelected = '/wallet';
+        }
+        else if (defaultSelected.startsWith('/peer/')) {
+            defaultSelected = '/peers';
         }
 
-        for (let screen of this.walletScreens) {
-            if (pathName.startsWith(screen)) {
-                return true;
-            }
-        }
-        return false;
+        return defaultSelected;
     }
 
     render() {
-        let props = this.props;
+        let props           = this.props;
+        let defaultSelected = this.highlightSelected(props.location.pathname);
+
         return (<aside className={'navigation'} style={{
             height   : '100%',
             minHeight: '100vh'
@@ -66,7 +63,6 @@ class Sidebar extends Component {
                 onSelect={(selected) => {
                     switch (selected) {
                         case 'lock':
-
                             props.lockWallet();
                             break;
                         case 'resetValidation':
@@ -74,13 +70,18 @@ class Sidebar extends Component {
                         default:
                             props.history.push(selected);
                     }
+
+                    if (props.location.pathname !== selected) {
+                        props.history.push(selected);
+                    }
                 }}
             >
-                <div className='nav-utc_clock'>
+                <div className="nav-utc_clock">
                     <span>{moment.utc(this.state.date).format('YYYY-MM-DD HH:mm:ss')} utc</span>
                 </div>
                 <SideNav.Nav
-                    defaultSelected={!this.isWalletScreen(props.location.pathname) ? '/wallet' : props.location.pathname}>
+                    selected={defaultSelected}
+                >
                     <NavItem key={'wallet'} eventKey="/wallet">
                         <NavText>
                             home
