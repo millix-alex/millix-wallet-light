@@ -108,6 +108,14 @@ class DatatableView extends Component {
                 sortable={item.sortable}/>);
         });
 
+        if (this.props.showActionColumn) {
+            column.push(<Column
+                key={'action'}
+                field={'action'}
+                header={'action'}
+                sortable={false}/>);
+        }
+
         return (
             <DataTable value={this.props.value}
                        paginator
@@ -133,10 +141,11 @@ class DatatableView extends Component {
 
 
 DatatableView.propTypes = {
-    value       : PropTypes.array.isRequired,
-    resultColumn: PropTypes.array.isRequired,
-    sortField   : PropTypes.string,
-    sortOrder   : PropTypes.number
+    value           : PropTypes.array.isRequired,
+    resultColumn    : PropTypes.array.isRequired,
+    sortField       : PropTypes.string,
+    sortOrder       : PropTypes.number,
+    showActionColumn: PropTypes.bool
 };
 
 
