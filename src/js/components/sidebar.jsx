@@ -3,6 +3,7 @@ import SideNav, {NavItem, NavText} from '@trendmicro/react-sidenav';
 import {connect} from 'react-redux';
 import {lockWallet} from '../redux/actions/index';
 import moment from 'moment';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 
 
 class Sidebar extends Component {
@@ -12,7 +13,7 @@ class Sidebar extends Component {
         this.state         = {
             fileKeyExport: 'export_' + now,
             fileKeyImport: 'import_' + now,
-            date: new Date()
+            date         : new Date()
         };
     }
 
@@ -49,6 +50,11 @@ class Sidebar extends Component {
     }
 
     render() {
+        const stateParam = {
+            '/unspent-transaction-output-list/stable' : {stable: 1},
+            '/unspent-transaction-output-list/pending': {stable: 0}
+        };
+
         let props           = this.props;
         let defaultSelected = this.highlightSelected(props.location.pathname);
 
@@ -68,7 +74,12 @@ class Sidebar extends Component {
                         case 'resetValidation':
                             break;
                         default:
-                            props.history.push(selected);
+                            if (typeof (stateParam[selected] !== 'undefined')) {
+                                props.history.push(selected, stateParam[selected]);
+                            }
+                            else {
+                                props.history.push(selected);
+                            }
                     }
 
                     if (props.location.pathname !== selected) {
@@ -87,11 +98,36 @@ class Sidebar extends Component {
                             home
                         </NavText>
                     </NavItem>
-                    <NavItem key={'history'} eventKey="/history">
+
+                    <NavItem eventKey="transaction">
                         <NavText>
-                            transactions
+                            transactions <FontAwesomeIcon className={'icon'}
+                                                          icon="chevron-down"
+                                                          size="1x"/>
+                            <FontAwesomeIcon className={'icon hidden'}
+                                             icon="chevron-up"
+                                             size="1x"/>
                         </NavText>
+                        <NavItem key={'transaction-list'}
+                                 eventKey="/transaction-list">
+                            <NavText>
+                                all
+                            </NavText>
+                        </NavItem>
+                        <NavItem key={'unspent-transaction-output-list-pending'}
+                                 eventKey="/unspent-transaction-output-list/pending">
+                            <NavText>
+                                pending unspent list
+                            </NavText>
+                        </NavItem>
+                        <NavItem key={'unspent-transaction-output-list-stable'}
+                                 eventKey={'/unspent-transaction-output-list/stable'}>
+                            <NavText>
+                                stable unspent list
+                            </NavText>
+                        </NavItem>
                     </NavItem>
+
                     <NavItem key={'peers'} eventKey="/peers">
                         <NavText>
                             peers
@@ -121,28 +157,55 @@ class Sidebar extends Component {
                     </NavItem>
                     <NavItem eventKey="ads">
                         <NavText>
-                            ads
+                            ads <FontAwesomeIcon className={'icon'}
+                                                 icon="chevron-down"
+                                                 size="1x"/>
+                            <FontAwesomeIcon className={'icon hidden'}
+                                             icon="chevron-up"
+                                             size="1x"/>
                         </NavText>
-                        <NavItem key={'create-ad'} eventKey="/create-ad">
+                        <NavItem key={'ad-create'} eventKey="/ad-create">
                             <NavText>
                                 create
                             </NavText>
                         </NavItem>
-                        <NavItem key={'list-ad'} eventKey="/list-ad">
+                        <NavItem key={'ad-list'} eventKey="/ad-list">
                             <NavText>
                                 list
                             </NavText>
                         </NavItem>
                     </NavItem>
+
+                    <NavItem eventKey="help">
+                        <NavText>
+                            help <FontAwesomeIcon className={'icon'}
+                                                  icon="chevron-down"
+                                                  size="1x"/>
+                            <FontAwesomeIcon className={'icon hidden'}
+                                             icon="chevron-up"
+                                             size="1x"/>
+                        </NavText>
+                        <NavItem key={'faq'} eventKey="/faq">
+                            <NavText>
+                                faq
+                            </NavText>
+                        </NavItem>
+                        <NavItem key={'report-issue'} eventKey="/report-issue">
+                            <NavText>
+                                report problem
+                            </NavText>
+                        </NavItem>
+                    </NavItem>
+
                     <NavItem key={'lock'} eventKey="lock">
                         <NavText>
                             logout
                         </NavText>
                     </NavItem>
                 </SideNav.Nav>
-                <div className='nav-info'>
-                     <span>version {props.node.node_version}</span>
-                     </div>
+                <div className="nav-info">
+                    <span>version {props.node.node_version}</span>
+                </div>
             </SideNav>
         </aside>);
     }

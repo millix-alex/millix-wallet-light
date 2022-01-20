@@ -21,6 +21,7 @@ import ActionView from './action-view';
 import NewWalletView from './new-wallet-view';
 import ManageWalletView from './manage-wallet-view';
 import StatsView from './stats-view';
+import ReportIssueView from './report-issue-view';
 
 
 class AppContainer extends Component {
@@ -47,9 +48,10 @@ class AppContainer extends Component {
                     <Route path="/manage-wallet/" component={ManageWalletView}/>
                     <Route path="/new-wallet/" component={NewWalletView}/>
                     <Route path="/import-wallet/" component={ImportWalletView}/>
-                    <UnlockedWalletRequiredRoute path="/create-ad/"
+
+                    <UnlockedWalletRequiredRoute path="/ad-create/"
                                                  component={CreateAdView}/>
-                    <UnlockedWalletRequiredRoute path="/list-ad/"
+                    <UnlockedWalletRequiredRoute path="/ad-list/"
                                                  component={ListAdView}/>
                     <UnlockedWalletRequiredRoute path="/peers"
                                                  component={PeerListView}/>
@@ -65,13 +67,18 @@ class AppContainer extends Component {
                                                  component={ActionView}/>
                     <UnlockedWalletRequiredRoute path="/status"
                                                  component={StatsView}/>
+
+                    <UnlockedWalletRequiredRoute path="/report-issue"
+                                                 component={ReportIssueView}/>
+
                     <UnlockedWalletRequiredRoute
                         path="/transaction/:transaction_id"
                         component={TransactionDetails}/>
-                    <UnlockedWalletRequiredRoute path="/history"
+                    <UnlockedWalletRequiredRoute path="/transaction-list"
                                                  component={TransactionHistoryView}/>
-                    <UnlockedWalletRequiredRoute path="/utxo/:state"
-                                                 component={UnspentTransactionOutputView}/>
+                    <UnlockedWalletRequiredRoute
+                        path="/unspent-transaction-output-list/:state"
+                        component={UnspentTransactionOutputView}/>
                     <UnlockedWalletRequiredRoute component={WalletView}/>
                 </Switch>
             </Router>
