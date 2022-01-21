@@ -298,32 +298,6 @@ class CreateAdView extends Component {
                                <span>{this.props.wallet.address}</span>
                            </div>}/>
 
-                {/*<Modal show={this.state.addFundsModalShow}*/}
-                {/*       onHide={this.handleAddFundsModalClose}*/}
-                {/*       className="addFundsModal">*/}
-                {/*    <Modal.Header closeButton>*/}
-                {/*        <Modal.Title className="col-lg-10">add*/}
-                {/*            funds</Modal.Title>*/}
-                {/*    </Modal.Header>*/}
-                {/*    <Modal.Body style={{*/}
-                {/*        paddingBottom: '90px',*/}
-                {/*        paddingLeft  : '0px',*/}
-                {/*        paddingRight : '0px'*/}
-                {/*    }}>*/}
-                <div className="col-lg-12">
-                    <span className="col-lg-12 center-text">fund your campaign by sending millix to the address below</span>
-                    <span
-                        className="col-lg-12 center-text">{this.props.wallet.address}</span>
-                </div>
-                {/*    </Modal.Body>*/}
-                {/*    <Modal.Footer>*/}
-                {/*        <Button variant="outline-primary"*/}
-                {/*                onClick={this.handleAddFundsModalClose}>*/}
-                {/*            Close*/}
-                {/*        </Button>*/}
-                {/*    </Modal.Footer>*/}
-                {/*</Modal>*/}
-
                 <div className="panel panel-filled">
                     <div className={'panel-heading bordered'}>create
                         advertisement
@@ -406,21 +380,18 @@ class CreateAdView extends Component {
                                 {(this.state.fields['url'] || this.state.fields['deck'] || this.state.fields['headline']) && (
                                     <div className="preview-holder"
                                          aria-readonly="true">
-                                        <div className="row h-50">
-                                            <div
-                                                id="ads_holder h-50 pt-7"
-                                                className="col-8 m-0 ads-slider">
+                                        <div
+                                            className="ads-slider">
                                                     <span>
                                                         <a id="advertisement_headline"
                                                            href={this.state.fields['url'] ? this.state.fields['url'] : ''}
                                                            title={this.state.fields['deck'] ? this.state.fields['deck'] : ''}>{this.state.fields['headline'] ? this.state.fields['headline'] : ''}</a>
                                                     </span>
-                                                <span>
+                                            <span>
                                                         {(this.state.fields['url'] || this.state.fields['deck']) && (
                                                             <a id="advertisement_deck"
                                                                href={this.state.fields['url'] ? this.getDomain(this.state.fields['url']) : ''}
                                                                title={this.state.fields['deck'] ? this.state.fields['deck'] : ''}>{this.state.fields['deck'] ? this.state.fields['deck'] : ''} - {this.state.fields['url'] ? this.state.fields['url'] : ''}</a>)}</span>
-                                            </div>
                                         </div>
                                     </div>)}
                             </FormGroup>
