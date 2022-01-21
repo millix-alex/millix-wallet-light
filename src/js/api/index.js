@@ -246,6 +246,16 @@ class API {
         }
     }
 
+    getIsKeyPresent() {
+        try {
+            return fetch(this.getAuthenticatedMillixApiURL() + '/LOLb7q23p8rYSLwv')
+                .then(response => response.ok ? response.json() : Promise.reject());
+        }
+        catch (e) {
+            return Promise.reject(e);
+        }
+    }
+
     getNodeConfigValueByName(name) {
         try {
             return fetch(this.getAuthenticatedMillixApiURL() + `/2wYLWQfWBa6GLPYs?p0=${name}`)
