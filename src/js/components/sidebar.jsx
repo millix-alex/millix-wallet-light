@@ -174,7 +174,7 @@ class Sidebar extends Component {
                         </NavText>
                         <NavItem key={'faq'} eventKey="/faq">
                             <NavText>
-                                faq
+                                frequent questions
                             </NavText>
                         </NavItem>
                         <NavItem key={'report-issue'} eventKey="/report-issue">

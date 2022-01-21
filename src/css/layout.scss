@@ -136,10 +136,13 @@ body .section_subtitle {
   }
 }
 
+ul {
+  margin-bottom: 0;
+}
+
 .popover-body {
   ul {
     padding-left: 1rem;
-    margin-bottom: 0;
 
     li {
       margin-bottom: 0.5rem;

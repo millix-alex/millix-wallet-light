@@ -330,7 +330,7 @@ class WalletView extends Component {
                                                                   onChange={this.handleAmountValueChange.bind(this)}
                                                                   disabled={this.state.feesLocked}/>
                                                     <button
-                                                        className="btn btn-outline-input-group-addon"
+                                                        className="btn btn-outline-input-group-addon icon_only"
                                                         type="button"
                                                         onClick={() => this.setState({feesLocked: !this.state.feesLocked})}>
                                                         <FontAwesomeIcon
