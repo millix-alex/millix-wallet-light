@@ -116,11 +116,6 @@ class ImportWalletView extends Component {
                     </Button>
                 </Row>
                 <>
-                    <div style={{marginBottom: 40}}>
-                        <ImportWalletStepProgressView
-                            stepBackwards={ref => this.progressStepBackwards = ref}
-                            stepForward={ref => this.progressStepForward = ref}/>
-                    </div>
                     {status === STATUS.NEW_WALLET_MNEMONIC && (
                         <MnemonicConfirmView mnemonic={new Array(24).fill('')}
                                              importNew={true}
@@ -148,8 +143,7 @@ class ImportWalletView extends Component {
                             <Button variant='outline-primary'
                                     disabled={!this.state.mnemonic_is_confirmed ||
                                               (this.state.status === STATUS.NEW_WALLET_PASSWORD && !this.state.password_valid)}
-                                    onClick={() => this.createWalletNextStep()}>{this.state.status === STATUS.NEW_WALLET_PASSWORD
-                                                                                 || this.state.status === STATUS.NEW_WALLET_MNEMONIC ? 'next' : 'continue'}</Button>
+                                    onClick={() => this.createWalletNextStep()}>continue</Button>
                         </Col>
                     </Row>
                 </>

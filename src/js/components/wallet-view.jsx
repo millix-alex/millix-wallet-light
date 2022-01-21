@@ -10,17 +10,6 @@ import moment from 'moment';
 import ErrorList from './utils/error-list-view';
 import HelpIconView from './utils/help-icon-view';
 
-const styles = {
-    centered: {
-        display       : 'flex',
-        justifyContent: 'center'
-    },
-    left    : {
-        display       : 'flex',
-        justifyContent: 'left'
-    }
-};
-
 
 class WalletView extends Component {
     constructor(props) {
@@ -288,7 +277,7 @@ class WalletView extends Component {
                                     error_list={this.state.error_list}/>
                                 <Row>
                                     <Form>
-                                        <Col style={styles.centered}>
+                                        <Col className={'d-flex justify-content-center'}>
                                             {this.state.sendTransactionError && (
                                                 <div className={'form-error'}>
                                                     <span>{this.state.sendTransactionErrorMessage}</span>
@@ -341,7 +330,7 @@ class WalletView extends Component {
                                                 </Col>
                                             </Form.Group>
                                         </Col>
-                                        <Col style={styles.centered}>
+                                        <Col className={'d-flex justify-content-center'}>
                                             <Form.Group as={Row}>
                                                 <Button
                                                     variant="outline-primary"
