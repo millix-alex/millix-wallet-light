@@ -67,4 +67,13 @@ body .modal-body {
 
 .modal-footer {
   border-top: none;
+  padding: 1rem;
+
+  > * {
+    margin: 0;
+  }
+
+  > .btn {
+    margin-left: 0.5rem;
+  }
 }

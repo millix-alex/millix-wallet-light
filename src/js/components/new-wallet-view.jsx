@@ -126,19 +126,23 @@ class NewWalletView extends Component {
                                      (this.state.status === STATUS.NEW_WALLET_MNEMONIC && !this.state.mnemonic) ||
                                      (this.state.status === STATUS.NEW_WALLET_CONFIRM_MNEMONIC && !this.state.mnemonic_is_confirmed);
 
+        let back_button = <Button variant="outline-primary" onClick={() => {
+            this.props.history.replace('/unlock-wallet/');
+        }}>
+            back
+        </Button>;
+        if (this.state.status !== STATUS.NEW_WALLET_PASSWORD &&
+            this.state.status !== STATUS.NEW_WALLET_CREATED) {
+            back_button = <Button
+                variant="outline-default"
+                onClick={() => this.createWalletPrevStep()}>back</Button>;
+        }
+
         return (
             <Container style={{
                 marginTop  : 50,
                 paddingLeft: 25
             }}>
-                <Row className="mb-3">
-                    <Button variant="outline-primary" onClick={() => {
-                        this.props.history.replace('/unlock-wallet/');
-                    }}>
-                        <FontAwesomeIcon icon="fingerprint"
-                                         size="1x"/> unlock
-                    </Button>
-                </Row>
                 <>
                     <div className={'panel panel-filled'}>
                         <div className={'panel-heading bordered'}>
@@ -170,13 +174,9 @@ class NewWalletView extends Component {
                                     </div>
                                     <div
                                         className={'d-flex justify-content-center'}>
-                                        {this.state.status !== STATUS.NEW_WALLET_PASSWORD &&
-                                         this.state.status !== STATUS.NEW_WALLET_CREATED && (
-                                             <div className={'me-2'}>
-                                                 <Button
-                                                     variant="outline-default"
-                                                     onClick={() => this.createWalletPrevStep()}>back</Button>
-                                             </div>)}
+                                        <div className={'me-2'}>
+                                            {back_button}
+                                        </div>
                                         <Button variant="outline-primary"
                                                 disabled={next_button_disabled}
                                                 onClick={() => this.createWalletNextStep()}>continue</Button>
