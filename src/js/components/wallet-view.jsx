@@ -8,6 +8,7 @@ import API from '../api/index';
 import _ from 'lodash';
 import moment from 'moment';
 import ErrorList from './utils/error-list-view';
+import HelpIconView from './utils/help-icon-view';
 
 const styles = {
     centered: {
@@ -95,7 +96,7 @@ class WalletView extends Component {
                        message: 'invalid address'
                    });
                    this.setState({error_list: error_list});
-                   return Promise.reject('handled_error');
+                   return Promise.reject('validation_error');
                }
 
                const {
@@ -117,7 +118,7 @@ class WalletView extends Component {
                    this.setState({
                        error_list: error_list
                    });
-                   return Promise.reject('handled_error');
+                   return Promise.reject('validation_error');
                }
 
                let fees;
@@ -132,7 +133,7 @@ class WalletView extends Component {
                    this.setState({
                        error_list: error_list
                    });
-                   return Promise.reject('handled_error');
+                   return Promise.reject('validation_error');
                }
 
                this.setState({
@@ -173,10 +174,15 @@ class WalletView extends Component {
            .catch((e) => {
                let sendTransactionErrorMessage;
 
-               if (e !== 'handled_error') {
+               if (e !== 'validation_error') {
                    if (e.api_message) {
-                       const match                 = /unexpected generic api error: \((?<message>.*)\)/.exec(e.api_message);
-                       sendTransactionErrorMessage = `your transaction could not be sent: (${match.groups.message})`;
+                       const match = /unexpected generic api error: \((?<message>.*)\)/.exec(e.api_message);
+                       if (match.groups.message === 'maximum allowed number of inputs can not fund the transaction') {
+                           sendTransactionErrorMessage = 'your transaction tries to use too many outputs. please try to send smaller amount or aggregate manually by sending smaller amounts to yourself.';
+                       }
+                       else {
+                           sendTransactionErrorMessage = `your transaction could not be sent: (${match.groups.message})`;
+                       }
                    }
                    else if (e === 'insufficient_balance') {
                        sendTransactionErrorMessage = 'your transaction could not be sent: insufficient millix balance';
@@ -230,7 +236,9 @@ class WalletView extends Component {
                                         <thead>
                                         <tr>
                                             <th width="50%">available</th>
-                                            <th width="50%">pending</th>
+                                            <th width="50%">pending
+                                                <HelpIconView
+                                                    help_item_name={'pending_balance'}/></th>
                                         </tr>
                                         </thead>
                                         <tbody>

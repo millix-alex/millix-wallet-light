@@ -41,5 +41,12 @@ $modal-header-color-font: $color-white;
 
 $btn-close-color: $color-secondary;
 
-$modal-backdrop-bg:                 $color-body-font;
-$modal-backdrop-opacity:            .1;
+$modal-backdrop-bg: $color-body-font;
+$modal-backdrop-opacity: .1;
+
+$popover-header-color: $color-white;
+$popover-header-bg: $modal-header-color-bg;
+$popover-bg: $modal-color-bg;
+$popover-font-size: 1rem;
+$popover-header-padding-y: 1rem;
+$popover-header-padding-x: 1.4rem;

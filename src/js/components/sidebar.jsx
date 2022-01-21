@@ -116,6 +116,12 @@ class Sidebar extends Component {
                         </NavItem>
                     </NavItem>
 
+                    <NavItem key={'advertisement-list'} eventKey="/advertisement-list">
+                        <NavText>
+                            advertisements
+                        </NavText>
+                    </NavItem>
+
                     {/*
                      <NavItem key={'log'} eventKey="/log">
                      <NavText>
@@ -155,13 +161,6 @@ class Sidebar extends Component {
                                 peers
                             </NavText>
                         </NavItem>
-                    </NavItem>
-
-
-                    <NavItem key={'advertisement-list'} eventKey="/advertisement-list">
-                        <NavText>
-                            advertisements
-                        </NavText>
                     </NavItem>
 
                     <NavItem eventKey="help">
