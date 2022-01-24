@@ -14,28 +14,28 @@ const styles = {
     }
 };
 
+
 class UnlockWalletView extends Component {
     constructor(props) {
         super(props);
-        this.keyWatchDog = undefined;
-        this.state       = {
+        this.private_key_exist_interval_id = undefined;
+        this.state                         = {
             error_list       : [],
             private_key_exist: undefined, //ternary status: false -- doesn't
-            // exists, true -- present, undefined --
-            // status is not defined
+            // exists, true -- exist, undefined --
+            // unknown. ajax didn't return a response yet
             defaultTabActiveKey: 1
         };
     }
 
     componentDidMount() {
-        this.keyWatchDog = setInterval(() => {
-            this.private_key_exist();
+        this.private_key_exist_interval_id = setInterval(() => {
+            this.isPrivateKeyExist();
         }, 500);
     }
 
-
     componentWillUnmount() {
-        clearInterval(this.keyWatchDog);
+        clearInterval(this.private_key_exist_interval_id);
     }
 
     activateTab(eventKey) {
@@ -46,7 +46,7 @@ class UnlockWalletView extends Component {
         );
     }
 
-    private_key_exist() {
+    isPrivateKeyExist() {
         API.getIsPrivateKeyExist().then(response => {
             if (typeof (response.private_key_exist) === 'boolean') {
                 if (response.private_key_exist) {
@@ -59,7 +59,7 @@ class UnlockWalletView extends Component {
                 let error_list = [];
                 error_list.push({
                     name   : 'auth_error',
-                    message: 'private key not found'
+                    message: 'millix_private_key.json not found'
                 });
                 this.setState({
                     private_key_exist  : false,
@@ -67,7 +67,7 @@ class UnlockWalletView extends Component {
                     error_list         : error_list
                 });
             }
-            clearInterval(this.keyWatchDog);
+            clearInterval(this.private_key_exist_interval_id);
         });
     }
 
@@ -232,7 +232,10 @@ class UnlockWalletView extends Component {
                                                             <div>
                                                                 this will
                                                                 replace existing
-                                                                private_key.
+                                                                millix_private_key.json
+                                                                which contains
+                                                                your wallet
+                                                                mnemonic phrase.
                                                                 you cannot
                                                                 reverse
                                                                 this action.
@@ -247,7 +250,7 @@ class UnlockWalletView extends Component {
                                                                 please make sure
                                                                 you
                                                                 saved a copy of
-                                                                private_key it
+                                                                millix_private_key.json
                                                                 to a
                                                                 safe
                                                                 place before
@@ -273,7 +276,10 @@ class UnlockWalletView extends Component {
                                                             <div>
                                                                 this will
                                                                 replace existing
-                                                                private_key.
+                                                                millix_private_key.json
+                                                                which contains
+                                                                your wallet
+                                                                mnemonic phrase.
                                                                 you cannot
                                                                 reverse
                                                                 this action.
@@ -288,7 +294,7 @@ class UnlockWalletView extends Component {
                                                                 please make sure
                                                                 you
                                                                 saved a copy of
-                                                                private_key it
+                                                                millix_private_key.json
                                                                 to a
                                                                 safe
                                                                 place before
