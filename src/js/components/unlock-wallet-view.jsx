@@ -19,16 +19,17 @@ class UnlockWalletView extends Component {
         super(props);
         this.keyWatchDog = undefined;
         this.state       = {
-            isKeyPresent: undefined, //ternary status: false -- doesn't
-                                     // exists, true -- present, undefined --
-                                     // status is not defined
+            error_list       : [],
+            private_key_exist: undefined, //ternary status: false -- doesn't
+            // exists, true -- present, undefined --
+            // status is not defined
             defaultTabActiveKey: 1
         };
     }
 
     componentDidMount() {
         this.keyWatchDog = setInterval(() => {
-            this.isKeyPresent();
+            this.private_key_exist();
         }, 500);
     }
 
@@ -45,19 +46,25 @@ class UnlockWalletView extends Component {
         );
     }
 
-    isKeyPresent() {
-        API.getIsKeyPresent().then(response => {
-            if (typeof (response.isKeyPresent) === 'boolean') {
-                if (response.isKeyPresent) {
+    private_key_exist() {
+        API.getIsPrivateKeyExist().then(response => {
+            if (typeof (response.private_key_exist) === 'boolean') {
+                if (response.private_key_exist) {
                     this.setState({
-                        isKeyPresent: true
+                        private_key_exist: true
                     });
                 }
             }
             else {
+                let error_list = [];
+                error_list.push({
+                    name   : 'auth_error',
+                    message: 'private key not found'
+                });
                 this.setState({
-                    isKeyPresent       : false,
-                    defaultTabActiveKey: 2
+                    private_key_exist  : false,
+                    defaultTabActiveKey: 2,
+                    error_list         : error_list
                 });
             }
             clearInterval(this.keyWatchDog);
@@ -66,9 +73,8 @@ class UnlockWalletView extends Component {
 
 
     render() {
-        let error_list = [];
         let props      = this.props;
-
+        let error_list = this.state.error_list;
         if (props.wallet.unlocked) {
             const {from} = props.location.state || {from: {pathname: '/'}};
             return <Redirect to={from}/>;
@@ -168,7 +174,7 @@ class UnlockWalletView extends Component {
                                                             className="panel-body">
                                                             <ErrorList
                                                                 error_list={error_list}/>
-                                                            {this.state.isKeyPresent === undefined ? (
+                                                            {this.state.private_key_exist === undefined ? (
                                                                 <div
                                                                     className="col-lg-12 text-center mt-4 mb-4">
                                                                     looking
@@ -178,7 +184,7 @@ class UnlockWalletView extends Component {
                                                                 </div>
                                                             ) : ('')}
                                                             {
-                                                                this.state.isKeyPresent === true ? (
+                                                                this.state.private_key_exist === true ? (
                                                                     <div>
                                                                         <div
                                                                             className="form-group">
@@ -207,17 +213,6 @@ class UnlockWalletView extends Component {
                                                                             variant="outline-primary"
                                                                             className={'w-100'}
                                                                             onClick={() => walletUnlockWithPassword(passphraseRef.value)}>continue</Button>
-                                                                    </div>
-                                                                ) : ('')
-                                                            }
-                                                            {
-                                                                this.state.isKeyPresent === false ? (
-                                                                    <div
-                                                                        className="col-lg-12 text-center mt-4 mb-4">
-                                                                        private
-                                                                        key
-                                                                        not
-                                                                        found
                                                                     </div>
                                                                 ) : ('')
                                                             }

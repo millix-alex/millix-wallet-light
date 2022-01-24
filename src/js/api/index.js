@@ -257,7 +257,7 @@ class API {
         }
     }
 
-    getIsKeyPresent() {
+    getIsPrivateKeyExist() {
         try {
             return fetch(this.getAuthenticatedMillixApiURL() + '/LOLb7q23p8rYSLwv')
                 .then(response => response.ok ? response.json() : Promise.reject());
