@@ -14,59 +14,51 @@ const styles = {
     }
 };
 
-
 class UnlockWalletView extends Component {
     constructor(props) {
         super(props);
         this.keyWatchDog = undefined;
         this.state       = {
-            isKeyPresent    : false,
-            keyPoked        : false,
-            defaultActiveKey: 1
+            isKeyPresent: undefined, //ternary status: 0 -- doesn't
+                                     // exists, 1 -- present, 2
+            defaultTabActiveKey: 1
         };
     }
 
-
     componentDidMount() {
-        this.isKeyPresent();
-        this.keyWatchDog = setTimeout(() => {
-            this.pokeKey();
-        }, 3000);
+        this.keyWatchDog = setInterval(() => {
+            this.isKeyPresent();
+        }, 500);
     }
+
 
     componentWillUnmount() {
-        clearTimeout(this.keyWatchDog);
-    }
-
-    pokeKey() {
-
-        let result = (this.state.isKeyPresent !== undefined && this.state.isKeyPresent) ? true : false;
-        let key    = 1;
-        if (!result) {
-            key = 2;
-        }
-        this.setState({
-            keyPoked        : true,
-            defaultActiveKey: key
-        });
+        clearInterval(this.keyWatchDog);
     }
 
     activateTab(eventKey) {
         this.setState(
             {
-                defaultActiveKey: eventKey
+                defaultTabActiveKey: eventKey
             }
         );
     }
 
     isKeyPresent() {
         API.getIsKeyPresent().then(response => {
-            if (typeof (response.is_key_exists) === 'boolean') {
-                if (response.is_key_exists) {
+            if (typeof (response.isKeyPresent) === 'boolean') {
+                if (response.isKeyPresent) {
+                    clearInterval(this.keyWatchDog);
                     this.setState({
                         isKeyPresent: true
                     });
                 }
+            }
+            else {
+                this.setState({
+                    isKeyPresent       : false,
+                    defaultTabActiveKey: 2
+                });
             }
         });
     }
@@ -114,7 +106,7 @@ class UnlockWalletView extends Component {
                     <div className="cols-xs-12 col-lg-12 hpanel">
                         <div className="panel-body view-header tab">
                             <Tab.Container
-                                activeKey={this.state.defaultActiveKey}
+                                activeKey={this.state.defaultTabActiveKey}
                             >
                                 <Row>
                                     <Col xs={12}>
@@ -175,57 +167,112 @@ class UnlockWalletView extends Component {
                                                             className="panel-body">
                                                             <ErrorList
                                                                 error_list={error_list}/>
+                                                            {this.state.isKeyPresent === undefined ? (
+                                                                <div
+                                                                    className="col-lg-12 text-center mt-4 mb-4">
+                                                                    looking
+                                                                    for
+                                                                    private
+                                                                    key
+                                                                </div>
+                                                            ) : ('')}
                                                             {
-                                                                this.state.keyPoked ? (
-                                                                    this.state.isKeyPresent ? (
-                                                                        <div>
-                                                                            <div
-                                                                                className="form-group">
-                                                                                <label
-                                                                                    className="control-label"
-                                                                                    htmlFor="password">password</label>
-                                                                                <FormControl
-                                                                                    ref={c => passphraseRef = c}
-                                                                                    type="password"
-                                                                                    placeholder="******"
-                                                                                    aria-label="wallet password"
-                                                                                    aria-describedby="basic-addon"
-                                                                                    onKeyPress={(e) => {
-                                                                                        if (e.charCode === 13) {
-                                                                                            walletUnlockWithPassword(passphraseRef.value);
-                                                                                        }
-                                                                                    }}
-                                                                                />
-                                                                                {props.wallet.authenticationError ? (
-                                                                                    <span
-                                                                                        className="help-block small">there was a problem authenticating your key file. retry your password or <a
-                                                                                        style={{cursor: 'pointer'}}
-                                                                                        onClick={() => props.history.push('/import-wallet/')}> click here to load your key.</a></span>) : ''}
-                                                                            </div>
-                                                                            <Button
-                                                                                variant="outline-primary"
-                                                                                className={'w-100'}
-                                                                                onClick={() => walletUnlockWithPassword(passphraseRef.value)}>continue</Button>
-                                                                        </div>
-                                                                    ) : (
+                                                                this.state.isKeyPresent === true ? (
+                                                                    <div>
                                                                         <div
-                                                                            className="col-lg-12 text-center mt-4 mb-4">
-                                                                            private
-                                                                            key
-                                                                            not
-                                                                            found
+                                                                            className="form-group">
+                                                                            <label
+                                                                                className="control-label"
+                                                                                htmlFor="password">password</label>
+                                                                            <FormControl
+                                                                                ref={c => passphraseRef = c}
+                                                                                type="password"
+                                                                                placeholder="******"
+                                                                                aria-label="wallet password"
+                                                                                aria-describedby="basic-addon"
+                                                                                onKeyPress={(e) => {
+                                                                                    if (e.charCode === 13) {
+                                                                                        walletUnlockWithPassword(passphraseRef.value);
+                                                                                    }
+                                                                                }}
+                                                                            />
+                                                                            {props.wallet.authenticationError ? (
+                                                                                <span
+                                                                                    className="help-block small">there was a problem authenticating your key file. retry your password or <a
+                                                                                    style={{cursor: 'pointer'}}
+                                                                                    onClick={() => props.history.push('/import-wallet/')}> click here to load your key.</a></span>) : ''}
                                                                         </div>
-                                                                    )
-                                                                ) : (
+                                                                        <Button
+                                                                            variant="outline-primary"
+                                                                            className={'w-100'}
+                                                                            onClick={() => walletUnlockWithPassword(passphraseRef.value)}>continue</Button>
+                                                                    </div>
+                                                                ) : ('')
+                                                            }
+                                                            {
+                                                                this.state.isKeyPresent === false ? (
                                                                     <div
                                                                         className="col-lg-12 text-center mt-4 mb-4">
-                                                                        looking
-                                                                        for
                                                                         private
                                                                         key
+                                                                        not
+                                                                        found
                                                                     </div>
-                                                                )
+                                                                ) : ('')
                                                             }
+
+
+                                                            {/*{*/}
+                                                            {/*    this.state.keyPoked ? (*/}
+                                                            {/*        this.state.isKeyPresent ? (*/}
+                                                            {/*            <div>*/}
+                                                            {/*                <div*/}
+                                                            {/*                    className="form-group">*/}
+                                                            {/*                    <label*/}
+                                                            {/*                        className="control-label"*/}
+                                                            {/*                        htmlFor="password">password</label>*/}
+                                                            {/*                    <FormControl*/}
+                                                            {/*                        ref={c => passphraseRef = c}*/}
+                                                            {/*                        type="password"*/}
+                                                            {/*                        placeholder="******"*/}
+                                                            {/*                        aria-label="wallet password"*/}
+                                                            {/*                        aria-describedby="basic-addon"*/}
+                                                            {/*                        onKeyPress={(e) => {*/}
+                                                            {/*                            if (e.charCode === 13) {*/}
+                                                            {/*                                walletUnlockWithPassword(passphraseRef.value);*/}
+                                                            {/*                            }*/}
+                                                            {/*                        }}*/}
+                                                            {/*                    />*/}
+                                                            {/*                    {props.wallet.authenticationError ? (*/}
+                                                            {/*                        <span*/}
+                                                            {/*                            className="help-block small">there was a problem authenticating your key file. retry your password or <a*/}
+                                                            {/*                            style={{cursor: 'pointer'}}*/}
+                                                            {/*                            onClick={() => props.history.push('/import-wallet/')}> click here to load your key.</a></span>) : ''}*/}
+                                                            {/*                </div>*/}
+                                                            {/*                <Button*/}
+                                                            {/*                    variant="outline-primary"*/}
+                                                            {/*                    className={'w-100'}*/}
+                                                            {/*                    onClick={() => walletUnlockWithPassword(passphraseRef.value)}>continue</Button>*/}
+                                                            {/*            </div>*/}
+                                                            {/*        ) : (*/}
+                                                            {/*            <div*/}
+                                                            {/*                className="col-lg-12 text-center mt-4 mb-4">*/}
+                                                            {/*                private*/}
+                                                            {/*                key*/}
+                                                            {/*                not*/}
+                                                            {/*                found*/}
+                                                            {/*            </div>*/}
+                                                            {/*        )*/}
+                                                            {/*    ) : (*/}
+                                                            {/*        <div*/}
+                                                            {/*            className="col-lg-12 text-center mt-4 mb-4">*/}
+                                                            {/*            looking*/}
+                                                            {/*            for*/}
+                                                            {/*            private*/}
+                                                            {/*            key*/}
+                                                            {/*        </div>*/}
+                                                            {/*    )*/}
+                                                            {/*}*/}
                                                         </div>
                                                     </div>
                                                 </div>
