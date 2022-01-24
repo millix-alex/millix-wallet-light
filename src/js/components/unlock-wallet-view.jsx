@@ -104,9 +104,7 @@ class UnlockWalletView extends Component {
         if (props.wallet.authenticationError) {
             error_list.push({
                 name   : 'auth_error_name',
-                message: <span>there was a problem authenticating your key file. retry your password or <a
-                    style={{cursor: 'pointer'}}
-                    onClick={() => props.history.push('import-wallet')}> click here to load your key.</a></span>
+                message: 'there was a problem authenticating your key file. please make sure you are using correct password'
             });
         }
 
@@ -115,8 +113,6 @@ class UnlockWalletView extends Component {
                 <div className="unlock-container">
                     <div className="cols-xs-12 col-lg-12 hpanel">
                         <div className="panel-body view-header tab">
-                            <ErrorList error_list={error_list}/>
-
                             <Tab.Container
                                 activeKey={this.state.defaultActiveKey}
                             >
@@ -128,10 +124,8 @@ class UnlockWalletView extends Component {
                                                 className="col-lg-4"
                                                 onClick={() => this.activateTab(1)}
                                             >
-                                                <Nav.Link
-                                                    className="col-lg-12"
-                                                    eventKey={1}
-                                                >
+                                                <Nav.Link className="col-lg-12"
+                                                          eventKey={1}>
                                                     <h5 className="page_subtitle labeled">
                                                         <FontAwesomeIcon
                                                             className="fal"
@@ -179,6 +173,8 @@ class UnlockWalletView extends Component {
                                                         className="panel panel-filled">
                                                         <div
                                                             className="panel-body">
+                                                            <ErrorList
+                                                                error_list={error_list}/>
                                                             {
                                                                 this.state.keyPoked ? (
                                                                     this.state.isKeyPresent ? (
@@ -206,16 +202,10 @@ class UnlockWalletView extends Component {
                                                                                         style={{cursor: 'pointer'}}
                                                                                         onClick={() => props.history.push('/import-wallet/')}> click here to load your key.</a></span>) : ''}
                                                                             </div>
-                                                                            <div
-                                                                                className="pb-3">
-                                                                                <div
-                                                                                    className="d-grid gap-2 mt-4">
-                                                                                    <Button
-                                                                                        variant="outline-primary"
-                                                                                        size="lg"
-                                                                                        onClick={() => walletUnlockWithPassword(passphraseRef.value)}>continue</Button>
-                                                                                </div>
-                                                                            </div>
+                                                                            <Button
+                                                                                variant="outline-primary"
+                                                                                className={'w-100'}
+                                                                                onClick={() => walletUnlockWithPassword(passphraseRef.value)}>continue</Button>
                                                                         </div>
                                                                     ) : (
                                                                         <div
@@ -226,7 +216,6 @@ class UnlockWalletView extends Component {
                                                                             found
                                                                         </div>
                                                                     )
-
                                                                 ) : (
                                                                     <div
                                                                         className="col-lg-12 text-center mt-4 mb-4">
@@ -237,7 +226,6 @@ class UnlockWalletView extends Component {
                                                                     </div>
                                                                 )
                                                             }
-
                                                         </div>
                                                     </div>
                                                 </div>
@@ -276,13 +264,10 @@ class UnlockWalletView extends Component {
                                                                 proceed
                                                             </div>
                                                         </div>
-                                                        <div
-                                                            className={'submit-row'}>
-                                                            <Button
-                                                                className={'w-100'}
-                                                                variant="outline-primary"
-                                                                onClick={() => props.history.push('/new-wallet/')}>continue</Button>
-                                                        </div>
+                                                        <Button
+                                                            className={'w-100'}
+                                                            variant="outline-primary"
+                                                            onClick={() => props.history.push('/new-wallet/')}>continue</Button>
                                                     </div>
                                                 </div>
                                             </Tab.Pane>
@@ -320,13 +305,10 @@ class UnlockWalletView extends Component {
                                                                 proceed
                                                             </div>
                                                         </div>
-                                                        <div
-                                                            className={'form-group'}>
-                                                            <Button
-                                                                className={'w-100'}
-                                                                variant="outline-primary"
-                                                                onClick={() => props.history.push('/import-wallet/')}>continue</Button>
-                                                        </div>
+                                                        <Button
+                                                            className={'w-100'}
+                                                            variant="outline-primary"
+                                                            onClick={() => props.history.push('/import-wallet/')}>continue</Button>
                                                     </div>
                                                 </div>
                                             </Tab.Pane>
@@ -351,7 +333,7 @@ class UnlockWalletView extends Component {
                      </Row>)}
             </Container>
         );
-    }
+    };
 };
 
 export default connect(
