@@ -19,8 +19,9 @@ class UnlockWalletView extends Component {
         super(props);
         this.keyWatchDog = undefined;
         this.state       = {
-            isKeyPresent: undefined, //ternary status: 0 -- doesn't
-                                     // exists, 1 -- present, 2
+            isKeyPresent: undefined, //ternary status: false -- doesn't
+                                     // exists, true -- present, undefined --
+                                     // status is not defined
             defaultTabActiveKey: 1
         };
     }
@@ -59,8 +60,8 @@ class UnlockWalletView extends Component {
                     defaultTabActiveKey: 2
                 });
             }
+            clearInterval(this.keyWatchDog);
         });
-        clearInterval(this.keyWatchDog);
     }
 
 
