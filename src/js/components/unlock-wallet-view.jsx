@@ -220,59 +220,6 @@ class UnlockWalletView extends Component {
                                                                     </div>
                                                                 ) : ('')
                                                             }
-
-
-                                                            {/*{*/}
-                                                            {/*    this.state.keyPoked ? (*/}
-                                                            {/*        this.state.isKeyPresent ? (*/}
-                                                            {/*            <div>*/}
-                                                            {/*                <div*/}
-                                                            {/*                    className="form-group">*/}
-                                                            {/*                    <label*/}
-                                                            {/*                        className="control-label"*/}
-                                                            {/*                        htmlFor="password">password</label>*/}
-                                                            {/*                    <FormControl*/}
-                                                            {/*                        ref={c => passphraseRef = c}*/}
-                                                            {/*                        type="password"*/}
-                                                            {/*                        placeholder="******"*/}
-                                                            {/*                        aria-label="wallet password"*/}
-                                                            {/*                        aria-describedby="basic-addon"*/}
-                                                            {/*                        onKeyPress={(e) => {*/}
-                                                            {/*                            if (e.charCode === 13) {*/}
-                                                            {/*                                walletUnlockWithPassword(passphraseRef.value);*/}
-                                                            {/*                            }*/}
-                                                            {/*                        }}*/}
-                                                            {/*                    />*/}
-                                                            {/*                    {props.wallet.authenticationError ? (*/}
-                                                            {/*                        <span*/}
-                                                            {/*                            className="help-block small">there was a problem authenticating your key file. retry your password or <a*/}
-                                                            {/*                            style={{cursor: 'pointer'}}*/}
-                                                            {/*                            onClick={() => props.history.push('/import-wallet/')}> click here to load your key.</a></span>) : ''}*/}
-                                                            {/*                </div>*/}
-                                                            {/*                <Button*/}
-                                                            {/*                    variant="outline-primary"*/}
-                                                            {/*                    className={'w-100'}*/}
-                                                            {/*                    onClick={() => walletUnlockWithPassword(passphraseRef.value)}>continue</Button>*/}
-                                                            {/*            </div>*/}
-                                                            {/*        ) : (*/}
-                                                            {/*            <div*/}
-                                                            {/*                className="col-lg-12 text-center mt-4 mb-4">*/}
-                                                            {/*                private*/}
-                                                            {/*                key*/}
-                                                            {/*                not*/}
-                                                            {/*                found*/}
-                                                            {/*            </div>*/}
-                                                            {/*        )*/}
-                                                            {/*    ) : (*/}
-                                                            {/*        <div*/}
-                                                            {/*            className="col-lg-12 text-center mt-4 mb-4">*/}
-                                                            {/*            looking*/}
-                                                            {/*            for*/}
-                                                            {/*            private*/}
-                                                            {/*            key*/}
-                                                            {/*        </div>*/}
-                                                            {/*    )*/}
-                                                            {/*}*/}
                                                         </div>
                                                     </div>
                                                 </div>
