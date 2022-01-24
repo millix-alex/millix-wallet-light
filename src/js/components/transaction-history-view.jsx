@@ -49,7 +49,8 @@ class TransactionHistoryView extends Component {
                 parent_date: transaction.parent_date && moment.utc(transaction.parent_date * 1000).format('YYYY-MM-DD HH:mm:ss'),
                 action     : <DatatableActionButtonView
                     history_path={'/transaction/' + encodeURIComponent(transaction.transaction_id)}
-                    history_state={[transaction]}/>
+                    history_state={[transaction]}
+                    icon={'eye'}/>
             }));
 
             this.setState({

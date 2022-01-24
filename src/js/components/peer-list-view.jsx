@@ -40,7 +40,8 @@ class PeerListView extends Component {
 
                    const action = <DatatableActionButtonView
                        history_path={'/peer/' + item.node_id}
-                       history_state={{peer: item.node_id}}/>;
+                       history_state={{peer: item.node_id}}
+                       icon={'eye'}/>;
 
                    peerList.push({
                        node_idx   : idx + 1,

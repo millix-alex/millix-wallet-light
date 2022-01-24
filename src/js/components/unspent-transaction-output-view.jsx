@@ -71,7 +71,8 @@ class UnspentTransactionOutputView extends Component {
                 stable_date     : output.stable_date && moment.utc(output.stable_date * 1000).format('YYYY-MM-DD HH:mm:ss'),
                 action          : <DatatableActionButtonView
                     history_path={'/transaction/' + encodeURIComponent(output.transaction_id)}
-                    history_state={[output]}/>
+                    history_state={[output]}
+                    icon={'eye'}/>
             }));
             this.setState({
                 transaction_output_list   : rows,
@@ -146,5 +147,5 @@ class UnspentTransactionOutputView extends Component {
 export default connect(
     state => ({
         wallet: state.wallet
-    }),
+    })
 )(withRouter(UnspentTransactionOutputView));
