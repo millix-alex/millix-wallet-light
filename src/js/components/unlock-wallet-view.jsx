@@ -48,7 +48,6 @@ class UnlockWalletView extends Component {
         API.getIsKeyPresent().then(response => {
             if (typeof (response.isKeyPresent) === 'boolean') {
                 if (response.isKeyPresent) {
-                    clearInterval(this.keyWatchDog);
                     this.setState({
                         isKeyPresent: true
                     });
@@ -61,6 +60,7 @@ class UnlockWalletView extends Component {
                 });
             }
         });
+        clearInterval(this.keyWatchDog);
     }
 
 
