@@ -141,7 +141,7 @@ class StatsView extends Component {
                                         node public address
                                     </td>
                                     <td>
-                                        {props.network.node_public_ip.toLocaleString('en-US') + ':' + props.network.node_port}
+                                        {this.props.network.node_is_public === true && props.network.node_public_ip.toLocaleString('en-US') + ':' + props.network.node_port}
                                     </td>
                                 </tr>
                                 <tr>
