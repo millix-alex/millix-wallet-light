@@ -168,7 +168,7 @@ class CreateAdView extends Component {
 
         if (!fields['bid_per_impressions_mlx']) {
             formIsValid = false;
-            error_list.push('bid per impressio is required');
+            error_list.push('bid per impression is required');
         }
 
         if (typeof fields['bid_per_impressions_mlx'] !== 'undefined' && (typeof fields['daily_budget_mlx']) == 'string') {
@@ -176,6 +176,11 @@ class CreateAdView extends Component {
                 formIsValid = false;
                 error_list.push('bid per impression must be a number');
             }
+        }
+
+        if (parseFloat(fields['bid_per_impressions_mlx']) > parseFloat(fields['daily_budget_mlx'])) {
+            formIsValid = false;
+            error_list.push('bid per impression cannot exceed the daily budget');
         }
 
         this.setState({error_list: error_list});
