@@ -175,12 +175,12 @@ class WalletView extends Component {
                                const error = e.api_message.error;
                                if (error.error === 'transaction_input_max_error') {
                                    sendTransactionErrorMessage = <>your
-                                       transaction tries to use too many outputs<HelpIconView
+                                       transaction tried to use too many outputs<HelpIconView
                                            help_item_name={'transaction_max_input_number'}/>.
-                                       please try to send smaller amount or
-                                       aggregate manually by sending smaller
-                                       amounts to yourself. max amount you can
-                                       send now
+                                       please try to send a smaller amount or
+                                       aggregate manually by sending a smaller
+                                       amounts to yourself. the max amount you can
+                                       send is
                                        is {error.data.amount_max.toLocaleString('en-US')} mlx</>;
                                }
                            }
