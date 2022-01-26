@@ -46,10 +46,6 @@ class ListAdView extends Component {
         API.resetAd(advertisement_guid).then(_ => _);
     }
 
-    getFormattedDate(item) {
-        return moment.utc(item.create_date * 1000).format('YYYY-MM-DD HH:mm:ss');
-    }
-
     getStatusButton(item) {
         let icon = item.status === 1 ? 'pause' : 'play';
         return <Button
@@ -145,7 +141,7 @@ class ListAdView extends Component {
                             expiration                 : item.expiration,
                             status                     : this.getStatusLabel(item.status),
                             action                     : this.getActionButton(item),
-                            create_date                : this.getFormattedDate(item)
+                            create_date                : format.date(item.create_date)
                         });
                     });
 
@@ -160,10 +156,6 @@ class ListAdView extends Component {
     }
 
     componentDidMount() {
-        moment.relativeTimeThreshold('ss', -1); // required to get diff in
-        // seconds instead of "a few
-        // seconds ago"
-
         this.getCategories();
         this.getTypes();
         this.reloadDatatable();

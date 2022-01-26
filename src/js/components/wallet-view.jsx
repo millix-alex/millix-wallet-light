@@ -3,15 +3,13 @@ import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 import {Col, Row, Form, Table, Button, Badge} from 'react-bootstrap';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import DatatableView from './utils/datatable-view';
 import API from '../api/index';
-import _ from 'lodash';
-import moment from 'moment';
 import ErrorList from './utils/error-list-view';
 import HelpIconView from './utils/help-icon-view';
-import DatatableHeaderView from './utils/datatable-header-view';
 import ModalView from './utils/modal-view';
 import * as format from '../helper/format';
+import BalanceView from './utils/balance-view';
+import AddressListView from './address-list-view';
 
 
 class WalletView extends Component {
@@ -19,7 +17,6 @@ class WalletView extends Component {
         super(props);
         this.state = {
             feesLocked            : true,
-            addressList           : [],
             error_list            : [],
             modalShow             : false,
             address_base          : '',
@@ -32,37 +29,10 @@ class WalletView extends Component {
         this.send = this.send.bind(this);
     }
 
-    componentDidMount() {
-        this.updateAddresses();
-    }
-
     componentWillUnmount() {
         if (this.state.sending) {
             API.interruptTransaction().then(_ => _);
         }
-    }
-
-    updateAddresses() {
-        API.listAddresses(this.props.wallet.address_key_identifier)
-           .then(addresses => {
-               let result = _.sortBy(_.map(addresses, itemAddress => {
-                   return {
-                       address         : itemAddress.address,
-                       address_position: itemAddress.address_position,
-                       address_version : itemAddress.address_version,
-                       create_date     : moment.unix(itemAddress.create_date).format('YYYY-MM-DD HH:mm:ss')
-                   };
-               }), address => -address.address_position);
-
-               this.setState({
-                   addressList: result
-               });
-           });
-    }
-
-    getNextAddress() {
-        API.getNextAddress()
-           .then(() => this.updateAddresses());
     }
 
     _getAmount(value, allowZero = false) {
@@ -274,61 +244,11 @@ class WalletView extends Component {
             <div>
                 <Row>
                     <Col md={12}>
-                        <div className={'panel panel-filled'}>
-                            <div className={'panel-heading bordered'}>balance
-                            </div>
-                            <div className={'panel-body'}>
-                                <div className={'d-flex'}>
-                                    <Table striped bordered hover>
-                                        <thead>
-                                        <tr>
-                                            <th width="50%">available</th>
-                                            <th width="50%">pending
-                                                <HelpIconView
-                                                    help_item_name={'pending_balance'}/>
-                                            </th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        <tr key="1">
-                                            <td>
-                                                <div className={'d-flex'}>
-                                                <span
-                                                    className={'d-flex align-self-center'}>
-                                                    {format.millix(this.props.wallet.balance_stable)}
-                                                </span>
-                                                    <Button
-                                                        variant="outline-primary"
-                                                        className={'btn-xs icon_only ms-auto'}
-                                                        onClick={() => this.props.history.push('/unspent-transaction-output-list/stable')}>
-                                                        <FontAwesomeIcon
-                                                            icon={'list'}
-                                                            size="1x"/>
-                                                    </Button>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div className={'d-flex'}>
-                                                <span
-                                                    className={'d-flex align-self-center'}>
-                                                    {format.millix(this.props.wallet.balance_pending)}
-                                                    </span>
-                                                    <Button
-                                                        variant="outline-primary"
-                                                        className={'btn-xs icon_only ms-auto'}
-                                                        onClick={() => this.props.history.push('/unspent-transaction-output-list/pending')}>
-                                                        <FontAwesomeIcon
-                                                            icon={'list'}
-                                                            size="1x"/>
-                                                    </Button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                    </Table>
-                                </div>
-                            </div>
-                        </div>
+                        <BalanceView
+                            stable={this.props.wallet.balance_stable}
+                            pending={this.props.wallet.balance_pending}
+                            primary_address={this.props.wallet.address}
+                        />
                         <div className={'panel panel-filled'}>
                             <div className={'panel-heading bordered'}>send</div>
                             <div className={'panel-body'}>
@@ -386,7 +306,6 @@ class WalletView extends Component {
                                                             icon={this.state.feesLocked ? 'lock' : 'lock-open'}
                                                             size="sm"/>
                                                     </button>
-
                                                 </Col>
                                             </Form.Group>
                                         </Col>
@@ -421,39 +340,6 @@ class WalletView extends Component {
                                             </Form.Group>
                                         </Col>
                                     </Form>
-                                </Row>
-                            </div>
-                        </div>
-                        <div className={'panel panel-filled'}>
-                            <div className={'panel-heading bordered'}>addresses
-                            </div>
-                            <div className={'panel-body'}>
-                                <DatatableHeaderView
-                                    action_button_on_click={() => this.getNextAddress()}
-                                    action_button_label={'generate address'}
-                                />
-                                <Row>
-                                    <DatatableView
-                                        value={this.state.addressList}
-                                        sortField={'address_position'}
-                                        sortOrder={1}
-                                        resultColumn={[
-                                            {
-                                                field : 'address_position',
-                                                header: 'position'
-                                            },
-                                            {
-                                                field : 'address',
-                                                header: 'address'
-                                            },
-                                            {
-                                                field : 'address_version',
-                                                header: 'version'
-                                            },
-                                            {
-                                                field: 'create_date'
-                                            }
-                                        ]}/>
                                 </Row>
                             </div>
                         </div>

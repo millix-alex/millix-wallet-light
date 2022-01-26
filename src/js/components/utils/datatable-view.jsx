@@ -18,10 +18,6 @@ class DatatableView extends Component {
             currentPage: 1
         };
 
-        moment.relativeTimeThreshold('ss', -1); // required to get diff in
-        // seconds instead of "a few
-        // seconds ago"
-
         this.onCustomPage       = this.onCustomPage.bind(this);
         this.bodyTemplateAmount = this.bodyTemplateAmount.bind(this);
     }

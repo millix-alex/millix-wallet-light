@@ -6,7 +6,7 @@ import moment from 'moment';
 import API from '../api/index';
 import DatatableView from './utils/datatable-view';
 import DatatableActionButtonView from './utils/datatable-action-button-view';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import * as format from '../helper/format';
 import DatatableHeaderView from './utils/datatable-header-view';
 
 
@@ -23,10 +23,6 @@ class UnspentTransactionOutputView extends Component {
     }
 
     componentDidMount() {
-        moment.relativeTimeThreshold('ss', -1); // required to get diff in
-        // seconds instead of "a few
-        // seconds ago"
-
         const stable_value_new = this.getStableFromUrl();
         this.setState({
             stable: stable_value_new
@@ -67,8 +63,8 @@ class UnspentTransactionOutputView extends Component {
                 address         : output.address,
                 output_position : output.output_position,
                 amount          : output.amount,
-                transaction_date: moment.utc(output.transaction_date * 1000).format('YYYY-MM-DD HH:mm:ss'),
-                stable_date     : output.stable_date && moment.utc(output.stable_date * 1000).format('YYYY-MM-DD HH:mm:ss'),
+                transaction_date: format.date(output.transaction_date),
+                stable_date     : format.date(output.stable_date),
                 action          : <DatatableActionButtonView
                     history_path={'/transaction/' + encodeURIComponent(output.transaction_id)}
                     history_state={[output]}

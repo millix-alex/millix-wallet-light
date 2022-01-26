@@ -85,6 +85,29 @@ class HelpIconView extends Component {
                         by sending transactions to yourself.
                     </li>
                 </ul>
+            },
+            'primary_address': {
+                'title': 'primary address',
+                'body' : <ul>
+                    <li>
+                        it is the first address you get when you create a wallet.
+                    </li>
+                    <li>
+                        it is the address which your node provide to peers as a primary one.
+                    </li>
+                    <li>
+                        it is the address where you get paid for transaction validation if you has been selected as proxy.
+                    </li>
+                    <li>
+                        it is the address where you get paid for advertisement view.
+                    </li>
+                    <li>
+                        it is the address where you get paid for advertisement view.
+                    </li>
+                    <li>
+                        the base address and the key identifier has the same value in the prime address.
+                    </li>
+                </ul>
             }
         };
         let help_item     = false;

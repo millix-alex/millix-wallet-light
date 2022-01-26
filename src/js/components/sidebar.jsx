@@ -5,6 +5,7 @@ import {lockWallet} from '../redux/actions/index';
 import moment from 'moment';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import ModalView from './utils/modal-view';
+import * as format from '../helper/format';
 
 
 class Sidebar extends Component {
@@ -120,7 +121,7 @@ class Sidebar extends Component {
                            on_accept={() => props.lockWallet()}
                            body={<div>are you sure you want to logout?</div>}/>
                 <div className="nav-utc_clock">
-                    <span>{moment.utc(this.state.date).format('YYYY-MM-DD HH:mm:ss')} utc</span>
+                    <span>{format.date(this.state.date)} utc</span>
                 </div>
                 <SideNav.Nav
                     selected={defaultSelected}
@@ -128,6 +129,12 @@ class Sidebar extends Component {
                     <NavItem key={'wallet'} eventKey="/wallet">
                         <NavText>
                             home
+                        </NavText>
+                    </NavItem>
+
+                    <NavItem key={'address-list'} eventKey="/address-list">
+                        <NavText>
+                            addresses
                         </NavText>
                     </NavItem>
 

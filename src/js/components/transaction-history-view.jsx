@@ -5,7 +5,7 @@ import {Button, Col, Row} from 'react-bootstrap';
 import moment from 'moment';
 import DatatableView from './utils/datatable-view';
 import DatatableActionButtonView from './utils/datatable-action-button-view';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import * as format from '../helper/format';
 import API from '../api';
 import DatatableHeaderView from './utils/datatable-header-view';
 
@@ -22,10 +22,6 @@ class TransactionHistoryView extends Component {
     }
 
     componentDidMount() {
-        moment.relativeTimeThreshold('ss', -1); // required to get diff in
-                                                // seconds instead of "a few
-                                                // seconds ago"
-
         this.reloadDatatable();
         this.transactionHistoryUpdateHandler = setInterval(() => this.reloadDatatable, 60000);
     }
@@ -42,11 +38,11 @@ class TransactionHistoryView extends Component {
         return API.getTransactionHistory(this.props.wallet.address_key_identifier).then(data => {
             const rows = data.map((transaction, idx) => ({
                 idx        : data.length - idx,
-                date       : moment.utc(transaction.transaction_date * 1000).format('YYYY-MM-DD HH:mm:ss'),
+                date       : format.date(transaction.transaction_date),
                 amount     : transaction.amount,
                 txid       : transaction.transaction_id,
-                stable_date: transaction.stable_date && moment.utc(transaction.stable_date * 1000).format('YYYY-MM-DD HH:mm:ss'),
-                parent_date: transaction.parent_date && moment.utc(transaction.parent_date * 1000).format('YYYY-MM-DD HH:mm:ss'),
+                stable_date: format.date(transaction.stable_date),
+                parent_date: format.date(transaction.parent_date),
                 action     : <DatatableActionButtonView
                     history_path={'/transaction/' + encodeURIComponent(transaction.transaction_id)}
                     history_state={[transaction]}
