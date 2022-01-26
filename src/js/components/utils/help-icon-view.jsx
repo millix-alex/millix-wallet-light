@@ -86,26 +86,27 @@ class HelpIconView extends Component {
                     </li>
                 </ul>
             },
-            'primary_address': {
+            'primary_address'             : {
                 'title': 'primary address',
                 'body' : <ul>
                     <li>
-                        it is the first address you get when you create a wallet.
+                        is the first address created by a new wallet.
                     </li>
                     <li>
-                        it is the address which your node provide to peers as a primary one.
+                        is the address announced by your node to the network.
                     </li>
                     <li>
-                        it is the address where you get paid for transaction validation if you has been selected as proxy.
+                        is the address where you receive transaction fees when
+                        selected as a proxy.
                     </li>
                     <li>
-                        it is the address where you get paid for advertisement view.
+                        is the address where you receive advertisement payments.
                     </li>
                     <li>
-                        it is the address where you get paid for advertisement view.
-                    </li>
-                    <li>
-                        the base address and the key identifier has the same value in the prime address.
+                        click <a
+                        className={''}
+                        onClick={() => this.props.history.push('/address-list')}>here</a> to
+                        create new addresses and view existing addresses
                     </li>
                 </ul>
             }
