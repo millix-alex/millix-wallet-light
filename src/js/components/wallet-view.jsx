@@ -107,7 +107,6 @@ class WalletView extends Component {
                let amount;
                try {
                    amount = this._getAmount(this.amount.value);
-                   console.log(amount);
                }
                catch (e) {
                    error_list.push({
@@ -151,8 +150,6 @@ class WalletView extends Component {
 
     sendTransaction(){
         const amount = this.state.amount;
-
-        console.log(this.state)
         API.sendTransaction({
             transaction_output_list: [
                 {
@@ -183,10 +180,7 @@ class WalletView extends Component {
         }).catch((e) => {
             let sendTransactionErrorMessage;
             let error_list = [];
-            console.log(e);
             if (e !== 'validation_error') {
-                console.log('!validation_error');
-
                 if (e.api_message) {
                     if (typeof (e.api_message) === 'string') {
                         const match                 = /unexpected generic api error: \((?<message>.*)\)/.exec(e.api_message);
@@ -232,7 +226,7 @@ class WalletView extends Component {
         });
     }
 
-    breakTransaction() {
+    cancelSendTransaction() {
         this.setState({
             canceling: false,
             sending  : false
@@ -392,11 +386,11 @@ class WalletView extends Component {
                                                        on_hide={() => this.changeModalShow(false)}
                                                        heading={'reset validation'}
                                                        on_accept={() => this.sendTransaction()}
-                                                       on_cancel={() => this.breakTransaction()}
+                                                       on_cancel={() => this.cancelSendTransaction()}
                                                        body={<div>are you sure you want to send
-                                                           &nbsp;{this.state.amount}
-                                                           mlx to &nbsp;{this.state.address_base}&nbsp;
-                                                           paying &nbsp;{this.state.fees}
+                                                            {this.state.amount}
+                                                           mlx to  {this.state.address_base}
+                                                           paying {this.state.fees}
                                                            mlx fee?</div>}/>
                                             <Form.Group as={Row}>
                                                 <Button
