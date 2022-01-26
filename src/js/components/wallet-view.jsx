@@ -183,7 +183,10 @@ class WalletView extends Component {
         }).catch((e) => {
             let sendTransactionErrorMessage;
             let error_list = [];
+            console.log(e);
             if (e !== 'validation_error') {
+                console.log('!validation_error');
+
                 if (e.api_message) {
                     if (typeof (e.api_message) === 'string') {
                         const match                 = /unexpected generic api error: \((?<message>.*)\)/.exec(e.api_message);
@@ -205,14 +208,15 @@ class WalletView extends Component {
                         }
                     }
                 }
-                else if (e === 'insufficient_balance') {
+
+                if (e === 'insufficient_balance' || e.api_message.error.error === 'insufficient_balance') {
                     sendTransactionErrorMessage = 'your transaction could not be sent: insufficient millix balance';
                 }
-                else if (e === 'transaction_send_interrupt') {
+                else if (e === 'transaction_send_interrupt' || e.api_message.error === 'transaction_send_interrupt') {
                     sendTransactionErrorMessage = 'your transaction could not be sent: your transaction was canceled';
                 }
                 else {
-                    sendTransactionErrorMessage = `your transaction could not be sent: (${e.message || e.api_message || e})`;
+                    sendTransactionErrorMessage = `your transaction could not be sent: (${e.api_message.error.error || e.api_message.error || e.message || e.api_message || e})`;
                 }
 
                 error_list.push({
@@ -222,8 +226,16 @@ class WalletView extends Component {
             }
             this.setState({
                 error_list: error_list,
-                sending   : false
+                sending   : false,
+                canceling : false
             });
+        });
+    }
+
+    breakTransaction() {
+        this.setState({
+            canceling: false,
+            sending  : false
         });
     }
 
@@ -380,10 +392,11 @@ class WalletView extends Component {
                                                        on_hide={() => this.changeModalShow(false)}
                                                        heading={'reset validation'}
                                                        on_accept={() => this.sendTransaction()}
+                                                       on_cancel={() => this.breakTransaction()}
                                                        body={<div>are you sure you want to send
-                                                           {this.amount !== undefined ? this.amount.value : 0}
-                                                           mlx to {this.destinationAddress !== undefined ? this.destinationAddress.value : ''}
-                                                           paying {this.fees !== undefined ? this.fees.value : 0}
+                                                           &nbsp;{this.state.amount}
+                                                           mlx to &nbsp;{this.state.address_base}&nbsp;
+                                                           paying &nbsp;{this.state.fees}
                                                            mlx fee?</div>}/>
                                             <Form.Group as={Row}>
                                                 <Button
