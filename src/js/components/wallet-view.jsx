@@ -11,7 +11,7 @@ import ErrorList from './utils/error-list-view';
 import HelpIconView from './utils/help-icon-view';
 import DatatableHeaderView from './utils/datatable-header-view';
 import ModalView from './utils/modal-view';
-
+import * as format from '../helper/format'
 
 class WalletView extends Component {
     constructor(props) {
@@ -66,7 +66,7 @@ class WalletView extends Component {
 
     _getAmount(value, allowZero = false) {
         const pValue = parseInt(value.replace(/[,.]/g, ''));
-        if ((allowZero ? pValue < 0 : pValue <= 0) || pValue.toLocaleString('en-US') !== value) {
+        if ((allowZero ? pValue < 0 : pValue <= 0) || format.millix(pValue, false) !== value) {
             throw Error('invalid_value');
         }
         return pValue;
@@ -145,10 +145,10 @@ class WalletView extends Component {
                });
 
                this.changeModalShow();
-           })
+           });
     }
 
-    sendTransaction(){
+    sendTransaction() {
         const amount = this.state.amount;
         API.sendTransaction({
             transaction_output_list: [
@@ -167,16 +167,23 @@ class WalletView extends Component {
             if (data.api_status === 'fail') {
                 return Promise.reject(data);
             }
-        }).then(() => {
+
+            return data;
+        }).then(data => {
             this.destinationAddress.value = '';
             this.amount.value             = '';
+
             if (this.props.config.TRANSACTION_FEE_DEFAULT !== undefined) {
-                this.fees.value = this.props.config.TRANSACTION_FEE_DEFAULT.toLocaleString('en-US');
+                this.fees.value = format.millix(this.props.config.TRANSACTION_FEE_DEFAULT, false);
             }
+
             this.setState({
                 sending   : false,
                 feesLocked: true
             });
+
+            // todo: show modal with sent txid
+            console.log('1', data);
         }).catch((e) => {
             let sendTransactionErrorMessage;
             let error_list = [];
@@ -191,13 +198,15 @@ class WalletView extends Component {
                             const error = e.api_message.error;
                             if (error.error === 'transaction_input_max_error') {
                                 sendTransactionErrorMessage = <>your
-                                       transaction tried to use too many outputs<HelpIconView
-                                           help_item_name={'transaction_max_input_number'}/>.
-                                       please try to send a smaller amount or
-                                       aggregate manually by sending a smaller
-                                       amounts to yourself. the max amount you
-                                       can
-                                       send is {error.data.amount_max.toLocaleString('en-US')} mlx</>;
+                                    transaction tried to use too many
+                                    outputs<HelpIconView
+                                        help_item_name={'transaction_max_input_number'}/>.
+                                    please try to send a smaller amount or
+                                    aggregate manually by sending a smaller
+                                    amounts to yourself. the max amount you
+                                    can
+                                    send
+                                    is {format.millix(error.data.amount_max)}</>;
                             }
                         }
                     }
@@ -247,7 +256,7 @@ class WalletView extends Component {
         }
 
         amount         = parseInt(amount);
-        e.target.value = !isNaN(amount) ? amount.toLocaleString('en-US') : 0;
+        e.target.value = !isNaN(amount) ? format.millix(amount, false) : 0;
 
         e.target.setSelectionRange(cursorStart + offset, cursorEnd + offset);
     }
@@ -284,7 +293,7 @@ class WalletView extends Component {
                                                 <div className={'d-flex'}>
                                                 <span
                                                     className={'d-flex align-self-center'}>
-                                                    {this.props.wallet.balance_stable.toLocaleString('en-US')}
+                                                    {format.millix(this.props.wallet.balance_stable)}
                                                 </span>
                                                     <Button
                                                         variant="outline-primary"
@@ -300,7 +309,7 @@ class WalletView extends Component {
                                                 <div className={'d-flex'}>
                                                 <span
                                                     className={'d-flex align-self-center'}>
-                                                {this.props.wallet.balance_pending.toLocaleString('en-US')}
+                                                    {format.millix(this.props.wallet.balance_pending)}
                                                     </span>
                                                     <Button
                                                         variant="outline-primary"
@@ -362,7 +371,7 @@ class WalletView extends Component {
                                                                       this.fees = c;
                                                                       if (this.fees && !this.feesInitialized && this.props.config.TRANSACTION_FEE_DEFAULT !== undefined) {
                                                                           this.feesInitialized = true;
-                                                                          this.fees.value      = this.props.config.TRANSACTION_FEE_DEFAULT.toLocaleString('en-US');
+                                                                          this.fees.value      = format.millix(this.props.config.TRANSACTION_FEE_DEFAULT, false);
                                                                       }
                                                                   }}
                                                                   onChange={this.handleAmountValueChange.bind(this)}
@@ -381,17 +390,17 @@ class WalletView extends Component {
                                         </Col>
                                         <Col
                                             className={'d-flex justify-content-center'}>
-                                            <ModalView show={this.state.modalShow}
-                                                       size={'lg'}
-                                                       on_hide={() => this.changeModalShow(false)}
-                                                       heading={'send confirmation'}
-                                                       on_accept={() => this.sendTransaction()}
-                                                       on_cancel={() => this.cancelSendTransaction()}
-                                                       body={<div>are you sure you want to send
-                                                            {this.state.amount}
-                                                           mlx to  {this.state.address_base}
-                                                           paying {this.state.fees}
-                                                           mlx fee?</div>}/>
+                                            <ModalView
+                                                show={this.state.modalShow}
+                                                size={'lg'}
+                                                on_hide={() => this.changeModalShow(false)}
+                                                heading={'send confirmation'}
+                                                on_accept={() => this.sendTransaction()}
+                                                on_cancel={() => this.cancelSendTransaction()}
+                                                body={<div>you are about to
+                                                    send {format.millix(this.state.amount)} to {this.state.address_key_identifier}{this.state.address_version}{this.state.address_base}.
+                                                    <div>confirm that you want to
+                                                    continue.</div></div>}/>
                                             <Form.Group as={Row}>
                                                 <Button
                                                     variant="outline-primary"
@@ -405,7 +414,7 @@ class WalletView extends Component {
                                                          }}
                                                               className="loader-spin"/>
                                                          {this.state.canceling ? 'canceling' : 'cancel transaction'}
-                                                     </> : <>send millix</>}
+                                                     </> : <>send</>}
                                                 </Button>
                                             </Form.Group>
                                         </Col>

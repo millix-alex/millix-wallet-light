@@ -6,6 +6,7 @@ import ErrorList from './utils/error-list-view';
 import {walletUpdateAddresses, walletUpdateBalance} from '../redux/actions/index';
 import {withRouter} from 'react-router-dom';
 import ModalView from './utils/modal-view';
+import * as format from '../helper/format';
 
 
 class CreateAdView extends Component {
@@ -524,7 +525,7 @@ class CreateAdView extends Component {
                                 </Form.Label>
                                 <div>
                                     <span>
-                                        {this.props.wallet.balance_stable.toLocaleString('en-US')} mlx
+                                        {format.millix(this.props.wallet.balance_stable)}
                                     </span>
                                     <Button
                                         variant="outline-primary"
@@ -559,7 +560,7 @@ class CreateAdView extends Component {
                                     ref={c => {
                                         this.budget = c;
                                         if (this.budget && this.state.fields['daily_budget_mlx'] !== undefined) {
-                                            this.budget.value = this.state.fields['daily_budget_mlx'].toLocaleString('en-US');
+                                            this.budget.value = format.millix(this.state.fields['daily_budget_mlx'], false);
                                         }
                                     }}
                                     placeholder=""
@@ -593,7 +594,7 @@ class CreateAdView extends Component {
                                         ref={c => {
                                             this.impression = c;
                                             if (this.impression && this.state.fields['bid_per_impressions_mlx'] !== undefined) {
-                                                this.impression.value = this.state.fields['bid_per_impressions_mlx'].toLocaleString('en-US');
+                                                this.impression.value = format.millix(this.state.fields['bid_per_impressions_mlx'], false);
                                             }
                                         }}
                                         placeholder=""

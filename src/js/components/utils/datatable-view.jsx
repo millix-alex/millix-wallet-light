@@ -6,6 +6,7 @@ import {Dropdown} from 'primereact/dropdown';
 import {Ripple} from 'primereact/ripple';
 import {classNames} from 'primereact/utils';
 import moment from 'moment';
+import * as format from '../../helper/format';
 
 
 class DatatableView extends Component {
@@ -33,7 +34,7 @@ class DatatableView extends Component {
     }
 
     bodyTemplateAmount(rowData, field) {
-        return rowData[field].toLocaleString('en-US');
+        return format.millix(rowData[field], false);
     }
 
     getPaginatorTemplate() {

@@ -8,6 +8,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {Button} from 'react-bootstrap';
 import moment from 'moment';
 import DatatableHeaderView from './utils/datatable-header-view';
+import * as format from '../helper/format';
 
 
 class ListAdView extends Component {
@@ -137,10 +138,10 @@ class ListAdView extends Component {
                             advertisement_name         : item.advertisement_name,
                             advertisement_url          : item.advertisement_url,
                             protocol_address_funding   : item.protocol_address_funding,
-                            budget_daily_usd           : item.budget_daily_usd.toLocaleString('en-US'),
-                            budget_daily_mlx           : item.budget_daily_mlx.toLocaleString('en-US'),
-                            bid_impression_usd         : item.bid_impression_usd.toLocaleString('en-US'),
-                            bid_impression_mlx         : item.bid_impression_mlx.toLocaleString('en-US'),
+                            budget_daily_usd           : format.fiat(item.budget_daily_usd),
+                            budget_daily_mlx           : format.millix(item.budget_daily_mlx, false),
+                            bid_impression_usd         : format.fiat(item.bid_impression_usd),
+                            bid_impression_mlx         : format.millix(item.bid_impression_mlx, false),
                             expiration                 : item.expiration,
                             status                     : this.getStatusLabel(item.status),
                             action                     : this.getActionButton(item),
