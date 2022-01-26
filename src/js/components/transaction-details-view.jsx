@@ -103,7 +103,7 @@ class TransactionDetailsView extends Component {
                             <div className={'section_subtitle'}>
                                 transaction
                             </div>
-                            <Table striped bordered hover className={'mb-3'}>
+                            <Table striped bordered hover>
                                 <tbody>
                                 <tr>
                                     <td className={'w-20'}>

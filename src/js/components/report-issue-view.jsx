@@ -150,7 +150,7 @@ class ReportIssueView extends Component {
                                     <div className={'section_subtitle'}>
                                         hardware
                                     </div>
-                                    <Table striped bordered hover>
+                                    <Table striped bordered hover className={'mb-0'}>
                                         <tbody>
                                         <tr>
                                             <td className={'w-20'}>

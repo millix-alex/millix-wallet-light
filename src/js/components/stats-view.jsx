@@ -59,7 +59,7 @@ class StatsView extends Component {
                             <div className={'section_subtitle'}>
                                 node
                             </div>
-                            <Table striped bordered hover className={'mb-3'}>
+                            <Table striped bordered hover>
                                 <tbody>
                                 <tr>
                                     <td className={'w-20'}>
@@ -88,7 +88,7 @@ class StatsView extends Component {
                             <div className={'section_subtitle'}>
                                 data
                             </div>
-                            <Table striped bordered hover className={'mb-3'}>
+                            <Table striped bordered hover>
                                 <tbody>
                                 <tr>
                                     <td className={'w-20'}>
@@ -135,7 +135,7 @@ class StatsView extends Component {
                             <div className={'section_subtitle'}>
                                 network
                             </div>
-                            <Table striped bordered hover>
+                            <Table striped bordered hover className={'mb-0'}>
                                 <tbody>
                                 <tr>
                                     <td className={'w-20'}>
