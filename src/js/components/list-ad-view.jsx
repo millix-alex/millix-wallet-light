@@ -206,34 +206,25 @@ class ListAdView extends Component {
                                 showActionColumn={true}
                                 resultColumn={[
                                     {
-                                        'field'   : 'advertisement_name',
-                                        'header'  : 'name',
-                                        'sortable': true
+                                        field : 'advertisement_name',
+                                        header: 'name'
                                     },
                                     {
-                                        'field'   : 'advertisement_category',
-                                        'header'  : 'category',
-                                        'sortable': true
+                                        field : 'advertisement_category',
+                                        header: 'category'
                                     },
                                     {
-                                        'field'   : 'advertisement_url',
-                                        'header'  : 'url',
-                                        'sortable': true
+                                        field : 'advertisement_url',
+                                        header: 'url'
                                     },
                                     {
-                                        'field'   : 'expiration',
-                                        'header'  : 'expiration',
-                                        'sortable': true
+                                        field: 'expiration'
                                     },
                                     {
-                                        'field'   : 'status',
-                                        'header'  : 'status',
-                                        'sortable': true
+                                        field: 'status'
                                     },
                                     {
-                                        'field'   : 'create_date',
-                                        'header'  : 'create date',
-                                        'sortable': true
+                                        field: 'create_date'
                                     }
                                 ]}/>
                         </Row>

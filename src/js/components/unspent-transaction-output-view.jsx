@@ -66,7 +66,7 @@ class UnspentTransactionOutputView extends Component {
                 transaction_id  : output.transaction_id,
                 address         : output.address,
                 output_position : output.output_position,
-                amount          : output.amount.toLocaleString('en-US'),
+                amount          : output.amount,
                 transaction_date: moment.utc(output.transaction_date * 1000).format('YYYY-MM-DD HH:mm:ss'),
                 stable_date     : output.stable_date && moment.utc(output.stable_date * 1000).format('YYYY-MM-DD HH:mm:ss'),
                 action          : <DatatableActionButtonView
@@ -109,30 +109,21 @@ class UnspentTransactionOutputView extends Component {
                                 showActionColumn={true}
                                 resultColumn={[
                                     {
-                                        'field'   : 'transaction_date',
-                                        'header'  : 'date',
-                                        'sortable': true
+                                        field : 'transaction_date',
+                                        header: 'date'
                                     },
                                     {
-                                        'field'   : 'transaction_id',
-                                        'header'  : 'transaction id',
-                                        'sortable': true
+                                        field : 'amount',
+                                        format: 'amount'
                                     },
                                     {
-                                        'field'   : 'output_position',
-                                        'header'  : 'output position',
-                                        'sortable': true
+                                        field: 'address'
                                     },
                                     {
-                                        'field'   : 'address',
-                                        'header'  : 'address',
-                                        'sortable': true
+                                        field: 'transaction_id'
                                     },
-
                                     {
-                                        'field'   : 'amount',
-                                        'header'  : 'amount',
-                                        'sortable': true
+                                        field: 'output_position'
                                     }
                                 ]}/>
                         </Row>

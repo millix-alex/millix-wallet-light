@@ -43,7 +43,7 @@ class TransactionHistoryView extends Component {
             const rows = data.map((transaction, idx) => ({
                 idx        : data.length - idx,
                 date       : moment.utc(transaction.transaction_date * 1000).format('YYYY-MM-DD HH:mm:ss'),
-                amount     : transaction.amount.toLocaleString('en-US'),
+                amount     : transaction.amount,
                 txid       : transaction.transaction_id,
                 stable_date: transaction.stable_date && moment.utc(transaction.stable_date * 1000).format('YYYY-MM-DD HH:mm:ss'),
                 parent_date: transaction.parent_date && moment.utc(transaction.parent_date * 1000).format('YYYY-MM-DD HH:mm:ss'),
@@ -80,24 +80,18 @@ class TransactionHistoryView extends Component {
                                 showActionColumn={true}
                                 resultColumn={[
                                     {
-                                        'field'   : 'date',
-                                        'header'  : 'date',
-                                        'sortable': true
+                                        field: 'date'
                                     },
                                     {
-                                        'field'   : 'txid',
-                                        'header'  : 'transaction id',
-                                        'sortable': true
+                                        field : 'amount',
+                                        format: 'amount'
                                     },
                                     {
-                                        'field'   : 'amount',
-                                        'header'  : 'amount',
-                                        'sortable': true
+                                        field : 'txid',
+                                        header: 'transaction id'
                                     },
                                     {
-                                        'field'   : 'stable_date',
-                                        'header'  : 'stable date',
-                                        'sortable': true
+                                        field: 'stable_date'
                                     }
                                 ]}/>
                         </Row>

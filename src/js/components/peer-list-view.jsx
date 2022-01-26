@@ -97,19 +97,16 @@ class PeerListView extends Component {
                                 showActionColumn={true}
                                 resultColumn={[
                                     {
-                                        'field'   : 'node_idx',
-                                        'header'  : 'id',
-                                        'sortable': true
+                                        field : 'node_idx',
+                                        header: 'id'
                                     },
                                     {
-                                        'field'   : 'node_url',
-                                        'header'  : 'node',
-                                        'sortable': true
+                                        field : 'node_url',
+                                        header: 'node'
                                     },
                                     {
-                                        'field'   : 'node_status',
-                                        'header'  : 'status',
-                                        'sortable': true
+                                        field : 'node_status',
+                                        header: 'status'
                                     }
                                 ]}/>
                         </Row>

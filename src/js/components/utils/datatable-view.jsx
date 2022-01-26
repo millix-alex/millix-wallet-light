@@ -21,8 +21,8 @@ class DatatableView extends Component {
         // seconds instead of "a few
         // seconds ago"
 
-        this.onCustomPage = this.onCustomPage.bind(this);
-
+        this.onCustomPage       = this.onCustomPage.bind(this);
+        this.bodyTemplateAmount = this.bodyTemplateAmount.bind(this);
     }
 
     onCustomPage(event) {
@@ -30,6 +30,10 @@ class DatatableView extends Component {
             first: event.first,
             rows : event.rows
         });
+    }
+
+    bodyTemplateAmount(rowData, field) {
+        return rowData[field].toLocaleString('en-US');
     }
 
     getPaginatorTemplate() {
@@ -114,11 +118,16 @@ class DatatableView extends Component {
                 item.sortable = true;
             }
 
+            if (typeof (item.format) !== 'undefined' && item.format === 'amount') {
+                item.body = (rowData) => this.bodyTemplateAmount(rowData, item.field);
+            }
+
             column.push(<Column
                 key={index}
                 field={item.field}
                 header={item.header}
-                sortable={item.sortable}/>);
+                sortable={item.sortable}
+                body={item.body}/>);
         });
 
         if (this.props.showActionColumn) {

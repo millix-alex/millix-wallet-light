@@ -179,7 +179,8 @@ class WalletView extends Component {
                                            help_item_name={'transaction_max_input_number'}/>.
                                        please try to send a smaller amount or
                                        aggregate manually by sending a smaller
-                                       amounts to yourself. the max amount you can
+                                       amounts to yourself. the max amount you
+                                       can
                                        send is
                                        is {error.data.amount_max.toLocaleString('en-US')} mlx</>;
                                }
@@ -386,24 +387,19 @@ class WalletView extends Component {
                                         sortOrder={1}
                                         resultColumn={[
                                             {
-                                                'field'   : 'address_position',
-                                                'header'  : 'position',
-                                                'sortable': true
+                                                field : 'address_position',
+                                                header: 'position'
                                             },
                                             {
-                                                'field'   : 'address',
-                                                'header'  : 'address',
-                                                'sortable': true
+                                                field : 'address',
+                                                header: 'address'
                                             },
                                             {
-                                                'field'   : 'address_version',
-                                                'header'  : 'version',
-                                                'sortable': true
+                                                field : 'address_version',
+                                                header: 'version'
                                             },
                                             {
-                                                'field'   : 'create_date',
-                                                'header'  : 'create date',
-                                                'sortable': true
+                                                field: 'create_date'
                                             }
                                         ]}/>
                                 </Row>

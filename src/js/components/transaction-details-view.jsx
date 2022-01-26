@@ -184,31 +184,31 @@ class TransactionDetailsView extends Component {
                                     showActionColumn={true}
                                     resultColumn={[
                                         {
-                                            'field': 'input_position'
+                                            field: 'input_position'
                                         },
                                         {
-                                            'field': 'output_transaction_id'
+                                            field: 'output_transaction_id'
                                         },
                                         {
-                                            'field': 'output_position'
+                                            field: 'output_position'
                                         },
                                         {
-                                            'field': 'output_transaction_date'
+                                            field: 'output_transaction_date'
                                         },
                                         {
-                                            'field': 'is_double_spend'
+                                            field: 'is_double_spend'
                                         },
                                         {
-                                            'field': 'double_spend_date'
+                                            field: 'double_spend_date'
                                         },
                                         {
-                                            'field': 'is_stable'
+                                            field: 'is_stable'
                                         },
                                         {
-                                            'field': 'stable_date'
+                                            field: 'stable_date'
                                         },
                                         {
-                                            'field': 'status'
+                                            field: 'status'
                                         }
                                     ]}/>
                             </div>
@@ -222,28 +222,28 @@ class TransactionDetailsView extends Component {
                                 sortOrder={1}
                                 resultColumn={[
                                     {
-                                        'field': 'address'
+                                        field: 'address'
                                     },
                                     {
-                                        'field': 'output_position'
+                                        field: 'output_position'
                                     },
                                     {
-                                        'field': 'amount'
+                                        field: 'amount'
                                     },
                                     {
-                                        'field': 'is_double_spend'
+                                        field: 'is_double_spend'
                                     },
                                     {
-                                        'field': 'double_spend_date'
+                                        field: 'double_spend_date'
                                     },
                                     {
-                                        'field': 'is_stable'
+                                        field: 'is_stable'
                                     },
                                     {
-                                        'field': 'stable_date'
+                                        field: 'stable_date'
                                     },
                                     {
-                                        'field': 'status'
+                                        field: 'status'
                                     }
                                 ]}/>
                         </div>
