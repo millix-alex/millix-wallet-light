@@ -8,6 +8,7 @@ import DatatableView from './utils/datatable-view';
 import DatatableActionButtonView from './utils/datatable-action-button-view';
 import * as format from '../helper/format';
 import DatatableHeaderView from './utils/datatable-header-view';
+import HelpIconView from './utils/help-icon-view';
 
 
 class UnspentTransactionOutputView extends Component {
@@ -83,15 +84,40 @@ class UnspentTransactionOutputView extends Component {
     }
 
     render() {
+        let note  = '';
+        let title = '';
+        if (this.state.stable) {
+            title = 'stable unspents';
+            note =
+                <span>unspents appear as stable and included in balance once they are validated by your node.
+        </span>;
+        }
+        else {
+            title = 'pending unspents'
+            note =
+                <span>unspents appear as pending and included in pending balance<HelpIconView
+                    help_item_name={'pending_balance'}/> until they are validated by your node.
+        </span>;
+        }
+
         return (
             <div>
                 <div className={'panel panel-filled'}>
                     <div
                         className={'panel-heading bordered'}>
-                        {this.state.stable ? '' : 'pending'} unspent
-                        transaction output list
+                        {title}
                     </div>
                     <div className={'panel-body'}>
+                        <div>
+                            unspent is transaction output that you received and
+                            did not use to fund any transaction yet. when you send
+                            a transaction and an unspent bigger than you need
+                            has been used, you receive the change as a new
+                            output(unspent).
+                        </div>
+                        <div className={'form-group'}>
+                            {note}
+                        </div>
                         <DatatableHeaderView
                             reload_datatable={() => this.reloadDatatable()}
                             datatable_reload_timestamp={this.state.datatable_reload_timestamp}

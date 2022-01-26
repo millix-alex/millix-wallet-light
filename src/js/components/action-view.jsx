@@ -188,8 +188,7 @@ class ActionView extends Component {
                                             longer than 10-15 minutes
                                         </li>
                                         <li>
-                                            you think that your stable balance
-                                            is wrong
+                                            you think that your balance                                            is wrong
                                         </li>
                                     </ul>
                                 </div>

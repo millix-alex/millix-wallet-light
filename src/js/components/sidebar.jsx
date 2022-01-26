@@ -159,13 +159,13 @@ class Sidebar extends Component {
                         <NavItem key={'unspent-transaction-output-list-pending'}
                                  eventKey="/unspent-transaction-output-list/pending">
                             <NavText>
-                                pending unspent list
+                                pending unspents
                             </NavText>
                         </NavItem>
                         <NavItem key={'unspent-transaction-output-list-stable'}
                                  eventKey={'/unspent-transaction-output-list/stable'}>
                             <NavText>
-                                stable unspent list
+                                stable unspents
                             </NavText>
                         </NavItem>
                     </NavItem>

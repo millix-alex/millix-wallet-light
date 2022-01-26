@@ -70,20 +70,15 @@ class PeerListView extends Component {
         clearTimeout(this.updateHandler);
     }
 
-
     render() {
         return (
             <div>
                 <div className={'panel panel-filled'}>
                     <div className={'panel-heading bordered'}>peers</div>
                     <div className={'panel-body'}>
-                        <Row>
-                            <Col>
-                                <div className={'form-group'}>
-                                    <span>these are peers to which you are connected. "peer" is another node to which your node connects to in order to send/receive data.</span>
-                                </div>
-                            </Col>
-                        </Row>
+                        <div className={'form-group'}>
+                            <span>these are peers to which you are connected. "peer" is another node to which your node connects to in order to send/receive data.</span>
+                        </div>
                         <DatatableHeaderView
                             reload_datatable={() => this.reloadDatatable()}
                             datatable_reload_timestamp={this.state.datatable_reload_timestamp}
