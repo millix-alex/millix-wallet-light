@@ -384,7 +384,7 @@ class WalletView extends Component {
                                             <ModalView show={this.state.modalShow}
                                                        size={'lg'}
                                                        on_hide={() => this.changeModalShow(false)}
-                                                       heading={'reset validation'}
+                                                       heading={'send confirmation'}
                                                        on_accept={() => this.sendTransaction()}
                                                        on_cancel={() => this.cancelSendTransaction()}
                                                        body={<div>are you sure you want to send
