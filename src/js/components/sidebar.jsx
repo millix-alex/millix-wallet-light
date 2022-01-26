@@ -103,7 +103,7 @@ class Sidebar extends Component {
                 onSelect={(selected) => {
                     switch (selected) {
                         case 'lock':
-                            this.changeModalShow(true)
+                            this.changeModalShow(true);
                             break;
                         case 'resetValidation':
                             break;
@@ -115,7 +115,7 @@ class Sidebar extends Component {
             >
                 <ModalView show={this.state.modalShow}
                            size={'lg'}
-                           on_hide={() => this.changeModalShow(false)}
+                           on_close={() => this.changeModalShow(false)}
                            heading={'logout'}
                            on_accept={() => props.lockWallet()}
                            body={<div>are you sure you want to logout?</div>}/>

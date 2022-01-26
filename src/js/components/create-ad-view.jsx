@@ -284,7 +284,7 @@ class CreateAdView extends Component {
             <div>
                 <ModalView show={this.state.modalShow}
                            size={'lg'}
-                           on_hide={() => this.changeModalShow(false)}
+                           on_close={() => this.changeModalShow(false)}
                            heading={'add funds'}
                            body={<div>
                                <div>fund your campaign by sending millix to the

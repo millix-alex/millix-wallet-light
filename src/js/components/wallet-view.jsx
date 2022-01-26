@@ -11,7 +11,8 @@ import ErrorList from './utils/error-list-view';
 import HelpIconView from './utils/help-icon-view';
 import DatatableHeaderView from './utils/datatable-header-view';
 import ModalView from './utils/modal-view';
-import * as format from '../helper/format'
+import * as format from '../helper/format';
+
 
 class WalletView extends Component {
     constructor(props) {
@@ -240,6 +241,7 @@ class WalletView extends Component {
             canceling: false,
             sending  : false
         });
+        this.changeModalShow(false);
     }
 
     handleAmountValueChange(e) {
@@ -393,14 +395,14 @@ class WalletView extends Component {
                                             <ModalView
                                                 show={this.state.modalShow}
                                                 size={'lg'}
-                                                on_hide={() => this.changeModalShow(false)}
                                                 heading={'send confirmation'}
                                                 on_accept={() => this.sendTransaction()}
-                                                on_cancel={() => this.cancelSendTransaction()}
+                                                on_close={() => this.cancelSendTransaction()}
                                                 body={<div>you are about to
                                                     send {format.millix(this.state.amount)} to {this.state.address_key_identifier}{this.state.address_version}{this.state.address_base}.
-                                                    <div>confirm that you want to
-                                                    continue.</div></div>}/>
+                                                    <div>confirm that you want
+                                                        to
+                                                        continue.</div></div>}/>
                                             <Form.Group as={Row}>
                                                 <Button
                                                     variant="outline-primary"
