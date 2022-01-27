@@ -19,6 +19,8 @@ class WalletView extends Component {
             feesLocked            : true,
             error_list            : [],
             modalShow             : false,
+            modalShowSendResult   : false,
+            modalBodySendResult   : [],
             address_base          : '',
             address_version       : '',
             address_key_identifier: '',
@@ -148,13 +150,25 @@ class WalletView extends Component {
                 this.fees.value = format.millix(this.props.config.TRANSACTION_FEE_DEFAULT, false);
             }
 
-            this.setState({
-                sending   : false,
-                feesLocked: true
+            const transaction = data.transaction.find(item => {
+                return item.version.indexOf('0a') !== -1;
             });
 
-            // todo: show modal with sent txid
-            console.log('1', data);
+            const modalBodySendResult = <div className={'text-center'}>
+                <div>
+                    transaction id
+                </div>
+                <div>
+                    {transaction.transaction_id}
+                </div>
+            </div>;
+
+            this.setState({
+                sending            : false,
+                feesLocked         : true,
+                modalBodySendResult: modalBodySendResult
+            });
+            this.changeModalShowSendResult();
         }).catch((e) => {
             let sendTransactionErrorMessage;
             let error_list = [];
@@ -236,6 +250,12 @@ class WalletView extends Component {
     changeModalShow(value = true) {
         this.setState({
             modalShow: value
+        });
+    }
+
+    changeModalShowSendResult(value = true) {
+        this.setState({
+            modalShowSendResult: value
         });
     }
 
@@ -322,6 +342,13 @@ class WalletView extends Component {
                                                     <div>confirm that you want
                                                         to
                                                         continue.</div></div>}/>
+
+                                            <ModalView
+                                                show={this.state.modalShowSendResult}
+                                                size={'lg'}
+                                                on_close={() => this.changeModalShowSendResult(false)}
+                                                heading={'payment has been sent'}
+                                                body={this.state.modalBodySendResult}/>
                                             <Form.Group as={Row}>
                                                 <Button
                                                     variant="outline-primary"

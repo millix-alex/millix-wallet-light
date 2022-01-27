@@ -24,7 +24,7 @@ class BalanceView extends Component {
                         </div>
                         <div
                             className={'pending'}>
-                            pending {format.millix(this.props.pending)}
+                            {format.millix(this.props.pending)}
                             <HelpIconView
                                 help_item_name={'pending_balance'}/>
                         </div>

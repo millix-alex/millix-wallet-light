@@ -84,20 +84,12 @@ class UnspentTransactionOutputView extends Component {
     }
 
     render() {
-        let note  = '';
         let title = '';
         if (this.state.stable) {
             title = 'stable unspents';
-            note =
-                <span>unspents appear as stable and included in balance once they are validated by your node.
-        </span>;
         }
         else {
             title = 'pending unspents'
-            note =
-                <span>unspents appear as pending and included in pending balance<HelpIconView
-                    help_item_name={'pending_balance'}/> until they are validated by your node.
-        </span>;
         }
 
         return (
@@ -109,14 +101,12 @@ class UnspentTransactionOutputView extends Component {
                     </div>
                     <div className={'panel-body'}>
                         <div>
-                            unspent is transaction output that you received and
-                            did not use to fund any transaction yet. when you send
-                            a transaction and an unspent bigger than you need
-                            has been used, you receive the change as a new
-                            output(unspent).
+                            an unspent is a transaction output sent to your address that you received and
+                            have not used to fund a payment. your balance is the sum of your validated unspents. your pending balance<HelpIconView
+                            help_item_name={'pending_balance'}/> is the sum of your unspents that haven't been validated yet.
                         </div>
                         <div className={'form-group'}>
-                            {note}
+                            when you send a transaction using an unspent, or group of unspents, whose sum is bigger than your payment, you will receive the remaining change as a new unspent.
                         </div>
                         <DatatableHeaderView
                             reload_datatable={() => this.reloadDatatable()}
