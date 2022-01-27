@@ -32,6 +32,14 @@ class TransactionHistoryView extends Component {
         clearTimeout(this.transactionHistoryUpdateHandler);
     }
 
+    revalidateTransaction(props, transactionID) {
+        API.resetTransactionValidationByGUID(transactionID).then(response => {
+            if (typeof response.api_status === 'string') {
+                props.history.push('/unspent-transaction-output-list/pending');
+            }
+        });
+    }
+
     reloadDatatable() {
         return API.getTransactionHistory(this.props.wallet.address_key_identifier).then(data => {
             const rows = data.map((transaction, idx) => ({
@@ -41,9 +49,17 @@ class TransactionHistoryView extends Component {
                 txid       : transaction.transaction_id,
                 stable_date: transaction.stable_date && moment.utc(transaction.stable_date * 1000).format('YYYY-MM-DD HH:mm:ss'),
                 parent_date: transaction.parent_date && moment.utc(transaction.parent_date * 1000).format('YYYY-MM-DD HH:mm:ss'),
-                action     : <DatatableActionButtonView
+                action     : <div><DatatableActionButtonView
                     history_path={'/transaction/' + encodeURIComponent(transaction.transaction_id)}
                     history_state={[transaction]}/>
+                    <DatatableActionButtonView
+                        icon={'sync'}
+                        title={'reset validation'}
+                        callback={this.revalidateTransaction}
+                        callback_props={this.props}
+                        callback_args={transaction.transaction_id}
+                    />
+                </div>
             }));
 
             this.setState({

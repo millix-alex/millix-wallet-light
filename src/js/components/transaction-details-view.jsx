@@ -7,6 +7,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import config from '../../config';
 import moment from 'moment';
 import DatatableView from './utils/datatable-view';
+import API from '../api';
 
 
 class TransactionDetailsView extends Component {
@@ -47,6 +48,12 @@ class TransactionDetailsView extends Component {
                     size="1x"/>
             </Button>
         </Link>;
+    }
+
+    revalidateTransaction(transactionID) {
+        API.resetTransactionValidationByGUID(transactionID).then(_ => {
+            this.props.history.push('/unspent-transaction-output-list/pending');
+        });
     }
 
     render() {
@@ -166,6 +173,23 @@ class TransactionDetailsView extends Component {
                                 </tr>
                                 </tbody>
                             </Table>
+                            <div className={'mb-3'}>
+                                <Row>
+                                    <Col>
+                                        <Button
+                                            variant="outline-primary"
+                                            onClick={() => this.revalidateTransaction(transaction.transaction_id)}
+                                            title={'reset validation'}
+                                        >
+                                            <FontAwesomeIcon
+                                                icon={'sync'}
+                                                size="1x"/>
+                                            reset validation
+                                        </Button>
+                                    </Col>
+                                </Row>
+                            </div>
+
 
                             <div className={'mb-3'}>
                                 <div className={'section_subtitle'}>

@@ -43,6 +43,11 @@ class UnspentTransactionOutputView extends Component {
         }
     }
 
+    componentWillUnmount() {
+        clearInterval(this.updaterHandler);
+    }
+
+
     getStableFromUrl() {
         const stable_filter  = this.props.location.pathname.split('/').pop();
         let stable_value_new = 1;
@@ -51,6 +56,14 @@ class UnspentTransactionOutputView extends Component {
         }
 
         return stable_value_new;
+    }
+
+    revalidateTransaction(props, transactionID) {
+        API.resetTransactionValidationByGUID(transactionID).then(response => {
+            if (typeof response.api_status === 'string') {
+                props.history.push('/unspent-transaction-output-list/pending');
+            }
+        });
     }
 
     reloadDatatable() {
@@ -63,9 +76,18 @@ class UnspentTransactionOutputView extends Component {
                 amount          : output.amount.toLocaleString('en-US'),
                 transaction_date: moment.utc(output.transaction_date * 1000).format('YYYY-MM-DD HH:mm:ss'),
                 stable_date     : output.stable_date && moment.utc(output.stable_date * 1000).format('YYYY-MM-DD HH:mm:ss'),
-                action          : <DatatableActionButtonView
-                    history_path={'/transaction/' + encodeURIComponent(output.transaction_id)}
-                    history_state={[output]}/>
+                action          : <div>
+                    <DatatableActionButtonView
+                        history_path={'/transaction/' + encodeURIComponent(output.transaction_id)}
+                        history_state={[output]}/>
+                    <DatatableActionButtonView
+                        icon={'sync'}
+                        title={'reset validation'}
+                        callback={this.revalidateTransaction}
+                        callback_props={this.props}
+                        callback_args={output.transaction_id}
+                    />
+                </div>
             }));
             this.setState({
                 transaction_output_list   : rows,
@@ -152,5 +174,5 @@ class UnspentTransactionOutputView extends Component {
 export default connect(
     state => ({
         wallet: state.wallet
-    }),
+    })
 )(withRouter(UnspentTransactionOutputView));

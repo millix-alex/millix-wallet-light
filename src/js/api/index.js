@@ -418,6 +418,26 @@ class API {
             return Promise.reject(e);
         }
     }
+
+    resetTransactionValidationByGUID(transactionID = null) {
+        try {
+            return fetch(
+                this.getAuthenticatedMillixApiURL() + '/P2LMh8NsUTkpWAH3',
+                {
+                    method : 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body   : JSON.stringify({
+                        'p0': transactionID
+                    })
+                }
+            ).then(response => {
+                return response.ok ? response.json() : Promise.reject();
+            });
+        }
+        catch (e) {
+            return Promise.reject();
+        }
+    }
 }
 
 
