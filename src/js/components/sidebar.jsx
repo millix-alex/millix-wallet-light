@@ -4,6 +4,8 @@ import {connect} from 'react-redux';
 import {lockWallet} from '../redux/actions/index';
 import moment from 'moment';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import ModalView from './utils/modal-view';
+import * as format from '../helper/format';
 
 
 class Sidebar extends Component {
@@ -13,7 +15,8 @@ class Sidebar extends Component {
         this.state = {
             fileKeyExport: 'export_' + now,
             fileKeyImport: 'import_' + now,
-            date         : new Date()
+            date         : new Date(),
+            modalShow    : false
         };
     }
 
@@ -82,6 +85,12 @@ class Sidebar extends Component {
         return result;
     }
 
+    changeModalShow(value = true) {
+        this.setState({
+            modalShow: value
+        });
+    }
+
     render() {
         let props           = this.props;
         let defaultSelected = this.highlightSelected(props.location.pathname);
@@ -95,7 +104,7 @@ class Sidebar extends Component {
                 onSelect={(selected) => {
                     switch (selected) {
                         case 'lock':
-                            props.lockWallet();
+                            this.changeModalShow(true);
                             break;
                         case 'resetValidation':
                             break;
@@ -105,8 +114,14 @@ class Sidebar extends Component {
                 }}
                 expanded={true}
             >
+                <ModalView show={this.state.modalShow}
+                           size={'lg'}
+                           on_close={() => this.changeModalShow(false)}
+                           heading={'logout'}
+                           on_accept={() => props.lockWallet()}
+                           body={<div>are you sure you want to logout?</div>}/>
                 <div className="nav-utc_clock">
-                    <span>{moment.utc(this.state.date).format('YYYY-MM-DD HH:mm:ss')} utc</span>
+                    <span>{format.date(this.state.date)} utc</span>
                 </div>
                 <SideNav.Nav
                     selected={defaultSelected}
@@ -114,6 +129,12 @@ class Sidebar extends Component {
                     <NavItem key={'wallet'} eventKey="/wallet">
                         <NavText>
                             home
+                        </NavText>
+                    </NavItem>
+
+                    <NavItem key={'address-list'} eventKey="/address-list">
+                        <NavText>
+                            addresses
                         </NavText>
                     </NavItem>
 
@@ -138,18 +159,19 @@ class Sidebar extends Component {
                         <NavItem key={'unspent-transaction-output-list-pending'}
                                  eventKey="/unspent-transaction-output-list/pending">
                             <NavText>
-                                pending unspent list
+                                pending unspents
                             </NavText>
                         </NavItem>
                         <NavItem key={'unspent-transaction-output-list-stable'}
                                  eventKey={'/unspent-transaction-output-list/stable'}>
                             <NavText>
-                                stable unspent list
+                                stable unspents
                             </NavText>
                         </NavItem>
                     </NavItem>
 
-                    <NavItem key={'advertisement-list'} eventKey="/advertisement-list">
+                    <NavItem key={'advertisement-list'}
+                             eventKey="/advertisement-list">
                         <NavText>
                             advertisements
                         </NavText>

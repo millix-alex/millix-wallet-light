@@ -5,10 +5,9 @@ import {Button, Col, Row, Table} from 'react-bootstrap';
 import {clearTransactionDetails, updateTransactionDetails} from '../redux/actions/index';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import config from '../../config';
-import moment from 'moment';
 import DatatableView from './utils/datatable-view';
+import * as format from '../helper/format';
 import API from '../api';
-
 
 class TransactionDetailsView extends Component {
     constructor(props) {
@@ -62,30 +61,36 @@ class TransactionDetailsView extends Component {
             return '';
         }
 
-        const transaction_output_list = transaction.transaction_output_list.map((output, idx) => ({
-            address          : output.address,
-            output_position  : output.output_position,
-            amount           : output.amount,
-            is_double_spend  : this.getBoolLabel(output.is_double_spend),
-            double_spend_date: output.double_spend_date && moment.utc(output.double_spend_date * 1000).format('YYYY-MM-DD HH:mm:ss'),
-            is_stable        : this.getBoolLabel(output.is_stable),
-            stable_date      : output.stable_date && moment.utc(output.stable_date * 1000).format('YYYY-MM-DD HH:mm:ss'),
-            status           : output.status
-        }));
+        let transaction_output_list = [];
+        let transaction_input_list  = [];
+        if (transaction.transaction_output_list) {
+            transaction_output_list = transaction.transaction_output_list.map((output, idx) => ({
+                address          : output.address,
+                output_position  : output.output_position,
+                amount           : output.amount,
+                is_double_spend  : this.getBoolLabel(output.is_double_spend),
+                double_spend_date: format.date(output.double_spend_date),
+                is_stable        : this.getBoolLabel(output.is_stable),
+                stable_date      : format.date(output.stable_date),
+                status           : output.status
+            }));
+        }
 
-        const transaction_input_list = transaction.transaction_input_list.map((input, idx) => ({
-            address                : input.address,
-            input_position         : input.input_position,
-            output_transaction_id  : input.output_transaction_id,
-            output_position        : input.output_position,
-            output_transaction_date: input.output_transaction_date && moment.utc(input.output_transaction_date * 1000).format('YYYY-MM-DD HH:mm:ss'),
-            is_double_spend        : this.getBoolLabel(input.is_double_spend),
-            double_spend_date      : input.double_spend_date && moment.utc(input.double_spend_date * 1000).format('YYYY-MM-DD HH:mm:ss'),
-            is_stable              : this.getBoolLabel(input.is_stable),
-            stable_date            : input.stable_date && moment.utc(input.stable_date * 1000).format('YYYY-MM-DD HH:mm:ss'),
-            status                 : input.status,
-            action                 : this.getTransactionInputOutputLink(input)
-        }));
+        if (transaction.transaction_input_list) {
+            transaction_input_list = transaction.transaction_input_list.map((input, idx) => ({
+                address                : input.address,
+                input_position         : input.input_position,
+                output_transaction_id  : input.output_transaction_id,
+                output_position        : input.output_position,
+                output_transaction_date: format.date(input.output_transaction_date),
+                is_double_spend        : this.getBoolLabel(input.is_double_spend),
+                double_spend_date      : format.date(input.double_spend_date),
+                is_stable              : this.getBoolLabel(input.is_stable),
+                stable_date            : format.date(input.stable_date),
+                status                 : input.status,
+                action                 : this.getTransactionInputOutputLink(input)
+            }));
+        }
 
         return (
             <>
@@ -104,7 +109,7 @@ class TransactionDetailsView extends Component {
                             <div className={'section_subtitle'}>
                                 transaction
                             </div>
-                            <Table striped bordered hover className={'mb-3'}>
+                            <Table striped bordered hover>
                                 <tbody>
                                 <tr>
                                     <td className={'w-20'}>
@@ -135,7 +140,7 @@ class TransactionDetailsView extends Component {
                                         transaction date
                                     </td>
                                     <td>
-                                        {moment.utc(transaction.transaction_date * 1000).format('YYYY-MM-DD HH:mm:ss')}
+                                        {format.date(transaction.transaction_date)}
                                     </td>
                                 </tr>
                                 <tr>
@@ -143,7 +148,7 @@ class TransactionDetailsView extends Component {
                                         is stable
                                     </td>
                                     <td>
-                                        {this.getBoolLabel(transaction.is_stable)} ({transaction.stable_date && moment.utc(transaction.stable_date * 1000).format('YYYY-MM-DD HH:mm:ss')})
+                                        {this.getBoolLabel(transaction.is_stable)} ({format.date(transaction.stable_date)})
                                     </td>
                                 </tr>
                                 <tr>
@@ -202,31 +207,31 @@ class TransactionDetailsView extends Component {
                                     showActionColumn={true}
                                     resultColumn={[
                                         {
-                                            'field': 'input_position'
+                                            field: 'input_position'
                                         },
                                         {
-                                            'field': 'output_transaction_id'
+                                            field: 'output_transaction_id'
                                         },
                                         {
-                                            'field': 'output_position'
+                                            field: 'output_position'
                                         },
                                         {
-                                            'field': 'output_transaction_date'
+                                            field: 'output_transaction_date'
                                         },
                                         {
-                                            'field': 'is_double_spend'
+                                            field: 'is_double_spend'
                                         },
                                         {
-                                            'field': 'double_spend_date'
+                                            field: 'double_spend_date'
                                         },
                                         {
-                                            'field': 'is_stable'
+                                            field: 'is_stable'
                                         },
                                         {
-                                            'field': 'stable_date'
+                                            field: 'stable_date'
                                         },
                                         {
-                                            'field': 'status'
+                                            field: 'status'
                                         }
                                     ]}/>
                             </div>
@@ -240,28 +245,28 @@ class TransactionDetailsView extends Component {
                                 sortOrder={1}
                                 resultColumn={[
                                     {
-                                        'field': 'address'
+                                        field: 'address'
                                     },
                                     {
-                                        'field': 'output_position'
+                                        field: 'output_position'
                                     },
                                     {
-                                        'field': 'amount'
+                                        field: 'amount'
                                     },
                                     {
-                                        'field': 'is_double_spend'
+                                        field: 'is_double_spend'
                                     },
                                     {
-                                        'field': 'double_spend_date'
+                                        field: 'double_spend_date'
                                     },
                                     {
-                                        'field': 'is_stable'
+                                        field: 'is_stable'
                                     },
                                     {
-                                        'field': 'stable_date'
+                                        field: 'stable_date'
                                     },
                                     {
-                                        'field': 'status'
+                                        field: 'status'
                                     }
                                 ]}/>
                         </div>
