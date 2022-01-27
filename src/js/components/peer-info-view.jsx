@@ -164,9 +164,6 @@ class PeerInfoView extends Component {
                                 },
                                 {
                                     'field': 'is_required'
-                                },
-                                {
-                                    'field': 'fee_ask_request_byte'
                                 }
                             ]}/>
                     </div>
