@@ -36,12 +36,10 @@ class PeerInfoView extends Component {
         let tabularAttributes = [];
         attributes.forEach(ele => {
             if (ele.attribute_type === 'job_list') {
-                let tempJobList = {};
-                ele.value.forEach(element => {
-                        tempJobList[element.job_name] = element.status;
-                    }
-                );
-                jobList = [tempJobList];
+                jobList = ele.value.map((input, idx) => ({
+                    job_name: input.job_name,
+                    status: input.status
+                }));
             }
 
             if (ele.value instanceof Array) {
@@ -135,41 +133,14 @@ class PeerInfoView extends Component {
                             <DatatableView
                                 value={jobList}
                                 sortOrder={1}
-                                showActionColumn={true}
+                                showActionColumn={false}
                                 resultColumn={[
                                     {
-                                        'field': 'peer_rotation'
+                                        'field': 'job_name'
                                     },
                                     {
-                                        'field': 'node_list'
+                                        'field': 'status'
                                     },
-                                    {
-                                        'field': 'transaction_validation'
-                                    },
-                                    {
-                                        'field': 'transaction_spend_sync'
-                                    },
-                                    {
-                                        'field': 'consensus_watchdog_validation'
-                                    },
-                                    {
-                                        'field': 'wallet_inspect'
-                                    },
-                                    {
-                                        'field': 'wallet_retry_validation_update'
-                                    },
-                                    {
-                                        'field': 'shard_zero_pruning'
-                                    },
-                                    {
-                                        'field': 'dag_progress'
-                                    },
-                                    {
-                                        'field': 'transaction_output_expiration'
-                                    },
-                                    {
-                                        'field': 'node_attribute_update'
-                                    }
                                 ]}/>
                         </div>
                     </div>
@@ -180,7 +151,7 @@ class PeerInfoView extends Component {
                         <DatatableView
                             value={tabularAttributes}
                             sortOrder={1}
-                            showActionColumn={true}
+                            showActionColumn={false}
                             resultColumn={[
                                 {
                                     'field': 'shard_id'
