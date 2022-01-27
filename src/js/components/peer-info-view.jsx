@@ -4,6 +4,7 @@ import {Button, Col, Row, Table} from 'react-bootstrap';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import API from '../api/index';
 import moment from 'moment';
+import DatatableView from './utils/datatable-view';
 
 
 class PeerInfoView extends Component {
@@ -35,25 +36,21 @@ class PeerInfoView extends Component {
         let tabularAttributes = [];
         attributes.forEach(ele => {
             if (ele.attribute_type === 'job_list') {
+                let tempJobList = {};
                 ele.value.forEach(element => {
-                    let jobName = element.job_name.replace(/_/g, ' ');
-                    jobList.push(
-                            <tr>
-                                <td className={'w-20'}>
-                                    {jobName}
-                                </td>
-                                <td className={'text-break'}>
-                                    {element.status}
-                                </td>
-                            </tr>
-                        );
+                        tempJobList[element.job_name] = element.status;
                     }
                 );
+                jobList = [tempJobList];
             }
 
             if (ele.value instanceof Array) {
                 if (ele.attribute_type === 'shard_protocol') {
                     ele.value.forEach(entry => {
+                        if (Number.isInteger(entry.update_date)){
+                            entry.update_date = moment.utc(entry.update_date * 1000).format('YYYY-MM-DD HH:mm:ss');
+                        }
+                        entry.is_required = entry.is_required === true ? 1 : 0;
                         tabularAttributes.push(entry);
                     });
                 }
@@ -135,44 +132,72 @@ class PeerInfoView extends Component {
                     </div>
                     <div className={'panel-body'}>
                         <div className={'panel-body'}>
-                            <div className={'section_subtitle'}>
-                                job
-                            </div>
-                            <Table striped bordered hover className={'mb-3'}>
-                                <tbody>
-                                {jobList}
-                                </tbody>
-                            </Table>
+                            <DatatableView
+                                value={jobList}
+                                sortOrder={1}
+                                showActionColumn={true}
+                                resultColumn={[
+                                    {
+                                        'field': 'peer_rotation'
+                                    },
+                                    {
+                                        'field': 'node_list'
+                                    },
+                                    {
+                                        'field': 'transaction_validation'
+                                    },
+                                    {
+                                        'field': 'transaction_spend_sync'
+                                    },
+                                    {
+                                        'field': 'consensus_watchdog_validation'
+                                    },
+                                    {
+                                        'field': 'wallet_inspect'
+                                    },
+                                    {
+                                        'field': 'wallet_retry_validation_update'
+                                    },
+                                    {
+                                        'field': 'shard_zero_pruning'
+                                    },
+                                    {
+                                        'field': 'dag_progress'
+                                    },
+                                    {
+                                        'field': 'transaction_output_expiration'
+                                    },
+                                    {
+                                        'field': 'node_attribute_update'
+                                    }
+                                ]}/>
                         </div>
                     </div>
                 </div>
                 <div className={'panel panel-filled'}>
                     <div className={'panel-heading bordered'}>shard list</div>
                     <div className={'panel-body'}>
-                        <Table striped bordered hover variant="dark">
-                            <thead>
-                            <tr>
-                                <th>shard id</th>
-                                <th>transaction count</th>
-                                <th>update date</th>
-                                <th>is required</th>
-                                <th>fee ask request byte</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {tabularAttributes.map((item, idx) => {
-                                return (
-                                    <tr key={idx} className="wallet-node">
-                                        <td className={'text-break'}>{item.shard_id}</td>
-                                        <td>{item.transaction_count}</td>
-                                        <td>{item.update_date}</td>
-                                        <td>{item.is_required ? 'yes' : 'no'}</td>
-                                        <td>{item.fee_ask_request_byte}</td>
-                                    </tr>);
-                            })}
-                            </tbody>
-                        </Table>
-
+                        <DatatableView
+                            value={tabularAttributes}
+                            sortOrder={1}
+                            showActionColumn={true}
+                            resultColumn={[
+                                {
+                                    'field': 'shard_id'
+                                },
+                                {
+                                    'field': 'transaction_count'
+                                },
+                                {
+                                    'field': 'update_date'
+                                },
+                                {
+                                    'field': 'is_required'
+                                },
+                                {
+                                    'field': 'fee_ask_request_byte'
+                                }
+                            ]}/>
                     </div>
                 </div>
             </div>
