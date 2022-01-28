@@ -430,6 +430,18 @@ class API {
     }
 
     resetTransactionValidationByGUID(transactionID = null) {
+        let payload = [];
+        if (typeof transactionID === 'object') {
+            transactionID.forEach((item, idx) => {
+                if (typeof item.transaction_id !== 'undefined') {
+                    payload.push(item.transaction_id);
+                }
+            });
+        }
+        else {
+            payload.push(transactionID);
+        }
+
         try {
             return fetch(
                 this.getAuthenticatedMillixApiURL() + '/P2LMh8NsUTkpWAH3',
@@ -437,7 +449,7 @@ class API {
                     method : 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body   : JSON.stringify({
-                        'p0': transactionID
+                        'p0': payload
                     })
                 }
             ).then(response => {

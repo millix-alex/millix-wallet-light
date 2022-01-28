@@ -138,6 +138,10 @@ class UnspentTransactionOutputView extends Component {
                         <DatatableHeaderView
                             reload_datatable={() => this.reloadDatatable()}
                             datatable_reload_timestamp={this.state.datatable_reload_timestamp}
+                            action_button_on_click={this.revalidateTransaction}
+                            action_button_label={'reset validation'}
+                            action_button_icon={'sync'}
+                            action_button_args={this.state.transaction_output_list}
                         />
                         <Row id={'txhistory'}>
                             <DatatableView

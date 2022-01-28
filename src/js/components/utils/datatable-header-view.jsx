@@ -25,6 +25,11 @@ class DatatableHeaderView extends Component {
             action_button_label = this.props.action_button_label;
         }
 
+        let action_button_args = [];
+        if (this.props.action_button_args) {
+            action_button_args = this.props.action_button_args;
+        }
+
         return (
             <div className={'datatable_action_row'}>
                 <Col md={4}>
@@ -55,7 +60,7 @@ class DatatableHeaderView extends Component {
                         <Button variant="outline-primary"
                                 size={'sm'}
                                 className={'datatable_action_button'}
-                                onClick={() => this.props.action_button_on_click()}>
+                                onClick={() => this.props.action_button_on_click(this.props, action_button_args)}>
                             <FontAwesomeIcon
                                 icon={action_button_icon}
                                 size="1x"/>
