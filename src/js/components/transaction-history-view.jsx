@@ -51,7 +51,7 @@ class TransactionHistoryView extends Component {
                 txid       : transaction.transaction_id,
                 stable_date: format.date(transaction.stable_date),
                 parent_date: format.date(transaction.parent_date),
-                action     : <div><DatatableActionButtonView
+                action: <><DatatableActionButtonView
                     history_path={'/transaction/' + encodeURIComponent(transaction.transaction_id)}
                     history_state={[transaction]}
                     icon={'eye'}/>
@@ -62,7 +62,7 @@ class TransactionHistoryView extends Component {
                         callback_props={this.props}
                         callback_args={transaction.transaction_id}
                     />
-                </div>
+                </>
             }));
 
             this.setState({

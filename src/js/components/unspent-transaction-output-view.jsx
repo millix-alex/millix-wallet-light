@@ -79,7 +79,7 @@ class UnspentTransactionOutputView extends Component {
                 amount          : output.amount,
                 transaction_date: format.date(output.transaction_date),
                 stable_date     : format.date(output.stable_date),
-                action          : <div><DatatableActionButtonView
+                action: <><DatatableActionButtonView
                     history_path={'/transaction/' + encodeURIComponent(output.transaction_id)}
                     history_state={[output]}
                     icon={'eye'}/>
@@ -90,7 +90,7 @@ class UnspentTransactionOutputView extends Component {
                         callback_props={this.props}
                         callback_args={output.transaction_id}
                     />
-                </div>
+                </>
             }));
             this.setState({
                 transaction_output_list   : rows,

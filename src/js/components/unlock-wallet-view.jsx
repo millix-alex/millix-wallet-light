@@ -48,8 +48,8 @@ class UnlockWalletView extends Component {
 
     isPrivateKeyExist() {
         API.getIsPrivateKeyExist().then(response => {
-            if (typeof (response.is_key_exists) === 'boolean') {
-                if (response.is_key_exists) {
+            if (typeof (response.private_key_exists) === 'boolean') {
+                if (response.private_key_exists) {
                     this.setState({
                         private_key_exist: true
                     });
