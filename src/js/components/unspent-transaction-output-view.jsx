@@ -125,9 +125,9 @@ class UnspentTransactionOutputView extends Component {
                             an unspent is a transaction output sent to your
                             address that you received and
                             have not used to fund a payment. your balance is the
-                            sum of your validated unspents. your pending balance<HelpIconView
-                            help_item_name={'pending_balance'}/> is the sum of
-                            your unspents that haven't been validated yet.
+                            sum of your validated unspents. your pending balance
+                            is the sum of your unspents that haven't been
+                            validated yet.
                         </div>
                         <div className={'form-group'}>
                             when you send a transaction using an unspent, or
