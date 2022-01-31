@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import SideNav, {NavItem, NavText} from '@trendmicro/react-sidenav';
 import {connect} from 'react-redux';
 import {lockWallet} from '../redux/actions/index';
-import moment from 'moment';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import ModalView from './utils/modal-view';
 import * as format from '../helper/format';
@@ -61,6 +60,17 @@ class Sidebar extends Component {
                  (
                      (defaultSelected === '/status-summary') ||
                      (defaultSelected === '/peers')
+                 )
+        ) {
+            result = true;
+        }
+        else if (section === 'settings' &&
+                 (
+                     (defaultSelected === '/fees') ||
+                     (defaultSelected === '/network') ||
+                     (defaultSelected === '/connection') ||
+                     (defaultSelected === '/consensus') ||
+                     (defaultSelected === '/address-version')
                  )
         ) {
             result = true;
@@ -184,11 +194,62 @@ class Sidebar extends Component {
                      </NavText>
                      </NavItem>
                      */}
-                    <NavItem key={'config'} eventKey="/config">
+
+
+
+
+
+
+
+
+
+                    <NavItem
+                        eventKey="settings"
+                        expanded={this.isExpanded('settings', defaultSelected)}
+                    >
                         <NavText>
-                            settings
+                            settings <FontAwesomeIcon className={'icon'}
+                                                    icon="chevron-down"
+                                                    size="1x"/>
+                            <FontAwesomeIcon className={'icon hidden'}
+                                             icon="chevron-up"
+                                             size="1x"/>
                         </NavText>
+                        <NavItem key={'fees'}
+                                 eventKey="/config-fees">
+                            <NavText>
+                                fees
+                            </NavText>
+                        </NavItem>
+                        <NavItem key={'network'} eventKey="/config-network">
+                            <NavText>
+                                network
+                            </NavText>
+                        </NavItem>
+                        <NavItem key={'connection'} eventKey="/config-connection">
+                            <NavText>
+                                connection
+                            </NavText>
+                        </NavItem>
+                        <NavItem key={'consensus'} eventKey="/config-consensus">
+                            <NavText>
+                                consensus
+                            </NavText>
+                        </NavItem>
+                        <NavItem key={'address-version'} eventKey="/config-address-version">
+                            <NavText>
+                                address version
+                            </NavText>
+                        </NavItem>
                     </NavItem>
+
+
+
+
+
+
+
+
                     <NavItem key={'actions'} eventKey="/actions">
                         <NavText>
                             actions
