@@ -9,6 +9,7 @@ import DatatableView from './utils/datatable-view';
 import * as format from '../helper/format';
 import HelpIconView from './utils/help-icon-view';
 import API from '../api';
+import ModalView from './utils/modal-view';
 
 class TransactionDetailsView extends Component {
     constructor(props) {
@@ -96,6 +97,19 @@ class TransactionDetailsView extends Component {
 
         return (
             <>
+                <ModalView show={this.state.modalShow}
+                           size={'lg'}
+                           on_close={() => this.changeModalShow(false)}
+                           heading={'transaction validation reset'}
+                           body={<div>
+                               <div>validation has been reset for
+                                   transaction {this.state.reset_transaction_id}.
+                                   click <Link
+                                       to={'/unspent-transaction-output-list/pending'}>here</Link> to
+                                   see all your pending transactions
+                               </div>
+                           </div>}
+                />
                 <Col md="12">
                     <div className={'panel panel-filled'}>
                         <div className={'panel-heading bordered'}>

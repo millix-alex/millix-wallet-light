@@ -1,13 +1,13 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import {withRouter} from 'react-router-dom';
-import {Button, Col, Row} from 'react-bootstrap';
-import moment from 'moment';
+import {withRouter, Link} from 'react-router-dom';
+import {Row} from 'react-bootstrap';
 import DatatableView from './utils/datatable-view';
 import DatatableActionButtonView from './utils/datatable-action-button-view';
 import * as format from '../helper/format';
 import API from '../api';
 import DatatableHeaderView from './utils/datatable-header-view';
+import ModalView from './utils/modal-view';
 
 
 class TransactionHistoryView extends Component {
@@ -17,7 +17,9 @@ class TransactionHistoryView extends Component {
         this.state                           = {
             transaction_list          : [],
             datatable_reload_timestamp: '',
-            datatable_loading         : false
+            datatable_loading         : false,
+            modalShow                 : false,
+            reset_transaction_id      : ''
         };
     }
 
@@ -33,12 +35,20 @@ class TransactionHistoryView extends Component {
     revalidateTransaction(props, transactionID) {
         API.resetTransactionValidationByGUID(transactionID).then(response => {
             if (typeof response.api_status === 'string') {
-                props.history.push('/unspent-transaction-output-list/pending');
+                props.callback_props.changeModalShow(true, transactionID);
             }
         });
     }
 
+    changeModalShow(value = true, transactionID) {
+        this.setState({
+            modalShow           : value,
+            reset_transaction_id: value ? transactionID : ''
+        });
+    }
+
     reloadDatatable() {
+        let that = this;
         this.setState({
             datatable_loading: true
         });
@@ -59,7 +69,7 @@ class TransactionHistoryView extends Component {
                         icon={'sync'}
                         title={'reset validation'}
                         callback={this.revalidateTransaction}
-                        callback_props={this.props}
+                        callback_props={that}
                         callback_args={transaction.transaction_id}
                     />
                 </>
@@ -76,6 +86,19 @@ class TransactionHistoryView extends Component {
     render() {
         return (
             <div>
+                <ModalView show={this.state.modalShow}
+                           size={'lg'}
+                           on_close={() => this.changeModalShow(false)}
+                           heading={'transaction validation reset'}
+                           body={<div>
+                               <div>validation has been reset for
+                                   transaction {this.state.reset_transaction_id}.
+                                   click <Link
+                                       to={'/unspent-transaction-output-list/pending'}>here</Link> to
+                                   see all your pending transactions
+                               </div>
+                           </div>}
+                />
                 <div className={'panel panel-filled'}>
                     <div className={'panel-heading bordered'}>transactions</div>
                     <div className={'panel-body'}>
