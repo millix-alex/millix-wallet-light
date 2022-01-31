@@ -4,10 +4,9 @@ import {withRouter} from 'react-router-dom';
 import {Button, Col, Form, Row} from 'react-bootstrap';
 import {addWalletAddressVersion, removeWalletAddressVersion, walletUpdateConfig} from '../redux/actions/index';
 import API from '../api/index';
-import _ from 'lodash';
 import ErrorList from './utils/error-list-view';
 import ModalView from './utils/modal-view';
-
+import * as validate from '../helper/validate';
 
 class ConfigNetwork extends Component {
     constructor(props) {
@@ -43,7 +42,7 @@ class ConfigNetwork extends Component {
                 NODE_PORT_API               : this.props.config.NODE_PORT_API,
                 NODE_CONNECTION_INBOUND_MAX : this.props.config.NODE_CONNECTION_INBOUND_MAX,
                 NODE_CONNECTION_OUTBOUND_MAX: this.props.config.NODE_CONNECTION_OUTBOUND_MAX,
-                NODE_INITIAL_LIST           : this.props.config.NODE_INITIAL_LIST
+                NODE_INITIAL_LIST           : JSON.stringify(this.props.config.NODE_INITIAL_LIST)
             }
         });
     }
@@ -58,32 +57,10 @@ class ConfigNetwork extends Component {
     }
 
     refreshPage = () => {
-        this.setState(
-            {reload: true},
-            () => this.setState({reload: false})
-        );
+        this.loadConfigToState();
     };
 
     setNetworkConfig(data) {
-        console.log(data);
-        console.log(typeof data.NODE_INITIAL_LIST !== undefined);
-        console.log(typeof data.NODE_INITIAL_LIST);
-        if(typeof data.NODE_INITIAL_LIST !== 'undefined'){
-            try {
-                data.NODE_INITIAL_LIST = JSON.parse(data.NODE_INITIAL_LIST.split(','))
-            } catch (e) {
-                this.setState({
-                    error_list: [{
-                        name   : 'validateError',
-                        message: 'nodes - should contain valid json'
-                    }]
-                })
-                return;
-            }
-            this.setState({
-                error_list: {}
-            })
-        }
         for (let key in data) {
             this.state.network_config_data[key] = data[key];
         }
@@ -126,47 +103,37 @@ class ConfigNetwork extends Component {
     isValidNetworkData() {
         let data       = this.state.network_config_data;
         let error_list = [];
+        let valid = {isValid: true};
 
-        if(!this.isPositiveInteger(data.NODE_PORT)){
-            error_list.push(
-                {
-                    name   : 'validationError',
-                    message: 'network port - must be numbers bigger than 0'
-                }
-            );
+        try {
+            data.NODE_INITIAL_LIST = JSON.parse(data.NODE_INITIAL_LIST.split(','))
+        } catch (e) {
+            error_list.push({
+                name   : 'validationError',
+                message: 'nodes should contain valid json'
+            });
         }
-        if(!this.isPositiveInteger(data.NODE_PORT_API)){
-            error_list.push(
-                {
-                    name   : 'validationError',
-                    message: 'rpc port - must be numbers bigger than 0'
-                }
-            );
+        validate.required('node port', data.NODE_PORT, error_list, valid);
+        if(valid.isValid){
+            validate.positiveInteger('node port', data.NODE_PORT, error_list);
         }
-        if(!this.isPositiveInteger(data.NODE_CONNECTION_INBOUND_MAX)){
-            error_list.push(
-                {
-                    name   : 'validationError',
-                    message: 'max connections in - must be numbers bigger than 0'
-                }
-            );
+        validate.required('rpc port', data.NODE_PORT_API, error_list, valid);
+        if(valid.isValid) {
+            validate.positiveInteger('rpc port', data.NODE_PORT_API, error_list);
         }
-        if(!this.isPositiveInteger(data.NODE_CONNECTION_OUTBOUND_MAX)){
-            error_list.push(
-                {
-                    name   : 'validationError',
-                    message: 'min connections in - must be numbers bigger than 0'
-                }
-            );
+        validate.required('max connections in', data.NODE_CONNECTION_INBOUND_MAX, error_list, valid);
+        if(valid.isValid) {
+            validate.positiveInteger('max connections in', data.NODE_CONNECTION_INBOUND_MAX, error_list);
         }
-        if(!this.isValidIpAddress(data.NODE_HOST)){
-            error_list.push(
-                {
-                    name   : 'validationError',
-                    message: 'bind address should be an ip'
-                }
-            );
+        validate.required('min connections in', data.NODE_CONNECTION_OUTBOUND_MAX, error_list, valid);
+        if(valid.isValid) {
+            validate.positiveInteger('min connections in', data.NODE_CONNECTION_OUTBOUND_MAX, error_list);
         }
+        validate.required('bind address', data.NODE_HOST, error_list, valid);
+        if(valid.isValid) {
+            validate.ipAddress('bind address', data.NODE_HOST, error_list);
+        }
+
 
         if (error_list.length > 0) {
             this.setState({
@@ -177,28 +144,6 @@ class ConfigNetwork extends Component {
         }
 
         return true;
-    }
-
-    isPositiveInteger(str) {
-        if(typeof str === 'number') {
-            return Number.isInteger(str) && str > 0;
-        }
-        if (typeof str !== 'string') {
-            return false;
-        }
-        const num = Number(str);
-        return Number.isInteger(num) && num > 0;
-    }
-
-
-    isValidIpAddress(ipAddress) {
-        return /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(ipAddress);
-    }
-
-    removeFromConfigList(configName, value) {
-        _.pull(this.props.config[configName], value);
-        this.setNetworkConfig({[configName]: this.props.config[configName]});
-        this.setNetworkConfigToState();
     }
 
     render() {
@@ -309,7 +254,7 @@ class ConfigNetwork extends Component {
                                                       onChange={() => {
                                                           this.setNetworkConfig({NODE_INITIAL_LIST: this._nodes.value});
                                                       }}
-                                                      value={JSON.stringify(this.state.network_config_data.NODE_INITIAL_LIST)}
+                                                      value={this.state.network_config_data.NODE_INITIAL_LIST}
                                         />
                                     </Form.Group>
                                 </Col>

@@ -1,12 +1,16 @@
 import * as format from './format';
 
-export function required(field_name, value, error_list) {
-    value = value.trim();
+export function required(field_name, value, error_list, valid = {}) {
+    valid.isValid = true
+    if(typeof value === "string"){
+        value = value.trim();
+    }
     if (!value) {
         error_list.push({
             name   : get_error_name('required', field_name),
             message: `${field_name} is required`
         });
+        valid.isValid = false;
     }
 
     return value;
@@ -44,6 +48,56 @@ export function amount(field_name, value, error_list, allow_zero = false) {
 
     return value_escaped;
 }
+export function positiveInteger(field_name, value, error_list, allow_zero = false) {
+    let value_escaped;
+    if (typeof value === 'string') {
+        value_escaped = value.trim();
+        value_escaped = parseInt(value_escaped.replace(/\D/g, ''));
+    } else {
+        value_escaped = value;
+    }
+    if (!Number.isInteger(value_escaped)) {
+        error_list.push({
+            name   : get_error_name('amount_is_not_integer', field_name),
+            message: `${field_name} must be a number`
+        });
+        return false;
+    }
+    else if (!allow_zero && value_escaped <= 0) {
+        error_list.push({
+            name   : get_error_name('amount_is_lt_zero', field_name),
+            message: `${field_name} must be bigger than 0`
+        });
+        return false;
+    }
+    else if (allow_zero && value_escaped < 0) {
+        error_list.push({
+            name   : get_error_name('amount_is_lte_zero', field_name),
+            message: `${field_name} must be bigger than or equal to 0`
+        });
+        return false;
+    }
+}
+
+export function ipAddress(field_name, value, error_list) {
+    let ipAddressArray = value.split('.');
+    if(ipAddressArray.length !== 4 ){
+        error_list.push({
+            name   : get_error_name('amount_format_is_wrong', field_name),
+            message: `${field_name} must be a valid ip address`
+        });
+    }
+    ipAddressArray.forEach(element => {
+        if(element > 255 || element < 0 || element === ''){
+            error_list.push({
+                name   : get_error_name('amount_format_is_wrong', field_name),
+                message: `${field_name} must be a valid ip address`
+            });
+            return false;
+        }
+    });
+}
+
 
 function get_error_name(prefix, field_name) {
     return `${prefix}_${field_name.replaceAll(' ', '_')}`;
