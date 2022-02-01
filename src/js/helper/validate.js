@@ -1,6 +1,7 @@
 import * as format from './format';
 
-export function required(field_name, value, error_list) {
+export function required(field_name, value, error_list, valid = {}) {
+    valid.isValid = true
     if(typeof value === "string"){
         value = value.trim();
     }
@@ -9,6 +10,7 @@ export function required(field_name, value, error_list) {
             name   : get_error_name('required', field_name),
             message: `${field_name} is required`
         });
+        valid.isValid = false;
     }
 
     return value;
