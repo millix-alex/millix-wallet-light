@@ -54,8 +54,8 @@ class DatatableView extends Component {
                 item.body = (rowData) => this.bodyTemplateAmount(rowData, item.field);
             }
 
-            if (typeof (item.filter) !== 'undefined') {
-                item.filter = (rowData) => this.bodyTemplateAmount(rowData, item.field);
+            if (typeof (item.filter_type) !== 'undefined' && item.filter_type === 'multi_select') {
+                item.filter = true;
             }
 
             result_global_search_field.push(item.field);
@@ -63,7 +63,11 @@ class DatatableView extends Component {
                 key={index}
                 field={item.field}
                 header={item.header}
-                filter={item.filter}
+                // filter={item.filter}
+                // filterField={item.field}
+                // filterElement={this.filterTemplateMultiSelect}
+
+                showFilterMatchModes={false}
                 sortable={item.sortable}
                 body={item.body}/>);
         });
@@ -77,7 +81,7 @@ class DatatableView extends Component {
         }
 
         this.setState({
-            'result_column': result_column,
+            'result_column'             : result_column,
             'result_global_search_field': result_global_search_field
         });
     }
@@ -164,34 +168,26 @@ class DatatableView extends Component {
         };
     }
 
-    representativeBodyTemplate(rowData) {
-        const representative = rowData.representative;
-        return (
-            <React.Fragment>
-                <span className="image-text">{representative.name}</span>
-            </React.Fragment>
-        );
-    }
+    // filterTemplateMultiSelect(options) {
+    //     console.log(options);
+    //     return <MultiSelect value={options.value} options={this.representatives} //itemTemplate={this.representativesItemTemplate}
+    //                         onChange={(e) => options.filterCallback(e.value)} optionLabel="name" placeholder="Any" className="p-column-filter"/>;
+    // }
 
-    representativeFilterTemplate(options) {
-        return <MultiSelect value={options.value} options={this.representatives} itemTemplate={this.representativesItemTemplate}
-                            onChange={(e) => options.filterCallback(e.value)} optionLabel="name" placeholder="Any" className="p-column-filter"/>;
-    }
-
-    filterClearTemplate(options) {
-        return <Button type="button" icon="pi pi-times" onClick={options.filterClearCallback} className="p-button-secondary"></Button>;
-    }
-
-    filterApplyTemplate(options) {
-        return <Button type="button" icon="pi pi-check" onClick={options.filterApplyCallback} className="p-button-success"></Button>;
-    }
-
-    filterFooterTemplate() {
-        return <div className="px-3 pt-0 pb-3 text-center font-bold">Customized Buttons</div>;
-    }
+    // filterClearTemplate(options) {
+    //     return <Button type="button" icon="pi pi-times" onClick={options.filterClearCallback} className="p-button-secondary"></Button>;
+    // }
+    //
+    // filterApplyTemplate(options) {
+    //     return <Button type="button" icon="pi pi-check" onClick={options.filterApplyCallback} className="p-button-success"></Button>;
+    // }
+    //
+    // filterFooterTemplate() {
+    //     return <div className="px-3 pt-0 pb-3 text-center font-bold">Customized Buttons</div>;
+    // }
 
     on_global_search_change(e) {
-        const value = e.target.value;
+        const value                   = e.target.value;
         let result_filter             = {...this.state.result_filter};
         result_filter['global'].value = value;
 
@@ -229,11 +225,7 @@ class DatatableView extends Component {
 
                            globalFilterFields={this.state.result_global_search_field}
                            filters={this.state.result_filter}
-
-                    // filterDisplay="menu"
-                    // filterField="country.name" style={{minWidth: '12rem'}} body={this.countryBodyTemplate} filter filterPlaceholder="Search by country"
-                    // filterClear={this.filterClearTemplate} filterApply={this.filterApplyTemplate} filterFooter={this.filterFooterTemplate}
-
+                           filterDisplay="menu"
 
                            responsiveLayout="scroll">
                     {this.state.result_column}

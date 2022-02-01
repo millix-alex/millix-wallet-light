@@ -225,8 +225,8 @@ class ListAdView extends Component {
                                     field: 'expiration'
                                 },
                                 {
-                                    field : 'status',
-                                    // filter: true
+                                    field      : 'status',
+                                    // filter_type: 'multi_select'
                                 },
                                 {
                                     field: 'create_date'
