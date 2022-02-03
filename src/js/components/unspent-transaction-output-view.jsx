@@ -10,6 +10,7 @@ import * as format from '../helper/format';
 import DatatableHeaderView from './utils/datatable-header-view';
 import HelpIconView from './utils/help-icon-view';
 import ModalView from './utils/modal-view';
+import _ from 'lodash';
 
 class UnspentTransactionOutputView extends Component {
     constructor(props) {
@@ -20,8 +21,9 @@ class UnspentTransactionOutputView extends Component {
             stable                    : 1,
             datatable_reload_timestamp: '',
             datatable_loading         : false,
-            modalShow                 : false,
-            reset_transaction_id      : ''
+            promptModalShow           : false,
+            confirmModalShow          : false,
+            resetTransactionId        : ''
         };
     }
 
@@ -62,15 +64,29 @@ class UnspentTransactionOutputView extends Component {
     revalidateTransaction(props, transactionID) {
         API.resetTransactionValidationByGUID(transactionID).then(response => {
             if (typeof response.api_status === 'string') {
-                props.callback_props.changeModalShow(true, transactionID);
+                props.toggleConfirmModal(props, transactionID, true);
             }
         });
     }
 
-    changeModalShow(value = true, transactionID) {
-        this.setState({
-            modalShow           : value,
-            reset_transaction_id: value ? transactionID : ''
+
+    toggleConfirmModal(props, transactionID, status = true) {
+        props.setState({
+            confirmModalShow  : status,
+            promptModalShow   : false,
+            resetTransactionId: status ? transactionID : ''
+        });
+    }
+
+    togglePromptModal(props, transactionID, status = true) {
+        if (props.callback_props) {
+            props = props.callback_props;
+        }
+
+        props.setState({
+            promptModalShow   : status,
+            confirmModal      : false,
+            resetTransactionID: transactionID
         });
     }
 
@@ -93,14 +109,13 @@ class UnspentTransactionOutputView extends Component {
                     history_path={'/transaction/' + encodeURIComponent(output.transaction_id)}
                     history_state={[output]}
                     icon={'eye'}/>
-                    {this.state.stable ? ('') : (
                         <DatatableActionButtonView
                             icon={'sync'}
                             title={'reset validation'}
-                            callback={this.revalidateTransaction}
+                            callback={this.togglePromptModal}
                             callback_props={that}
                             callback_args={output.transaction_id}
-                        />)}
+                        />
                 </>
             }));
             this.setState({
@@ -127,14 +142,25 @@ class UnspentTransactionOutputView extends Component {
 
         return (
             <div>
-                <ModalView show={this.state.modalShow}
+                <ModalView
+                    show={this.state.promptModalShow}
+                    size={'lg'}
+                    heading={'are you sure?'}
+                    on_close={() => this.togglePromptModal(that, this.state.resetTransactionID, false)}
+                    on_accept={() => this.revalidateTransaction(that, this.state.resetTransactionID)}
+                    body={
+                        <div>transaction {_.isArray(this.state.resetTransactionID) ? this.state.resetTransactionID : this.state.resetTransactionID} will be
+                            reset and re-validated</div>
+                    }
+                />
+                <ModalView show={this.state.confirmModalShow}
                            size={'lg'}
-                           on_close={() => this.changeModalShow(false)}
+                           on_close={() => this.toggleConfirmModal(that, this.state.resetTransactionID, false)}
                            heading={'transaction validation reset'}
-                           body={(typeof (this.state.reset_transaction_id) === 'string') ? (
+                           body={(typeof (this.state.resetTransactionID) === 'string') ? (
                                <div>
                                    <div>validation has been reset for
-                                       transaction {this.state.reset_transaction_id}.
+                                       transaction {this.state.resetTransactionID}.
                                        click <Link
                                            to={'/unspent-transaction-output-list/pending'}>here</Link> to
                                        see all your pending transactions
@@ -173,15 +199,22 @@ class UnspentTransactionOutputView extends Component {
                             payment, you will receive the remaining change as a
                             new unspent.
                         </div>
-                        <DatatableHeaderView
-                            reload_datatable={() => this.reloadDatatable()}
-                            datatable_reload_timestamp={this.state.datatable_reload_timestamp}
-                            action_button_on_click={this.revalidateTransaction}
-                            action_button_label={'reset validation'}
-                            action_button_icon={'sync'}
-                            callback_props={that}
-                            action_button_args={this.state.transaction_output_list}
-                        />
+                        {this.state.stable === 1 ? (
+                            <DatatableHeaderView
+                                reload_datatable={() => this.reloadDatatable()}
+                                datatable_reload_timestamp={this.state.datatable_reload_timestamp}
+                            />
+                        ) : (
+                             <DatatableHeaderView
+                                 reload_datatable={() => this.reloadDatatable()}
+                                 datatable_reload_timestamp={this.state.datatable_reload_timestamp}
+                                 action_button_on_click={this.togglePromptModal}
+                                 action_button_label={'reset validation'}
+                                 action_button_icon={'sync'}
+                                 callback_props={that}
+                                 action_button_args={this.state.transaction_output_list}
+                             />
+                         )}
                         <Row id={'txhistory'}>
                             <DatatableView
                                 value={this.state.transaction_output_list}

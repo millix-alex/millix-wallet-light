@@ -14,6 +14,11 @@ import ModalView from './utils/modal-view';
 class TransactionDetailsView extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            promptModalShow   : false,
+            confirmModalShow  : false,
+            resetTransactionID: ''
+        };
     }
 
     componentDidMount() {
@@ -47,9 +52,25 @@ class TransactionDetailsView extends Component {
         </Link>;
     }
 
-    revalidateTransaction(transactionID) {
-        API.resetTransactionValidationByGUID(transactionID).then(_ => {
-            this.props.history.push('/unspent-transaction-output-list/pending');
+    revalidateTransaction(props, transactionID) {
+        API.resetTransactionValidationByGUID(transactionID).then(response => {
+            if (typeof response.api_status === 'string') {
+                props.toggleConfirmModal(true, transactionID);
+            }
+        });
+    }
+
+    togglePromptModal(status = true, transactionID) {
+        this.setState({
+            promptModalShow   : status,
+            resetTransactionID: transactionID
+        });
+    }
+
+    toggleConfirmModal(status = true, transactionID) {
+        this.setState({
+            confirmModalShow  : status,
+            resetTransactionID: transactionID
         });
     }
 
@@ -95,20 +116,32 @@ class TransactionDetailsView extends Component {
             stable_value += ` (${format.date(transaction.stable_date)})`;
         }
 
+        let that = this;
+
         return (
             <>
-                <ModalView show={this.state.modalShow}
-                           size={'lg'}
-                           on_close={() => this.changeModalShow(false)}
-                           heading={'transaction validation reset'}
-                           body={<div>
-                               <div>validation has been reset for
-                                   transaction {this.state.reset_transaction_id}.
-                                   click <Link
-                                       to={'/unspent-transaction-output-list/pending'}>here</Link> to
-                                   see all your pending transactions
-                               </div>
-                           </div>}
+                <ModalView
+                    show={this.state.promptModalShow}
+                    size={'lg'}
+                    heading={'are you sure?'}
+                    on_close={() => this.togglePromptModal(false)}
+                    on_accept={() => this.revalidateTransaction(that, this.state.resetTransactionID)}
+                    body={
+                        <div>transaction {this.state.resetTransactionID} will be reset and re-validated</div>
+                    }
+                />
+                <ModalView
+                    show={this.state.confirmModalShow}
+                    size={'lg'}
+                    heading={'transaction validation reset'}
+                    body={<div>
+                        <div>validation has been reset for
+                            transaction {this.state.resetTransactionID}.
+                            click <Link
+                                to={'/unspent-transaction-output-list/pending'}>here</Link> to
+                            see all your pending transactions
+                        </div>
+                    </div>}
                 />
                 <Col md="12">
                     <div className={'panel panel-filled'}>
@@ -194,7 +227,7 @@ class TransactionDetailsView extends Component {
                                     <Col>
                                         <Button
                                             variant="outline-primary"
-                                            onClick={() => this.revalidateTransaction(transaction.transaction_id)}
+                                            onClick={() => this.togglePromptModal(true, transaction.transaction_id)}
                                             title={'reset validation'}
                                         >
                                             <FontAwesomeIcon
