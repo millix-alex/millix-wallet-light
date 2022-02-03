@@ -6,15 +6,34 @@ import {addWalletAddressVersion, removeWalletAddressVersion, walletUpdateConfig}
 import _ from 'lodash';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import DatatableView from './utils/datatable-view';
+import DatatableHeaderView from './utils/datatable-header-view';
+import ModalView from './utils/modal-view';
 
 class ConfigConnection extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            node_public_ip       : '',
-            datatables           : []
+            node_public_ip    : '',
+            datatables        : [],
+            modalAddConnection:
+                {
+                    status: false,
+                    body: ''
+                }
         };
+    }
+
+    changeModalAddConnection(value = true, callback) {
+        this.setState({
+            modalAddConnection: {
+                status: value,
+                body: callback()
+            }
+        });
+        if (value === false) {
+
+        }
     }
 
     componentDidMount() {
@@ -71,6 +90,19 @@ class ConfigConnection extends Component {
         })
     }
 
+    getInboundConnectionModal(){
+        return <Form>
+            <Form.Control
+                type="text"
+                placeholder="node id"
+                ref={(c) => this._connection_whitelist_inbound_node = c}
+                onChange={() => {
+                    this.setState({connection_whitelist_inbound_node: this._connection_whitelist_inbound_node.value});
+                }}
+                value={this.state.connection_whitelist_inbound_node}/>
+        </Form>;
+    }
+
 
     getConnectionDeleteButton(nodeID, configName) {
         return <Button
@@ -85,6 +117,13 @@ class ConfigConnection extends Component {
 
     render() {
         return <div>
+            <ModalView
+                show={this.state.modalAddConnection.status}
+                size={'lg'}
+                on_close={() => this.changeModalAddConnection(false)}
+                on_accept={() => this.sendTransaction()}
+                heading={'success'}
+                body={this.state.modalAddConnection.body}/>
             <Form>
                 <div className={'panel panel-filled'}>
                     <div className={'panel-heading bordered'}>inbound connection
@@ -93,11 +132,7 @@ class ConfigConnection extends Component {
                     <div className={'panel-body'}>
                         <Col>
                             <Form.Group className="form-group">
-                                <label>add
-                                    inbound
-                                    connection
-                                </label>
-                                <Row>
+                                {/*<Row>
                                     <Col sm="10"
                                          md="11">
                                         <Form.Control
@@ -120,10 +155,16 @@ class ConfigConnection extends Component {
                                                 size="1x"/>
                                         </Button>
                                     </Col>
-                                </Row>
+                                </Row>*/}
                             </Form.Group>
                         </Col>
                         <Col>
+                            <DatatableHeaderView
+                                reload_datatable={() => this.reloadDatatable()}
+                                datatable_reload_timestamp={this.state.datatable_reload_timestamp}
+                                action_button_label={'add inbound connection'}
+                                action_button_on_click={() => this.changeModalAddConnection(true, this.getInboundConnectionModal)}
+                            />
                             <DatatableView
                                 value={this.state.datatables.connection_inbound}
                                 sortOrder={1}
@@ -172,7 +213,30 @@ class ConfigConnection extends Component {
                                                 size="1x"/>
                                         </Button>
                                     </Col>
-                                </Row>
+                                </Row>{/*<Row>
+                                    <Col sm="10"
+                                         md="11">
+                                        <Form.Control
+                                            type="text"
+                                            placeholder="node id"
+                                            ref={(c) => this._connection_whitelist_inbound_node = c}
+                                            onChange={() => {
+                                                this.setState({connection_whitelist_inbound_node: this._connection_whitelist_inbound_node.value});
+                                            }}
+                                            value={this.state.connection_whitelist_inbound_node}/>
+                                    </Col>
+                                    <Col sm="2"
+                                         md="1">
+                                        <Button
+                                            variant="outline-primary"
+                                            size={'sm'}
+                                            onClick={() => this.addToConfigList('NODE_CONNECTION_INBOUND_WHITELIST', 'connection_whitelist_inbound_node')}>
+                                            <FontAwesomeIcon
+                                                icon="plus"
+                                                size="1x"/>
+                                        </Button>
+                                    </Col>
+                                </Row>*/}
                             </Form.Group>
                         </Col>
                         <Col>

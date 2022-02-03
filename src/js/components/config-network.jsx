@@ -104,7 +104,6 @@ class ConfigNetwork extends Component {
     isValidNetworkData() {
         let data       = this.state.network_config_data;
         let error_list = [];
-        let valid = {isValid: true};
 
         try {
             data.NODE_INITIAL_LIST = JSON.parse(data.NODE_INITIAL_LIST.split(','))
@@ -114,24 +113,24 @@ class ConfigNetwork extends Component {
                 message: 'nodes should contain valid json'
             });
         }
-        validate.required('node port', data.NODE_PORT, error_list, valid);
-        if(valid.isValid){
+        data.NODE_PORT = validate.required('node port', data.NODE_PORT, error_list);
+        if(data.NODE_PORT){
             validate.positiveInteger('node port', data.NODE_PORT, error_list);
         }
-        validate.required('rpc port', data.NODE_PORT_API, error_list, valid);
-        if(valid.isValid) {
+        data.NODE_PORT_API = validate.required('rpc port', data.NODE_PORT_API, error_list);
+        if(data.NODE_PORT_API) {
             validate.positiveInteger('rpc port', data.NODE_PORT_API, error_list);
         }
-        validate.required('max connections in', data.NODE_CONNECTION_INBOUND_MAX, error_list, valid);
-        if(valid.isValid) {
+        data.NODE_CONNECTION_INBOUND_MAX = validate.required('max connections in', data.NODE_CONNECTION_INBOUND_MAX, error_list);
+        if(data.NODE_CONNECTION_INBOUND_MAX) {
             validate.positiveInteger('max connections in', data.NODE_CONNECTION_INBOUND_MAX, error_list);
         }
-        validate.required('min connections in', data.NODE_CONNECTION_OUTBOUND_MAX, error_list, valid);
-        if(valid.isValid) {
+        data.NODE_CONNECTION_OUTBOUND_MAX = validate.required('min connections in', data.NODE_CONNECTION_OUTBOUND_MAX, error_list);
+        if(data.NODE_CONNECTION_OUTBOUND_MAX) {
             validate.positiveInteger('min connections in', data.NODE_CONNECTION_OUTBOUND_MAX, error_list);
         }
-        validate.required('bind address', data.NODE_HOST, error_list, valid);
-        if(valid.isValid) {
+        validate.required('bind address', data.NODE_HOST, error_list);
+        if(data.NODE_HOST) {
             validate.ipAddress('bind address', data.NODE_HOST, error_list);
         }
 

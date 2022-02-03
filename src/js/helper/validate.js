@@ -1,7 +1,6 @@
 import * as format from './format';
 
-export function required(field_name, value, error_list, valid = {}) {
-    valid.isValid = true
+export function required(field_name, value, error_list) {
     if(typeof value === "string"){
         value = value.trim();
     }
@@ -10,7 +9,6 @@ export function required(field_name, value, error_list, valid = {}) {
             name   : get_error_name('required', field_name),
             message: `${field_name} is required`
         });
-        valid.isValid = false;
     }
 
     return value;
@@ -118,6 +116,17 @@ export function handleAmountInputChange(e) {
 
     amount         = parseInt(amount);
     e.target.value = !isNaN(amount) ? format.millix(amount, false) : 0;
+    console.log(e.target.value)
 
     e.target.setSelectionRange(cursorStart + offset, cursorEnd + offset);
+}
+
+export function handleAmountInputChangeValue(inputAmount) {
+    if (inputAmount === 0 || inputAmount === undefined) {
+        return;
+    }
+    inputAmount = inputAmount.toString();
+    let amount      = inputAmount.replace(/[,.]/g, '');
+    amount         = parseInt(amount);
+    return !isNaN(amount) ? format.millix(amount, false) : 0;
 }
