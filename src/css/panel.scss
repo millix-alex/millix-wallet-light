@@ -6,7 +6,8 @@ $panel-spacing: 1rem;
 }
 
 .panel.panel-filled {
-  background-color: #3b3d45;
+  background-color: $panel-color-bg;
+  border: $border-width solid $border-color;
 }
 
 .panel > .panel-heading {
