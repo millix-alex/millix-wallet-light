@@ -55,9 +55,7 @@ import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 
 import './vendor/luna/custom_form_element.css';
-import './vendor/luna/datatable.css';
 import './vendor/luna/datepicker.css';
-import './vendor/luna/universal_admin.css';
 
 import '../node_modules/@trendmicro/react-sidenav/dist/react-sidenav.css';
 import '../node_modules/@fortawesome/fontawesome-svg-core/styles.css';
