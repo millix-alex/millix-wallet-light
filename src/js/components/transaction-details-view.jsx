@@ -8,17 +8,12 @@ import config from '../../config';
 import DatatableView from './utils/datatable-view';
 import * as format from '../helper/format';
 import HelpIconView from './utils/help-icon-view';
-import API from '../api';
-import ModalView from './utils/modal-view';
+import ResetTransactionValidationView from './utils/reset-transaction-validation-view';
+
 
 class TransactionDetailsView extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            promptModalShow   : false,
-            confirmModalShow  : false,
-            resetTransactionID: ''
-        };
     }
 
     componentDidMount() {
@@ -40,8 +35,7 @@ class TransactionDetailsView extends Component {
             return '';
         }
 
-        return <Link to={'/transaction/' +
-                         encodeURIComponent(input.output_transaction_id)}>
+        return <Link to={'/transaction/' + encodeURIComponent(input.output_transaction_id)}>
             <Button
                 variant="outline-default"
                 className={'btn-xs icon_only ms-auto'}>
@@ -50,28 +44,6 @@ class TransactionDetailsView extends Component {
                     size="1x"/>
             </Button>
         </Link>;
-    }
-
-    revalidateTransaction(props, transactionID) {
-        API.resetTransactionValidationByGUID(transactionID).then(response => {
-            if (typeof response.api_status === 'string') {
-                props.toggleConfirmModal(true, transactionID);
-            }
-        });
-    }
-
-    togglePromptModal(status = true, transactionID) {
-        this.setState({
-            promptModalShow   : status,
-            resetTransactionID: transactionID
-        });
-    }
-
-    toggleConfirmModal(status = true, transactionID) {
-        this.setState({
-            confirmModalShow  : status,
-            resetTransactionID: transactionID
-        });
     }
 
     render() {
@@ -116,33 +88,9 @@ class TransactionDetailsView extends Component {
             stable_value += ` (${format.date(transaction.stable_date)})`;
         }
 
-        let that = this;
-
         return (
             <>
-                <ModalView
-                    show={this.state.promptModalShow}
-                    size={'lg'}
-                    heading={'are you sure?'}
-                    on_close={() => this.togglePromptModal(false)}
-                    on_accept={() => this.revalidateTransaction(that, this.state.resetTransactionID)}
-                    body={
-                        <div>transaction {this.state.resetTransactionID} will be reset and re-validated</div>
-                    }
-                />
-                <ModalView
-                    show={this.state.confirmModalShow}
-                    size={'lg'}
-                    heading={'transaction validation reset'}
-                    body={<div>
-                        <div>validation has been reset for
-                            transaction {this.state.resetTransactionID}.
-                            click <Link
-                                to={'/unspent-transaction-output-list/pending'}>here</Link> to
-                            see all your pending transactions
-                        </div>
-                    </div>}
-                />
+                <ResetTransactionValidationView onRef={instance => this.resetTransactionValidationRef = instance}/>
                 <Col md="12">
                     <div className={'panel panel-filled'}>
                         <div className={'panel-heading bordered'}>
@@ -150,7 +98,21 @@ class TransactionDetailsView extends Component {
                         </div>
                         <div className={'panel-body'}>
                             <div className={'section_subtitle'}>
+                                <span>
                                 transaction
+                                </span>
+                                <Button
+                                    className={'ms-auto'}
+                                    variant="outline-primary"
+                                    size={'sm'}
+                                    onClick={() => this.resetTransactionValidationRef.toggleConfirmationModal(transaction.transaction_id)}
+                                    title={'reset validation'}
+                                >
+                                    <FontAwesomeIcon
+                                        icon="rotate-left"
+                                        size="1x"/>
+                                    reset validation
+                                </Button>
                             </div>
                             <Table striped bordered hover>
                                 <tbody>
@@ -222,23 +184,6 @@ class TransactionDetailsView extends Component {
                                 </tr>
                                 </tbody>
                             </Table>
-                            <div className={'mb-3'}>
-                                <Row>
-                                    <Col>
-                                        <Button
-                                            variant="outline-primary"
-                                            onClick={() => this.togglePromptModal(true, transaction.transaction_id)}
-                                            title={'reset validation'}
-                                        >
-                                            <FontAwesomeIcon
-                                                icon={'sync'}
-                                                size="1x"/>
-                                            reset validation
-                                        </Button>
-                                    </Col>
-                                </Row>
-                            </div>
-
 
                             <div className={'mb-3'}>
                                 <div className={'section_subtitle'}>
@@ -325,11 +270,9 @@ class TransactionDetailsView extends Component {
 }
 
 
-export default connect(
-    state => ({
-        transaction: state.transactionDetails
-    }),
-    {
-        clearTransactionDetails,
-        updateTransactionDetails
-    })(withRouter(TransactionDetailsView));
+export default connect(state => ({
+    transaction: state.transactionDetails
+}), {
+    clearTransactionDetails,
+    updateTransactionDetails
+})(withRouter(TransactionDetailsView));

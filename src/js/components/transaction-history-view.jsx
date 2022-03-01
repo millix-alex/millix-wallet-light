@@ -6,7 +6,8 @@ import DatatableView from './utils/datatable-view';
 import DatatableActionButtonView from './utils/datatable-action-button-view';
 import * as format from '../helper/format';
 import API from '../api';
-import DatatableHeaderView from './utils/datatable-header-view';
+import * as text from '../helper/text';
+import ResetTransactionValidationView from './utils/reset-transaction-validation-view';
 
 
 class TransactionHistoryView extends Component {
@@ -16,7 +17,7 @@ class TransactionHistoryView extends Component {
         this.state                           = {
             transaction_list          : [],
             datatable_reload_timestamp: '',
-            datatable_loading         : false,
+            datatable_loading         : false
         };
     }
 
@@ -42,10 +43,17 @@ class TransactionHistoryView extends Component {
                 txid       : transaction.transaction_id,
                 stable_date: format.date(transaction.stable_date),
                 parent_date: format.date(transaction.parent_date),
-                action: <><DatatableActionButtonView
-                    history_path={'/transaction/' + encodeURIComponent(transaction.transaction_id)}
-                    history_state={[transaction]}
-                    icon={'eye'}/>
+                action     : <>
+                    <DatatableActionButtonView
+                        history_path={'/transaction/' + encodeURIComponent(transaction.transaction_id)}
+                        history_state={[transaction]}
+                        icon={'eye'}/>
+                    <DatatableActionButtonView
+                        icon={'rotate-left'}
+                        title={'reset validation'}
+                        callback={() => this.resetTransactionValidationRef.toggleConfirmationModal(transaction.transaction_id)}
+                        callback_args={transaction.transaction_id}
+                    />
                 </>
             }));
 
@@ -58,8 +66,15 @@ class TransactionHistoryView extends Component {
     }
 
     render() {
+        const confirmation_modal_body_single = <>
+            <div>continuing will force your node to revalidate transaction</div>
+            <div>{this.state.reset_transaction_id}</div>
+            {text.get_confirmation_modal_question()}
+        </>;
+
         return (
             <div>
+                <ResetTransactionValidationView onRef={instance => this.resetTransactionValidationRef = instance}/>
                 <div className={'panel panel-filled'}>
                     <div className={'panel-heading bordered'}>transactions</div>
                     <div className={'panel-body'}>

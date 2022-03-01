@@ -436,17 +436,17 @@ class API {
         }
     }
 
-    resetTransactionValidationByGUID(transactionID = null) {
+    resetTransactionValidationByID(transaction_id = null) {
         let payload = [];
-        if (typeof transactionID === 'object') {
-            transactionID.forEach((item, idx) => {
+        if (typeof transaction_id === 'object') {
+            transaction_id.forEach((item, idx) => {
                 if (typeof item.transaction_id !== 'undefined') {
                     payload.push(item.transaction_id);
                 }
             });
         }
         else {
-            payload.push(transactionID);
+            payload.push(transaction_id);
         }
 
         try {
