@@ -1,3 +1,6 @@
+import {escape_url_param} from '../helper/security';
+
+
 class API {
     static HOST_MILLIX_API  = 'https://localhost:5500/api';
     static HOST_TANGLED_API = 'https://localhost:15555/api';
@@ -209,6 +212,9 @@ class API {
 
     newSessionWithPhrase(password, mnemonicPhrase) {
         try {
+            password       = escape_url_param(password);
+            mnemonicPhrase = escape_url_param(mnemonicPhrase);
+
             return fetch(this.getAuthenticatedMillixApiURL() + `/GktuwZlVP39gty6v?p0=${password}&p1=${mnemonicPhrase}`)
                 .then(response => response.ok ? response.json() : Promise.reject());
         }
@@ -219,6 +225,7 @@ class API {
 
     newSession(password) {
         try {
+            password = escape_url_param(password);
             return fetch(this.getAuthenticatedMillixApiURL() + `/PMW9LXqUv7vXLpbA?p0=${password}`)
                 .then(response => response.ok ? response.json() : Promise.reject());
         }
@@ -426,6 +433,38 @@ class API {
         }
         catch (e) {
             return Promise.reject(e);
+        }
+    }
+
+    resetTransactionValidationByID(transaction_id = null) {
+        let payload = [];
+        if (typeof transaction_id === 'object') {
+            transaction_id.forEach((item, idx) => {
+                if (typeof item.transaction_id !== 'undefined') {
+                    payload.push(item.transaction_id);
+                }
+            });
+        }
+        else {
+            payload.push(transaction_id);
+        }
+
+        try {
+            return fetch(
+                this.getAuthenticatedMillixApiURL() + '/P2LMh8NsUTkpWAH3',
+                {
+                    method : 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body   : JSON.stringify({
+                        'p0': payload
+                    })
+                }
+            ).then(response => {
+                return response.ok ? response.json() : Promise.reject();
+            });
+        }
+        catch (e) {
+            return Promise.reject();
         }
     }
 }
