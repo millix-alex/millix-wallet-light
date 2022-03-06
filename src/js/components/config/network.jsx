@@ -2,22 +2,24 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 import {Button, Col, Form, Row} from 'react-bootstrap';
-import {addWalletAddressVersion, removeWalletAddressVersion, walletUpdateConfig} from '../redux/actions/index';
-import API from '../api/index';
-import ErrorList from './utils/error-list-view';
-import ModalView from './utils/modal-view';
-import * as validate from '../helper/validate';
+import {addWalletAddressVersion, removeWalletAddressVersion, walletUpdateConfig} from '../../redux/actions';
+import API from '../../api';
+import ErrorList from '../utils/error-list-view';
+import ModalView from '../utils/modal-view';
+import * as validate from '../../helper/validate';
 
-class ConfigNetwork extends Component {
+
+class Network extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            node_public_ip     : '',
-            sending            : false,
-            network_config_data: {},
-            error_list         : {},
-            modalShowSendResult: false,
-            reload             : false
+            node_public_ip       : '',
+            sending              : false,
+            network_config_data  : {},
+            error_list           : {},
+            modalShowSendResult  : false,
+            reload               : false,
+            prepared_network_data: {}
         };
     }
 
@@ -82,7 +84,7 @@ class ConfigNetwork extends Component {
         }
 
         try {
-            this.props.walletUpdateConfig(this.state.network_config_data).then(() => {
+            this.props.walletUpdateConfig(this.state.prepared_network_data).then(() => {
                 this.setState({
                     sending: false
                 });
@@ -102,43 +104,44 @@ class ConfigNetwork extends Component {
     }
 
     isValidNetworkData() {
-        let data       = this.state.network_config_data;
+        this.state.prepared_network_data     = {...this.state.network_config_data};
         let error_list = [];
 
         try {
-            data.NODE_INITIAL_LIST = JSON.parse(data.NODE_INITIAL_LIST.split(','))
-        } catch (e) {
+            this.state.prepared_network_data.NODE_INITIAL_LIST = JSON.parse(this.state.prepared_network_data.NODE_INITIAL_LIST.split(','));
+        }
+        catch (e) {
             error_list.push({
                 name   : 'validationError',
                 message: 'nodes should contain valid json'
             });
         }
-        data.NODE_PORT = validate.required('node port', data.NODE_PORT, error_list);
-        if(data.NODE_PORT){
-            validate.positiveInteger('node port', data.NODE_PORT, error_list);
+        this.state.prepared_network_data.NODE_PORT = validate.required('node port', this.state.prepared_network_data.NODE_PORT, error_list);
+        if (this.state.prepared_network_data.NODE_PORT) {
+            validate.positiveInteger('node port', this.state.prepared_network_data.NODE_PORT, error_list);
         }
-        data.NODE_PORT_API = validate.required('rpc port', data.NODE_PORT_API, error_list);
-        if(data.NODE_PORT_API) {
-            validate.positiveInteger('rpc port', data.NODE_PORT_API, error_list);
+        this.state.prepared_network_data.NODE_PORT_API = validate.required('rpc port', this.state.prepared_network_data.NODE_PORT_API, error_list);
+        if (this.state.prepared_network_data.NODE_PORT_API) {
+            validate.positiveInteger('rpc port', this.state.prepared_network_data.NODE_PORT_API, error_list);
         }
-        data.NODE_CONNECTION_INBOUND_MAX = validate.required('max connections in', data.NODE_CONNECTION_INBOUND_MAX, error_list);
-        if(data.NODE_CONNECTION_INBOUND_MAX) {
-            validate.positiveInteger('max connections in', data.NODE_CONNECTION_INBOUND_MAX, error_list);
+        this.state.prepared_network_data.NODE_CONNECTION_INBOUND_MAX = validate.required('max connections in', this.state.prepared_network_data.NODE_CONNECTION_INBOUND_MAX, error_list);
+        if (this.state.prepared_network_data.NODE_CONNECTION_INBOUND_MAX) {
+            validate.positiveInteger('max connections in', this.state.prepared_network_data.NODE_CONNECTION_INBOUND_MAX, error_list);
         }
-        data.NODE_CONNECTION_OUTBOUND_MAX = validate.required('min connections in', data.NODE_CONNECTION_OUTBOUND_MAX, error_list);
-        if(data.NODE_CONNECTION_OUTBOUND_MAX) {
-            validate.positiveInteger('min connections in', data.NODE_CONNECTION_OUTBOUND_MAX, error_list);
+        this.state.prepared_network_data.NODE_CONNECTION_OUTBOUND_MAX = validate.required('min connections in', this.state.prepared_network_data.NODE_CONNECTION_OUTBOUND_MAX, error_list);
+        if (this.state.prepared_network_data.NODE_CONNECTION_OUTBOUND_MAX) {
+            validate.positiveInteger('min connections in', this.state.prepared_network_data.NODE_CONNECTION_OUTBOUND_MAX, error_list);
         }
-        validate.required('bind address', data.NODE_HOST, error_list);
-        if(data.NODE_HOST) {
-            validate.ipAddress('bind address', data.NODE_HOST, error_list);
+        validate.required('bind address', this.state.prepared_network_data.NODE_HOST, error_list);
+        if (this.state.prepared_network_data.NODE_HOST) {
+            validate.ipAddress('bind address', this.state.prepared_network_data.NODE_HOST, error_list);
         }
 
 
         if (error_list.length > 0) {
             this.setState({
                 error_list: error_list,
-                sending: false
+                sending   : false
             });
             return false;
         }
@@ -160,7 +163,7 @@ class ConfigNetwork extends Component {
                         </div>
                     </div>
                 }/>
-            <Form>
+            <div>
                 <div className={'panel panel-filled'}>
                     <div className={'panel-heading bordered'}>network</div>
                     <div className={'panel-body'}>
@@ -281,7 +284,7 @@ class ConfigNetwork extends Component {
                         </Row>
                     </div>
                 </div>
-            </Form>
+            </div>
         </div>;
     }
 }
@@ -297,4 +300,4 @@ export default connect(
         walletUpdateConfig,
         addWalletAddressVersion,
         removeWalletAddressVersion
-    })(withRouter(ConfigNetwork));
+    })(withRouter(Network));

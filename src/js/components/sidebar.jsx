@@ -224,27 +224,27 @@ class Sidebar extends Component {
                                              size="1x"/>
                         </NavText>
                         <NavItem key={'fees'}
-                                 eventKey="/config-fees">
+                                 eventKey="/fees">
                             <NavText>
                                 fees
                             </NavText>
                         </NavItem>
-                        <NavItem key={'network'} eventKey="/config-network">
+                        <NavItem key={'network'} eventKey="/network">
                             <NavText>
                                 network
                             </NavText>
                         </NavItem>
-                        <NavItem key={'connection'} eventKey="/config-connection">
+                        <NavItem key={'connection'} eventKey="/connection">
                             <NavText>
                                 connection
                             </NavText>
                         </NavItem>
-                        <NavItem key={'consensus'} eventKey="/config-consensus">
+                        <NavItem key={'consensus'} eventKey="/consensus">
                             <NavText>
                                 consensus
                             </NavText>
                         </NavItem>
-                        <NavItem key={'address-version'} eventKey="/config-address-version">
+                        <NavItem key={'address-version'} eventKey="/address-version">
                             <NavText>
                                 address version
                             </NavText>

@@ -2,13 +2,13 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 import {Button, Col, Form} from 'react-bootstrap';
-import {addWalletAddressVersion, removeWalletAddressVersion, walletUpdateConfig} from '../redux/actions/index';
+import {addWalletAddressVersion, removeWalletAddressVersion, walletUpdateConfig} from '../../redux/actions';
 import _ from 'lodash';
-import * as validate from '../helper/validate';
-import ModalView from './utils/modal-view';
-import ErrorList from './utils/error-list-view';
+import * as validate from '../../helper/validate';
+import ModalView from '../utils/modal-view';
+import ErrorList from '../utils/error-list-view';
 
-class ConfigFees extends Component {
+class Fees extends Component {
 
     constructor(props) {
         super(props);
@@ -197,4 +197,4 @@ export default connect(
         walletUpdateConfig,
         addWalletAddressVersion,
         removeWalletAddressVersion
-    })(withRouter(ConfigFees));
+    })(withRouter(Fees));

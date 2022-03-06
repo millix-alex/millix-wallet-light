@@ -2,12 +2,12 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 import {Button, Col, Form, Row} from 'react-bootstrap';
-import {addWalletAddressVersion, removeWalletAddressVersion, walletUpdateConfig} from '../redux/actions/index';
+import {addWalletAddressVersion, removeWalletAddressVersion, walletUpdateConfig} from '../../redux/actions';
 import _ from 'lodash';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import DatatableView from './utils/datatable-view';
+import DatatableView from '../utils/datatable-view';
 
-class ConfigAddressVersion extends Component {
+class AddressVersion extends Component {
 
     constructor(props) {
         super(props);
@@ -198,4 +198,4 @@ export default connect(
         walletUpdateConfig,
         addWalletAddressVersion,
         removeWalletAddressVersion
-    })(withRouter(ConfigAddressVersion));
+    })(withRouter(AddressVersion));

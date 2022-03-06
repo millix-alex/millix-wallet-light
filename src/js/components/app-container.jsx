@@ -23,11 +23,11 @@ import StatsView from './stats-view';
 import ReportIssueView from './report-issue-view';
 import FaqView from './faq-view';
 import AddressListView from './address-list-view';
-import ConfigFees from './config-fees';
-import ConfigNetwork from './config-network';
-import ConfigConnection from './config-connection';
-import ConfigConsensus from './config-consensus';
-import ConfigAddressVersion from './config-address-version';
+import ConfigFees from './config/fees';
+import ConfigNetwork from './config/network';
+import ConfigConnection from './config/connection';
+import ConfigConsensus from './config/consensus';
+import ConfigAddressVersion from './config/address-version';
 
 
 class AppContainer extends Component {
@@ -63,15 +63,15 @@ class AppContainer extends Component {
                                                  component={PeerListView}/>
                     <UnlockedWalletRequiredRoute path="/peer/:peer"
                                                  component={PeerInfoView}/>
-                    <UnlockedWalletRequiredRoute path="/config-fees"
+                    <UnlockedWalletRequiredRoute path="/fees"
                                                  component={ConfigFees}/>
-                    <UnlockedWalletRequiredRoute path="/config-network"
+                    <UnlockedWalletRequiredRoute path="/network"
                                                  component={ConfigNetwork}/>
-                    <UnlockedWalletRequiredRoute path="/config-connection"
+                    <UnlockedWalletRequiredRoute path="/connection"
                                                  component={ConfigConnection}/>
-                    <UnlockedWalletRequiredRoute path="/config-consensus"
+                    <UnlockedWalletRequiredRoute path="/consensus"
                                                  component={ConfigConsensus}/>
-                    <UnlockedWalletRequiredRoute path="/config-address-version"
+                    <UnlockedWalletRequiredRoute path="/address-version"
                                                  component={ConfigAddressVersion}/>
                     <UnlockedWalletRequiredRoute path="/actions"
                                                  component={ActionView}/>

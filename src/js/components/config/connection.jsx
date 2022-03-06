@@ -2,24 +2,28 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 import {Button, Col, Form, Row} from 'react-bootstrap';
-import {addWalletAddressVersion, removeWalletAddressVersion, walletUpdateConfig} from '../redux/actions/index';
+import {addWalletAddressVersion, removeWalletAddressVersion, walletUpdateConfig} from '../../redux/actions';
 import _ from 'lodash';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import DatatableView from './utils/datatable-view';
-import DatatableHeaderView from './utils/datatable-header-view';
-import ModalView from './utils/modal-view';
+import DatatableView from '../utils/datatable-view';
+import ModalView from '../utils/modal-view';
 
-class ConfigConnection extends Component {
+
+class Connection extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
             node_public_ip    : '',
-            datatables        : [],
+            datatables        : {
+                connection_inbound : [],
+                connection_outbound: [],
+                connection_static  : []
+            },
             modalAddConnection:
                 {
                     status: false,
-                    body: ''
+                    body  : ''
                 }
         };
     }
@@ -28,7 +32,7 @@ class ConfigConnection extends Component {
         this.setState({
             modalAddConnection: {
                 status: value,
-                body: callback()
+                body  : callback()
             }
         });
         if (value === false) {
@@ -74,7 +78,7 @@ class ConfigConnection extends Component {
     setConfigToState() {
         this.setState({
             datatables: {
-                connection_inbound: this.props.config.NODE_CONNECTION_INBOUND_WHITELIST.map((input) => ({
+                connection_inbound : this.props.config.NODE_CONNECTION_INBOUND_WHITELIST.map((input) => ({
                     node_id: input,
                     action : this.getConnectionDeleteButton(input, 'NODE_CONNECTION_INBOUND_WHITELIST')
                 })),
@@ -82,15 +86,15 @@ class ConfigConnection extends Component {
                     node_id: input,
                     action : this.getConnectionDeleteButton(input, 'NODE_CONNECTION_OUTBOUND_WHITELIST')
                 })),
-                connection_static: this.props.config.NODE_CONNECTION_STATIC.map((input) => ({
+                connection_static  : this.props.config.NODE_CONNECTION_STATIC.map((input) => ({
                     node_id: input,
                     action : this.getConnectionDeleteButton(input, 'NODE_CONNECTION_STATIC')
-                })),
+                }))
             }
-        })
+        });
     }
 
-    getInboundConnectionModal(){
+    getInboundConnectionModal() {
         return <Form>
             <Form.Control
                 type="text"
@@ -133,46 +137,44 @@ class ConfigConnection extends Component {
                         <Col>
                             <Form.Group className="form-group">
                                 {/*<Row>
-                                    <Col sm="10"
-                                         md="11">
-                                        <Form.Control
-                                            type="text"
-                                            placeholder="node id"
-                                            ref={(c) => this._connection_whitelist_inbound_node = c}
-                                            onChange={() => {
-                                                this.setState({connection_whitelist_inbound_node: this._connection_whitelist_inbound_node.value});
-                                            }}
-                                            value={this.state.connection_whitelist_inbound_node}/>
-                                    </Col>
-                                    <Col sm="2"
-                                         md="1">
-                                        <Button
-                                            variant="outline-primary"
-                                            size={'sm'}
-                                            onClick={() => this.addToConfigList('NODE_CONNECTION_INBOUND_WHITELIST', 'connection_whitelist_inbound_node')}>
-                                            <FontAwesomeIcon
-                                                icon="plus"
-                                                size="1x"/>
-                                        </Button>
-                                    </Col>
-                                </Row>*/}
+                                 <Col sm="10"
+                                 md="11">
+                                 <Form.Control
+                                 type="text"
+                                 placeholder="node id"
+                                 ref={(c) => this._connection_whitelist_inbound_node = c}
+                                 onChange={() => {
+                                 this.setState({connection_whitelist_inbound_node: this._connection_whitelist_inbound_node.value});
+                                 }}
+                                 value={this.state.connection_whitelist_inbound_node}/>
+                                 </Col>
+                                 <Col sm="2"
+                                 md="1">
+                                 <Button
+                                 variant="outline-primary"
+                                 size={'sm'}
+                                 onClick={() => this.addToConfigList('NODE_CONNECTION_INBOUND_WHITELIST', 'connection_whitelist_inbound_node')}>
+                                 <FontAwesomeIcon
+                                 icon="plus"
+                                 size="1x"/>
+                                 </Button>
+                                 </Col>
+                                 </Row>*/}
                             </Form.Group>
                         </Col>
                         <Col>
-                            <DatatableHeaderView
+                            <DatatableView
                                 reload_datatable={() => this.reloadDatatable()}
                                 datatable_reload_timestamp={this.state.datatable_reload_timestamp}
                                 action_button_label={'add inbound connection'}
-                                action_button_on_click={() => this.changeModalAddConnection(true, this.getInboundConnectionModal)}
-                            />
-                            <DatatableView
+                                action_button_on_click={() => this.addToConfigList('NODE_CONNECTION_INBOUND_WHITELIST', 'connection_whitelist_inbound_node')}
                                 value={this.state.datatables.connection_inbound}
                                 sortOrder={1}
                                 showActionColumn={true}
                                 resultColumn={[
                                     {
                                         field: 'node_id'
-                                    },
+                                    }
                                 ]}/>
                         </Col>
                     </div>
@@ -185,69 +187,20 @@ class ConfigConnection extends Component {
                     </div>
                     <div className={'panel-body'}>
                         <Col>
-                            <Form.Group className="form-group">
-                                <label>add
-                                    outbound
-                                    connection
-                                </label>
-                                <Row>
-                                    <Col sm="10"
-                                         md="11">
-                                        <Form.Control
-                                            type="text"
-                                            placeholder="node id"
-                                            ref={(c) => this._connection_whitelist_outbound_node = c}
-                                            onChange={() => {
-                                                this.setState({connection_whitelist_outbound_node: this._connection_whitelist_outbound_node.value});
-                                            }}
-                                            value={this.state.connection_whitelist_outbound_node}/>
-                                    </Col>
-                                    <Col sm="2"
-                                         md="1">
-                                        <Button
-                                            variant="outline-primary"
-                                            size={'sm'}
-                                            onClick={() => this.addToConfigList('NODE_CONNECTION_OUTBOUND_WHITELIST', 'connection_whitelist_outbound_node')}>
-                                            <FontAwesomeIcon
-                                                icon="plus"
-                                                size="1x"/>
-                                        </Button>
-                                    </Col>
-                                </Row>{/*<Row>
-                                    <Col sm="10"
-                                         md="11">
-                                        <Form.Control
-                                            type="text"
-                                            placeholder="node id"
-                                            ref={(c) => this._connection_whitelist_inbound_node = c}
-                                            onChange={() => {
-                                                this.setState({connection_whitelist_inbound_node: this._connection_whitelist_inbound_node.value});
-                                            }}
-                                            value={this.state.connection_whitelist_inbound_node}/>
-                                    </Col>
-                                    <Col sm="2"
-                                         md="1">
-                                        <Button
-                                            variant="outline-primary"
-                                            size={'sm'}
-                                            onClick={() => this.addToConfigList('NODE_CONNECTION_INBOUND_WHITELIST', 'connection_whitelist_inbound_node')}>
-                                            <FontAwesomeIcon
-                                                icon="plus"
-                                                size="1x"/>
-                                        </Button>
-                                    </Col>
-                                </Row>*/}
-                            </Form.Group>
-                        </Col>
-                        <Col>
                             <DatatableView
+                                reload_datatable={() => this.reloadDatatable()}
+                                datatable_reload_timestamp={this.state.datatable_reload_timestamp}
+                                action_button={{
+                                    label   : 'add outbound connection',
+                                    on_click: () => this.generateAddress()
+                                }}
                                 value={this.state.datatables.connection_outbound}
                                 sortOrder={1}
                                 showActionColumn={true}
                                 resultColumn={[
                                     {
                                         field: 'node_id'
-                                    },
+                                    }
                                 ]}/>
                         </Col>
                     </div>
@@ -258,7 +211,7 @@ class ConfigConnection extends Component {
                         connection
                     </div>
                     <div className={'panel-body'}>
-                        <Col>
+                        {/*<Col>
                             <Form.Group className="form-group">
                                 <label>add
                                     static
@@ -289,16 +242,22 @@ class ConfigConnection extends Component {
                                     </Col>
                                 </Row>
                             </Form.Group>
-                        </Col>
+                        </Col>*/}
                         <Col>
                             <DatatableView
+                                reload_datatable={() => this.reloadDatatable()}
+                                datatable_reload_timestamp={this.state.datatable_reload_timestamp}
+                                action_button={{
+                                    label   : 'add static connection',
+                                    on_click: () => ''/*this.generateAddress()*/
+                                }}
                                 value={this.state.datatables.connection_static}
                                 sortOrder={1}
                                 showActionColumn={true}
                                 resultColumn={[
                                     {
                                         field: 'node_id'
-                                    },
+                                    }
                                 ]}/>
                         </Col>
                     </div>
@@ -320,4 +279,4 @@ export default connect(
         walletUpdateConfig,
         addWalletAddressVersion,
         removeWalletAddressVersion
-    })(withRouter(ConfigConnection));
+    })(withRouter(Connection));
