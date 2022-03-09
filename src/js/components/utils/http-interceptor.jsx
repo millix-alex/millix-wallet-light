@@ -4,13 +4,15 @@ import {Button, Modal} from 'react-bootstrap';
 
 class HttpInteceptor extends Component {
 
+    
     constructor(props) {
         super(props);
 
         this.state = {
+            secondsBetween : 10,
             modalShow: false,
-            lastError: 0,
-            body:''
+            message: 0,
+            showTime: new Date(),
         };       
 
         this.register()
@@ -23,8 +25,6 @@ class HttpInteceptor extends Component {
             },
         
             requestError: function (error) {
-                // Called when an error occured during another 'request' interceptor call
-              
                 return Promise.reject(error);
             },
         
@@ -33,39 +33,57 @@ class HttpInteceptor extends Component {
             },
         
             responseError:  (error)=> {
-                // Handle an fetch error
-                console.log(error.message)
+
+                if(error.message.includes('Failed to fetch')){
+                    error.message = 'Failed to request the node.'
+                }            
                 
-                if(this.state.lastError !== error.message){
+                if(error.message === this.state.message){
+                    if(new Date() > this.state.showTime){                         
+                        this.setState({
+                            modalShow: true,
+                            message: error.message
+                        });
+                    }
+                }
+                else{
                     this.setState({
                         modalShow: true,
-                        lastError: error.message,
+                        message: error.message
                     });
                 }
-                //return Promise.reject(error);
             }
         });
     }
 
-    changeModalShow(value = true) {
+    show(value = true) {
         this.setState({
-            modalShow: value
+            modalShow: value        
         });
     }   
+
+    close(){
+        var timeAfter = new Date();
+        timeAfter.setSeconds(timeAfter.getSeconds() + this.state.secondsBetween);   
+        this.setState({
+            modalShow: false,
+            showTime: timeAfter
+        });
+    }
 
     render() { 
         return(              
                 <>
-                <Modal show={this.state.modalShow} onHide={() => this.changeModalShow(false)}
+                <Modal show={this.state.modalShow} onHide={() => this.show(false)}
                     size={'lg'}
                     animation={false}>
                     <Modal.Header closeButton>
                         <span
-                            className={'page_subtitle'}>{'Error occured'}</span>
+                            className={'page_subtitle'}>{'Error'}</span>
                     </Modal.Header>
-                    <Modal.Body>{this.state.lastError}</Modal.Body>
+                    <Modal.Body>{this.state.message}</Modal.Body>
                     <Modal.Footer>
-                        <Button variant="outline-default" onClick={() => this.changeModalShow(false)}>
+                        <Button variant="outline-default" onClick={() => this.close(false)}>
                             close
                         </Button>
                     </Modal.Footer>
