@@ -6,9 +6,7 @@ import {Dropdown} from 'primereact/dropdown';
 import {Ripple} from 'primereact/ripple';
 import {classNames} from 'primereact/utils';
 import * as format from '../../helper/format';
-import {Button} from 'primereact/button';
-import {MultiSelect} from 'primereact/multiselect';
-import {FilterMatchMode, FilterOperator} from 'primereact/api';
+import {FilterMatchMode} from 'primereact/api';
 import DatatableHeaderView from './datatable-header-view';
 
 
@@ -161,9 +159,13 @@ class DatatableView extends Component {
                 ];
 
                 return <div
-                    className={'paginator-dropdown-wrapper'}>show<Dropdown
+                    className={'paginator-dropdown-wrapper'}>
+                    show
+                    <Dropdown
                     value={options.value} options={dropdownOptions}
-                    onChange={options.onChange}/>records</div>;
+                    onChange={options.onChange} className={'align-middle'}/>
+                    records
+                </div>;
             }
         };
     }

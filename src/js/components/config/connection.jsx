@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
-import {Button, Col, Form, Row} from 'react-bootstrap';
+import {Button, Col, Form} from 'react-bootstrap';
 import {addWalletAddressVersion, removeWalletAddressVersion, walletUpdateConfig} from '../../redux/actions';
 import _ from 'lodash';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
@@ -14,30 +14,45 @@ class Connection extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            node_public_ip    : '',
             datatables        : {
                 connection_inbound : [],
                 connection_outbound: [],
                 connection_static  : []
             },
+            sending: false,
+            node_connection_inbound_whitelist : '',
+            node_connection_outbound_whitelist: '',
+            node_connection_static_whitelist  : '',
+            datatable_reload_timestamp: new Date(),
+            current_connections: {},
             modalAddConnection:
                 {
                     status: false,
-                    body  : ''
+                    body  : '',
+                    title : ''
                 }
         };
+        this.getInboundConnectionModal = this.getInboundConnectionModal.bind(this);
+        this.getOutboundConnectionModal = this.getOutboundConnectionModal.bind(this);
+        this.getStaticConnectionModal = this.getStaticConnectionModal.bind(this);
     }
 
-    changeModalAddConnection(value = true, callback) {
+    showModalAddConnection(callback, title) {
         this.setState({
             modalAddConnection: {
-                status: value,
-                body  : callback()
+                status: true,
+                body  : callback(),
+                title : title
             }
         });
-        if (value === false) {
-
-        }
+    }
+    hideModalAddConnection() {
+        this.setState({
+            modalAddConnection: {
+                status: false,
+                body  : ''
+            }
+        });
     }
 
     componentDidMount() {
@@ -55,15 +70,24 @@ class Connection extends Component {
         return this.props.walletUpdateConfig(data);
     }
 
-    addToConfigList(configName, stateName) {
-        let value        = this.state[stateName];
+    sendCurrentConnections() {
+        Object.entries(this.state.current_connections).forEach(([key]) => {
+            this.addToConfigList(key);
+        });
+
+        this.setState({current_connections: {}})
+        this.hideModalAddConnection();
+    }
+
+    addToConfigList(configName) {
+        let value        = this.state.current_connections[configName];
         const configList = this.props.config[configName];
         if (!value || configList.includes(value)) {
             return;
         }
         value = value.trim();
         configList.push(value);
-        this.setState({[stateName]: ''});
+        this.setState({[configName]: ''});
         this.setConfig({[configName]: configList});
         this.setConfigToState();
     }
@@ -77,6 +101,7 @@ class Connection extends Component {
 
     setConfigToState() {
         this.setState({
+            datatable_reload_timestamp: new Date(),
             datatables: {
                 connection_inbound : this.props.config.NODE_CONNECTION_INBOUND_WHITELIST.map((input) => ({
                     node_id: input,
@@ -99,11 +124,31 @@ class Connection extends Component {
             <Form.Control
                 type="text"
                 placeholder="node id"
-                ref={(c) => this._connection_whitelist_inbound_node = c}
-                onChange={() => {
-                    this.setState({connection_whitelist_inbound_node: this._connection_whitelist_inbound_node.value});
-                }}
-                value={this.state.connection_whitelist_inbound_node}/>
+                onChange={(e) => {
+                    this.setState({current_connections: {NODE_CONNECTION_INBOUND_WHITELIST: e.target.value}});
+                }}/>
+        </Form>;
+    }
+
+    getOutboundConnectionModal() {
+        return <Form>
+            <Form.Control
+                type="text"
+                placeholder="node id"
+                onChange={(e) => {
+                    this.setState({current_connections: {NODE_CONNECTION_OUTBOUND_WHITELIST: e.target.value}});
+                }}/>
+        </Form>;
+    }
+
+    getStaticConnectionModal() {
+        return <Form>
+            <Form.Control
+                type="text"
+                placeholder="node id"
+                onChange={(e) => {
+                    this.setState({current_connections: {NODE_CONNECTION_STATIC: e.target.value}});
+                }}/>
         </Form>;
     }
 
@@ -113,9 +158,7 @@ class Connection extends Component {
             variant="outline-default"
             onClick={() => this.removeFromConfigList(configName, nodeID)}
             className={'btn-xs icon_only ms-auto'}>
-            <FontAwesomeIcon
-                icon={'trash'}
-                size="1x"/>
+            <FontAwesomeIcon icon={'trash'} size="1x"/>
         </Button>;
     }
 
@@ -124,50 +167,25 @@ class Connection extends Component {
             <ModalView
                 show={this.state.modalAddConnection.status}
                 size={'lg'}
-                on_close={() => this.changeModalAddConnection(false)}
-                on_accept={() => this.sendTransaction()}
-                heading={'success'}
+                on_close={() => this.hideModalAddConnection()}
+                on_accept={() => this.sendCurrentConnections()}
+                heading={this.state.modalAddConnection.title}
                 body={this.state.modalAddConnection.body}/>
             <Form>
                 <div className={'panel panel-filled'}>
-                    <div className={'panel-heading bordered'}>inbound connection
-                        whitelist
+                    <div className={'panel-heading bordered'}>
+                        inbound connection whitelist
                     </div>
                     <div className={'panel-body'}>
                         <Col>
-                            <Form.Group className="form-group">
-                                {/*<Row>
-                                 <Col sm="10"
-                                 md="11">
-                                 <Form.Control
-                                 type="text"
-                                 placeholder="node id"
-                                 ref={(c) => this._connection_whitelist_inbound_node = c}
-                                 onChange={() => {
-                                 this.setState({connection_whitelist_inbound_node: this._connection_whitelist_inbound_node.value});
-                                 }}
-                                 value={this.state.connection_whitelist_inbound_node}/>
-                                 </Col>
-                                 <Col sm="2"
-                                 md="1">
-                                 <Button
-                                 variant="outline-primary"
-                                 size={'sm'}
-                                 onClick={() => this.addToConfigList('NODE_CONNECTION_INBOUND_WHITELIST', 'connection_whitelist_inbound_node')}>
-                                 <FontAwesomeIcon
-                                 icon="plus"
-                                 size="1x"/>
-                                 </Button>
-                                 </Col>
-                                 </Row>*/}
-                            </Form.Group>
-                        </Col>
-                        <Col>
                             <DatatableView
-                                reload_datatable={() => this.reloadDatatable()}
+                                reload_datatable={() => this.setConfigToState()}
                                 datatable_reload_timestamp={this.state.datatable_reload_timestamp}
                                 action_button_label={'add inbound connection'}
-                                action_button_on_click={() => this.addToConfigList('NODE_CONNECTION_INBOUND_WHITELIST', 'connection_whitelist_inbound_node')}
+                                action_button={{
+                                    label   : 'add inbound connection',
+                                    on_click: () => this.showModalAddConnection(this.getInboundConnectionModal, 'add inbound connection')
+                                }}
                                 value={this.state.datatables.connection_inbound}
                                 sortOrder={1}
                                 showActionColumn={true}
@@ -181,18 +199,17 @@ class Connection extends Component {
                 </div>
 
                 <div className={'panel panel-filled'}>
-                    <div className={'panel-heading bordered'}>outbound
-                        connection
-                        whitelist
+                    <div className={'panel-heading bordered'}>
+                        outbound connection whitelist
                     </div>
                     <div className={'panel-body'}>
                         <Col>
                             <DatatableView
-                                reload_datatable={() => this.reloadDatatable()}
+                                reload_datatable={() => this.setConfigToState()}
                                 datatable_reload_timestamp={this.state.datatable_reload_timestamp}
                                 action_button={{
                                     label   : 'add outbound connection',
-                                    on_click: () => this.generateAddress()
+                                    on_click: () => this.showModalAddConnection(this.getOutboundConnectionModal, 'add outbound connection')
                                 }}
                                 value={this.state.datatables.connection_outbound}
                                 sortOrder={1}
@@ -207,49 +224,17 @@ class Connection extends Component {
                 </div>
 
                 <div className={'panel panel-filled'}>
-                    <div className={'panel-heading bordered'}>static
-                        connection
+                    <div className={'panel-heading bordered'}>
+                        static connection
                     </div>
                     <div className={'panel-body'}>
-                        {/*<Col>
-                            <Form.Group className="form-group">
-                                <label>add
-                                    static
-                                    connection
-                                </label>
-                                <Row>
-                                    <Col sm="10"
-                                         md="11">
-                                        <Form.Control
-                                            type="text"
-                                            placeholder="node id"
-                                            ref={(c) => this._connection_static_node = c}
-                                            onChange={() => {
-                                                this.setState({connection_static_node: this._connection_static_node.value});
-                                            }}
-                                            value={this.state.connection_static_node}/>
-                                    </Col>
-                                    <Col sm="2"
-                                         md="1">
-                                        <Button
-                                            variant="outline-primary"
-                                            size={'sm'}
-                                            onClick={() => this.addToConfigList('NODE_CONNECTION_STATIC', 'connection_static_node')}>
-                                            <FontAwesomeIcon
-                                                icon="plus"
-                                                size="1x"/>
-                                        </Button>
-                                    </Col>
-                                </Row>
-                            </Form.Group>
-                        </Col>*/}
                         <Col>
                             <DatatableView
-                                reload_datatable={() => this.reloadDatatable()}
+                                reload_datatable={() => this.setConfigToState()}
                                 datatable_reload_timestamp={this.state.datatable_reload_timestamp}
                                 action_button={{
                                     label   : 'add static connection',
-                                    on_click: () => ''/*this.generateAddress()*/
+                                    on_click: () => this.showModalAddConnection(this.getStaticConnectionModal, 'add static connection')
                                 }}
                                 value={this.state.datatables.connection_static}
                                 sortOrder={1}
@@ -262,7 +247,6 @@ class Connection extends Component {
                         </Col>
                     </div>
                 </div>
-
             </Form>
         </div>;
     }
