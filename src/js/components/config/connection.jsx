@@ -46,6 +46,7 @@ class Connection extends Component {
             }
         });
     }
+
     hideModalAddConnection() {
         this.setState({
             modalAddConnection: {
