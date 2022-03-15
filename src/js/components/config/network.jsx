@@ -107,15 +107,7 @@ class Network extends Component {
         this.state.prepared_network_data     = {...this.state.network_config_data};
         let error_list = [];
 
-        try {
-            this.state.prepared_network_data.NODE_INITIAL_LIST = JSON.parse(this.state.prepared_network_data.NODE_INITIAL_LIST.split(','));
-        }
-        catch (e) {
-            error_list.push({
-                name   : 'validationError',
-                message: 'nodes should contain valid json'
-            });
-        }
+        this.state.prepared_network_data.NODE_INITIAL_LIST = validate.json('nodes', this.state.prepared_network_data.NODE_INITIAL_LIST.split(','), error_list);
         this.state.prepared_network_data.NODE_PORT = validate.required('node port', this.state.prepared_network_data.NODE_PORT, error_list);
         if (this.state.prepared_network_data.NODE_PORT) {
             validate.positiveInteger('node port', this.state.prepared_network_data.NODE_PORT, error_list);

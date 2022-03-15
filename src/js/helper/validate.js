@@ -18,13 +18,7 @@ export function amount(field_name, value, error_list, allow_zero = false) {
     let value_escaped = value.trim();
     value_escaped     = parseInt(value_escaped.replace(/\D/g, ''));
 
-    if (!Number.isInteger(value_escaped)) {
-        error_list.push({
-            name   : get_error_name('amount_is_not_integer', field_name),
-            message: `${field_name} must be a number`
-        });
-    }
-    else if (!allow_zero && value_escaped <= 0) {
+    if (!allow_zero && value_escaped <= 0) {
         error_list.push({
             name   : get_error_name('amount_is_lt_zero', field_name),
             message: `${field_name} must be bigger than 0`
@@ -46,6 +40,21 @@ export function amount(field_name, value, error_list, allow_zero = false) {
 
     return value_escaped;
 }
+
+export function integer(field_name, value, error_list) {
+    let value_escaped = value.trim();
+    value_escaped     = parseInt(value_escaped.replace(/\D/g, ''));
+
+    if (!Number.isInteger(value_escaped)) {
+        error_list.push({
+            name   : get_error_name('amount_is_not_integer', field_name),
+            message: `${field_name} must be a number`
+        });
+    }
+
+    return value_escaped;
+}
+
 export function positiveInteger(field_name, value, error_list, allow_zero = false) {
     let value_escaped;
     if (typeof value === 'string') {
@@ -94,6 +103,22 @@ export function ipAddress(field_name, value, error_list) {
             return false;
         }
     });
+}
+
+export function json(field_name, value, error_list) {
+    let validJson = false;
+    try {
+        validJson = JSON.parse(value);
+    }
+    catch (e) {
+        error_list.push({
+            name   : 'validationError',
+            message: `${field_name} nodes should contain valid json`
+        });
+
+        return value;
+    }
+    return validJson;
 }
 
 
