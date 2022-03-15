@@ -116,11 +116,7 @@ class AddressVersion extends Component {
         return <div>
             <Col>
                 <Form.Group className="form-group">
-                    <label
-                        className="label-btn">default
-                        address</label>
-                    <div
-                        className="btn-group btn-full-width">
+                    <label>default address</label>
                         <Form.Control
                             as="select"
                             value={this.state.address_is_default ? 'yes' : 'no'}
@@ -137,7 +133,6 @@ class AddressVersion extends Component {
                                 >{type}</option>
                             )}
                         </Form.Control>
-                    </div>
                 </Form.Group>
             </Col>
 
@@ -221,7 +216,7 @@ class AddressVersion extends Component {
                                 action_button_label={'add address version'}
                                 action_button={{
                                     label   : 'add address version',
-                                    on_click: () => this.showModalAddAddressVersion(this.getAddressVersionModal, 'add address version')
+                                    on_click: () => this.showModalAddAddressVersion(this.getAddressVersionModal, 'address version')
                                 }}
                                 value={this.state.datatables.address_version_list}
                                 sortOrder={1}
