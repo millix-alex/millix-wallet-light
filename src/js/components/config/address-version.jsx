@@ -117,7 +117,8 @@ class AddressVersion extends Component {
             <Col>
                 <Form.Group className="form-group">
                     <label>default address</label>
-                        <Form.Control
+                        <Form.Select
+                            className={'paginator-dropdown-wrapper'}
                             as="select"
                             value={this.state.address_is_default ? 'yes' : 'no'}
                             onChange={(e) => {
@@ -132,7 +133,7 @@ class AddressVersion extends Component {
                                     key={type}
                                 >{type}</option>
                             )}
-                        </Form.Control>
+                        </Form.Select>
                 </Form.Group>
             </Col>
 
