@@ -73,6 +73,7 @@ function rootReducer(state = initialState, action) {
         });
     }
     else if (action.type === LOCK_WALLET) {
+        state = initialState;
         return Object.assign({}, state, {
             wallet: {
                 ...state.wallet,
