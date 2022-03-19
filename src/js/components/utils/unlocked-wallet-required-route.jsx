@@ -19,30 +19,39 @@ const UnlockedWalletRequiredRoute = ({
             return;
         }
         let timeoutID;
-        const getNodeStat = () => {
-            timeoutID = setTimeout(() => API.getNodeStat()
-                                            .then(data => {
-                                                rest.walletUpdateBalance({
-                                                    balance_stable                   : data.balance.stable,
-                                                    balance_pending                  : data.balance.unstable,
-                                                    transaction_wallet_unstable_count: data.transaction.transaction_wallet_unstable_count || 0,
-                                                    transaction_count                : data.transaction.transaction_count || 0
-                                                });
-                                                rest.setBackLogSize(data.log.backlog_count);
-                                                rest.setLogSize(data.log.log_count);
-                                                rest.updateNetworkState({
-                                                    ...data.network,
-                                                    connections: data.network.peer_count
-                                                });
-                                                getNodeStat();
-                                            })
-                                            .catch(() => {
-                                                getNodeStat();
-                                            })
-                , 1000);
+        let UnlockedWalletRequiredRouteIsShowing = true; //necesary to prevent execute the function if you logout befpre getNodeStat response
+        const getNodeStat = () => {       
+
+            timeoutID = setTimeout(() => {    
+
+                API.getNodeStat().then(data => {
+
+                    console.log(UnlockedWalletRequiredRouteIsShowing)
+                    if (!UnlockedWalletRequiredRouteIsShowing) {
+                        return;
+                    }
+
+                    rest.walletUpdateBalance({
+                        balance_stable                   : data.balance.stable,
+                        balance_pending                  : data.balance.unstable,
+                        transaction_wallet_unstable_count: data.transaction.transaction_wallet_unstable_count || 0,
+                        transaction_count                : data.transaction.transaction_count || 0
+                    });
+                    rest.setBackLogSize(data.log.backlog_count);
+                    rest.setLogSize(data.log.log_count);
+                    rest.updateNetworkState({
+                        ...data.network,
+                        connections: data.network.peer_count
+                    });
+                    getNodeStat();
+                })
+                .catch(() => {
+                    getNodeStat();
+                })
+            }, 1000);
         };
         getNodeStat();
-        return () => clearTimeout(timeoutID);
+        return () => { clearTimeout(timeoutID); UnlockedWalletRequiredRouteIsShowing = false; };
     }, [rest.wallet.unlocked]);
     return (<Route {...rest} render={props => (
         rest.wallet.unlocked ? (
