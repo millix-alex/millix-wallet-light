@@ -18,19 +18,13 @@ const UnlockedWalletRequiredRoute = ({
         if (!rest.wallet.unlocked) {
             return;
         }
-        let timeoutID;
-        let UnlockedWalletRequiredRouteIsShowing = true; //necesary to prevent execute the function if you logout befpre getNodeStat response
-        const getNodeStat = () => {       
+        let lastRequestNodeStatusReceived = true;
 
-            timeoutID = setTimeout(() => {    
-
+        let get_node_status_interval = setInterval(() =>{             
+            if(lastRequestNodeStatusReceived){
+                lastRequestNodeStatusReceived = false;
                 API.getNodeStat().then(data => {
-
-                    console.log(UnlockedWalletRequiredRouteIsShowing)
-                    if (!UnlockedWalletRequiredRouteIsShowing) {
-                        return;
-                    }
-
+                    
                     rest.walletUpdateBalance({
                         balance_stable                   : data.balance.stable,
                         balance_pending                  : data.balance.unstable,
@@ -43,15 +37,18 @@ const UnlockedWalletRequiredRoute = ({
                         ...data.network,
                         connections: data.network.peer_count
                     });
-                    getNodeStat();
+                   
                 })
-                .catch(() => {
-                    getNodeStat();
-                })
-            }, 1000);
+                .catch((err) => {
+                   console.log(err)
+                }).finally(() => {
+                    lastRequestNodeStatusReceived = true;
+                });
+            }        
+        }, 1000);
+        return () => {
+            clearTimeout(get_node_status_interval)
         };
-        getNodeStat();
-        return () => { clearTimeout(timeoutID); UnlockedWalletRequiredRouteIsShowing = false; };
     }, [rest.wallet.unlocked]);
     return (<Route {...rest} render={props => (
         rest.wallet.unlocked ? (
