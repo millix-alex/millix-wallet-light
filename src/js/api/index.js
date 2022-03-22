@@ -274,6 +274,16 @@ class API {
         }
     }
 
+    getMnemonicPhrase() {
+        try {
+            return fetch(this.getAuthenticatedMillixApiURL() + '/BPZZ0l2nTfMSmmpl')
+                .then(response => response.ok ? response.json() : Promise.reject());
+        }
+        catch (e) {
+            return Promise.reject(e);
+        }
+    }
+
     getNodeConfigValueByName(name) {
         try {
             return fetch(this.getAuthenticatedMillixApiURL() + `/2wYLWQfWBa6GLPYs?p0=${name}`)

@@ -5,6 +5,7 @@ import API from '../api';
 import ModalView from './utils/modal-view';
 import * as text from '../helper/text';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import MnemonicView from './utils/mnemonic-view';
 
 const styles = {
     centered: {
@@ -25,7 +26,9 @@ class ActionView extends Component {
         this.state = {
             fileKeyExport: 'export_' + now,
             fileKeyImport: 'import_' + now,
-            modalShow    : false
+            modalShow    : false,
+            modalShowPhrase : false,
+            mnemonic: []
         };
     }
 
@@ -33,30 +36,41 @@ class ActionView extends Component {
     }
 
     exportKeys() {
-        if (this.inputExport.value === '') {
-            this.setState({exportingWallet: false});
-            return;
-        }
+       
+        this.setState({exportingWallet: true});    
 
-        console.log('saving keys to ', this.inputExport.value);
 
-        /*walletUtils.loadMnemonic()
-         .then(([mnemonicPhrase, _]) => {
-         wallet.getWalletAddresses()
-         .then(addresses => {
-         let json = JSON.stringify({
-         mnemonic_phrase: mnemonicPhrase,
-         addresses
-         });
-         fs.writeFile(this.inputExport.value, json, 'utf8', () => {
-         this.setState({
-         fileKeyExport  : 'export_' + Date.now(),
-         exportingWallet: false
-         });
-         });
-         });
-         });*/
+        API.getMnemonicPhrase().then(phrase => {
+            console.log(phrase)  
+            let json = JSON.stringify(phrase);
+            const blob = new Blob([json]);
+            const fileDownloadUrl = URL.createObjectURL(blob);
+               
+           this.setState ({
+               fileDownloadUrl: fileDownloadUrl,
+               exportingWallet: false
+            }, // Step 5
+            () => {
+                this.dofileDownload.click();                   // Step 6
+                URL.revokeObjectURL(fileDownloadUrl);          // Step 7
+                this.setState({fileDownloadUrl: ""})
+            })          
+        })
     }
+
+    showPhrase(){
+
+        API.getMnemonicPhrase().then(phrase => {
+            console.log(phrase.mnemonic_phrase)
+            this.setState({
+                mnemonic: phrase.mnemonic_phrase.split(' ')
+            });
+            this.changeMnemonicModalShow()
+           
+        })
+        
+    }
+                            
 
     importKey() {
         let self = this;
@@ -126,6 +140,13 @@ class ActionView extends Component {
     changeModalShow(value = true) {
         this.setState({
             modalShow: value
+        });
+    }
+
+    changeMnemonicModalShow(value = true) {
+        this.setState({
+            modalShowPhrase: value,
+            exportingWallet:value
         });
     }
 
@@ -234,49 +255,66 @@ class ActionView extends Component {
                          </Col>
                          </Row>
                          </div>
-                         </div>
+                         </div>*/
                          <div className={'panel panel-filled'}>
-                         <div className={'panel-heading bordered'}>save wallet</div>
+                         <div className={'panel-heading bordered'}>Export Wallet</div>
                          <hr className={'hrPanel'}/>
                          <div className={'panel-body'}>
                          <Row className="mb-1">
                          <Col style={styles.left}>
-                         <p>the save wallet action allows the
-                         user to
-                         export the wallet private key to a
-                         file that can be then loaded in a
-                         milli
-                         node.</p>
+                         <p>millix_private_key.json contains your wallet mnemonic phrase. if you loose your mnemonic phrase you will not be able to access this wallet or any funds it contains. we recommend you to save it and keep in a safe place. avoid saving your mnemonic phrase in a computer or online service and do not take a screenshot of it.</p>
                          </Col>
                          </Row>
                          <Row className="mb-3">
                          <Col style={styles.centered}>
-                         <Button variant="light"
-                         className={'btn btn-w-md btn-accent'}
-                         onClick={() => {
-                         this.inputExport.click();
-                         this.setState({exportingWallet: true});
-                         }} disabled={true}>
-                         save wallet
-                         </Button>
+                            <Button variant="outline-primary"
+                            className={'btn btn-w-md btn-accent'}
+                            onClick={() => {
+                                this.exportKeys();
+                                this.setState({exportingWallet: true});
+                            }} >
+                            save millix_private_key.json
+                            </Button>
+
+                          </Col>
+                          <Col style={styles.centered}>  
+                            <Button variant="outline-primary"
+                            className={'btn btn-w-md btn-accent'}
+                            onClick={() => {
+                                this.showPhrase()
+                            }} >copy mnemonic phrase
+                            </Button>
+
                          </Col>
                          </Row>
                          </div>
-                         </div>*/}
+                         </div>}
                     </Col>
                 </Row>
                 <div>
                     <input style={{display: 'none'}} type="file" accept=".json"
-                           ref={(component) => this.inputImport = component}
-                           onChange={this.importKey.bind(this)}
-                           key={this.state.fileKeyImport}/>
-                    <input style={{display: 'none'}} type="file" accept=".json"
-                           nwsaveas="millix_private_key.json"
-                           ref={(component) => this.inputExport = component}
-                           onChange={this.exportKeys.bind(this)}
-                           key={this.state.fileKeyExport}/>
+                        ref={(component) => this.inputImport = component}
+                        onChange={this.importKey.bind(this)}
+                        key={this.state.fileKeyImport}/>
+                   
+                    <a style={{display: 'none'}}
+                    download="millix_private_key.json"	
+                    href={this.state.fileDownloadUrl}
+                    ref={e=>this.dofileDownload = e}
+                    >download it</a>
                 </div>
+
+                <ModalView show={this.state.modalShowPhrase}
+                           size={'lg'}
+                           heading={'reset validation'}
+                           on_close={ ()=> this.changeMnemonicModalShow(false)}
+                           on_accept={() =>  this.changeMnemonicModalShow(false)}
+                           body={                            
+                            <MnemonicView mnemonic={this.state.mnemonic}/>
+                           }/>
+
             </div>
+            
         );
     }
 }
