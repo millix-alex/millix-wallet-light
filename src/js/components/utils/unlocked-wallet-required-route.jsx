@@ -6,14 +6,17 @@ import {Col, Container} from 'react-bootstrap';
 import '../../../../node_modules/mohithg-switchery/switchery.css';
 import $ from 'jquery';
 import API from '../../api';
-import {setBackLogSize, setLogSize, updateNetworkState, walletUpdateBalance} from '../../redux/actions';
+import {setBackLogSize, setLogSize, updateNetworkState, walletUpdateBalance, currencyPriceUpdate} from '../../redux/actions';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import HelpIconView from './help-icon-view';
+import config from '../../../config.js';
+import { MILLIX_VALUE_REFRESH_INTERVAL_MS } from '../../../config.js';
 
 const UnlockedWalletRequiredRoute = ({
                                          component: Component,
                                          ...rest
                                      }) => {
+    
     useEffect(() => {
         if (!rest.wallet.unlocked) {
             return;
@@ -44,8 +47,26 @@ const UnlockedWalletRequiredRoute = ({
             }, 1000);
         };
         getNodeStat();
-        return () => { 
-            clearTimeout(timeoutID); 
+
+        console.log(MILLIX_VALUE_REFRESH_INTERVAL_MS)
+
+        let fetch_fiatleak_api_timeout_id
+        const getFiatValuesInterval = () => { 
+            console.log('fetching fiatleak api');	
+            //API.getNodeStat().then(data => {
+                rest.currencyPriceUpdate({usd_value:0.0000005611000000});
+            //}).catch(() => {
+            //}).finally(() => {
+               // if(rest.wallet.unlocked)
+               fetch_fiatleak_api_timeout_id = setTimeout( ()=>{ getFiatValuesInterval()}, MILLIX_VALUE_REFRESH_INTERVAL_MS);
+            //});      
+            
+        };
+        getFiatValuesInterval();       
+
+        return () => {
+            clearTimeout(timeoutID)
+            clearInterval(fetch_fiatleak_api_timeout_id);   
         };
     }, [rest.wallet.unlocked]);
     return (<Route {...rest} render={props => (
@@ -93,10 +114,12 @@ export default connect(
     state => ({
         clock : state.clock,
         wallet: state.wallet,
-        node  : state.node
+        node  : state.node,
+        currency_price : state.currency_price
     }), {
         walletUpdateBalance,
         updateNetworkState,
         setBackLogSize,
-        setLogSize
+        setLogSize,
+        currencyPriceUpdate
     })(UnlockedWalletRequiredRoute);
