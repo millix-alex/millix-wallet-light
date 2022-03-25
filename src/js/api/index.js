@@ -412,6 +412,26 @@ class API {
         }
     }
 
+    listBacklog() {
+        try {
+            return fetch(this.getAuthenticatedMillixApiURL() + '/0df01ae7dd51cec4')
+                .then(response => response.ok ? response.json() : Promise.reject());
+        }
+        catch (e) {
+            return Promise.reject(e);
+        }
+    }
+
+    deleteBacklog() {
+        try {
+            return fetch(this.getAuthenticatedMillixApiURL() + '/epOW5kdvb12QdgsV')
+                .then(response => response.ok ? response.json() : Promise.reject());
+        }
+        catch (e) {
+            return Promise.reject(e);
+        }
+    }
+
     getNodeAttributes(nodeID) {
         try {
             return fetch(this.getAuthenticatedMillixApiURL() + `/AgsSNTSA0RHmWUkp?p0=${nodeID}`)
