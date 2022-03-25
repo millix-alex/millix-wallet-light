@@ -4,7 +4,7 @@ import {
     UPDATE_NETWORK_NODE_LIST, UPDATE_NETWORK_STATE, UPDATE_TRANSACTION_DETAILS,
     UPDATE_WALLET_ADDRESS, UPDATE_WALLET_CONFIG, UPDATE_WALLET_MAINTENANCE,
     UPDATE_WALLET_TRANSACTIONS, WALLET_READY, UPDATE_WALLET_ADDRESS_VERSION,
-    ADD_WALLET_ADDRESS_VERSION, GET_NODE_ATTRIBUTES, UPDATE_WALLET_BALANCE,UPDATE_CURRENCY_PRICE,
+    ADD_WALLET_ADDRESS_VERSION, GET_NODE_ATTRIBUTES, UPDATE_WALLET_BALANCE,
     WALLET_VERSION_AVAILABLE, UPDATE_WALLET_NOTIFICATION, UPDATE_NODE_ATTRIBUTE
 } from '../constants/action-types';
 import config from '../../../config.js';
@@ -41,10 +41,6 @@ const initialState = {
         transaction_count                : 0,
         notification_message             : undefined,
         version_available                : undefined
-    },
-    currency_price    : {
-        date_updated         : undefined,
-        usd_value           : 0
     },
     config            : {},
     clock             : 'not available...',
@@ -244,15 +240,6 @@ function rootReducer(state = initialState, action) {
         return Object.assign({}, state, {
             wallet: {
                 ...state.wallet,
-                ...action.payload
-            }
-        });
-    }
-    else if (action.type === UPDATE_CURRENCY_PRICE) {
-        let date_updated = new Date();
-        return Object.assign({}, state, {
-            currency_price: {
-                date_updated : date_updated,
                 ...action.payload
             }
         });
