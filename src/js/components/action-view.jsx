@@ -257,8 +257,7 @@ class ActionView extends Component {
                          </div>
                          </div>*/
                          <div className={'panel panel-filled'}>
-                         <div className={'panel-heading bordered'}>Export Wallet</div>
-                         <hr className={'hrPanel'}/>
+                         <div className={'panel-heading bordered'}>export wallet</div>
                          <div className={'panel-body'}>
                          <Row className="mb-1">
                          <Col style={styles.left}>
@@ -306,9 +305,7 @@ class ActionView extends Component {
 
                 <ModalView show={this.state.modalShowPhrase}
                            size={'lg'}
-                           heading={'reset validation'}
-                           on_close={ ()=> this.changeMnemonicModalShow(false)}
-                           on_accept={() =>  this.changeMnemonicModalShow(false)}
+                           heading={'copy mnemonic phrase'}
                            body={                            
                             <MnemonicView mnemonic={this.state.mnemonic}/>
                            }/>
