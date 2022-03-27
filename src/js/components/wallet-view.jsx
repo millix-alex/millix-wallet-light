@@ -246,6 +246,7 @@ class WalletView extends Component {
                         <BalanceView
                             stable={this.props.wallet.balance_stable}
                             pending={this.props.wallet.balance_pending}
+                            usd_value={this.props.currency_price.usd_value}
                             primary_address={this.props.wallet.address}
                         />
                         <div className={'panel panel-filled'}>
@@ -360,5 +361,6 @@ class WalletView extends Component {
 export default connect(
     state => ({
         wallet: state.wallet,
-        config: state.config
+        config: state.config,
+        currency_price:state.currency_price
     }))(withRouter(WalletView));

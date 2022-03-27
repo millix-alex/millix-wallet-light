@@ -237,11 +237,21 @@ ul {
       margin-right: 0.3rem;
     }
 
-    .stable {
+    .stable-millix {
       display: flex;
       color: $color-white;
       font-size: 2.8rem;
 
+      > span {
+        line-height: 1;
+      }
+    }
+
+    .stable-millix-price {
+      display: flex;
+      color: $color-white;
+      font-size: 2.5rem; 
+      margin-top: 0.45rem;
       > span {
         line-height: 1;
       }
@@ -259,6 +269,34 @@ ul {
     font-size: 1.4rem;
     word-break: break-all;
   }
+
+  .accordion{
+    background: none;
+  }
+
+  .accordion-item{
+    background-color: #171827 !important;
+    border:none;
+  }
+
+  .accordion-header{
+    background-color: #171827 !important;
+
+    button{
+      background-color: #171827 !important;
+    }
+  }
+
+  .text-primary{
+    color:#171827;
+  }
+
+  .accordion-body{
+    text-align: center;
+    font-size: 2.0rem;
+    padding: 0px;
+  }
+
 }
 
 h1, .h1,
