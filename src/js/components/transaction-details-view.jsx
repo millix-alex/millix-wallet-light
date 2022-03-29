@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {Link, withRouter} from 'react-router-dom';
-import {Button, Col, Row, Table} from 'react-bootstrap';
+import {Button, Col, Table} from 'react-bootstrap';
 import {clearTransactionDetails, updateTransactionDetails} from '../redux/actions/index';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import config from '../../config';
@@ -9,6 +9,7 @@ import DatatableView from './utils/datatable-view';
 import * as format from '../helper/format';
 import HelpIconView from './utils/help-icon-view';
 import ResetTransactionValidationView from './utils/reset-transaction-validation-view';
+import {bool_label} from '../helper/format';
 
 
 class TransactionDetailsView extends Component {
@@ -44,6 +45,21 @@ class TransactionDetailsView extends Component {
                     size="1x"/>
             </Button>
         </Link>;
+    }
+
+    isDoubleSpendTransaction(transaction_data) {
+        let is_double_spent = false;
+        Object.keys(transaction_data.transaction_input_list).forEach(key => {
+            if(transaction_data.transaction_input_list[key].is_double_spend !== 0 ) {
+                is_double_spent = true
+            }
+        });
+        Object.keys(transaction_data.transaction_output_list).forEach(key => {
+            if(transaction_data.transaction_output_list[key].is_double_spend !== 0 ) {
+                is_double_spent = true
+            }
+        });
+        return bool_label(is_double_spent);
     }
 
     render() {
@@ -180,6 +196,14 @@ class TransactionDetailsView extends Component {
                                     </td>
                                     <td>
                                         {transaction.node_id_proxy}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td className={'w-20'}>
+                                        double spend
+                                    </td>
+                                    <td>
+                                        {this.isDoubleSpendTransaction(transaction)}
                                     </td>
                                 </tr>
                                 </tbody>
