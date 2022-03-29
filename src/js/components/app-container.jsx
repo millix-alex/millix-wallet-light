@@ -24,6 +24,7 @@ import StatsView from './stats-view';
 import ReportIssueView from './report-issue-view';
 import FaqView from './faq-view';
 import AddressListView from './address-list-view';
+import EventsLogView from './event-log-view';
 
 
 class AppContainer extends Component {
@@ -61,6 +62,8 @@ class AppContainer extends Component {
                                                  component={PeerInfoView}/>
                     <UnlockedWalletRequiredRoute path="/config"
                                                  component={ConfigView}/>
+                    <UnlockedWalletRequiredRoute path="/event-list"
+                                                 component={EventsLogView}/>
 
                     {/*<UnlockedWalletRequiredRoute path='/log'*/}
                     {/*                             component={EventLogView}/>*/}

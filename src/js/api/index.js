@@ -274,6 +274,16 @@ class API {
         }
     }
 
+    getEventLogList() {
+        try {
+            return fetch(this.getAuthenticatedMillixApiURL() + '/PZ7x3HVHVstLNYf0')
+                .then(response => response.ok ? response.json() : Promise.reject());
+        }
+        catch (e) {
+            return Promise.reject(e);
+        }
+    }
+
     getNodeConfigValueByName(name) {
         try {
             return fetch(this.getAuthenticatedMillixApiURL() + `/2wYLWQfWBa6GLPYs?p0=${name}`)

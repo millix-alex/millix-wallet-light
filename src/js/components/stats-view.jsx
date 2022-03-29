@@ -120,7 +120,10 @@ class StatsView extends Component {
                                 </tr>
                                 <tr>
                                     <td className={'w-20'}>
-                                        event log size
+                                        <a className={''}
+                                           onClick={() => props.history.push('/event-list')}>
+                                            event log size
+                                        </a>
                                     </td>
                                     <td>
                                         {format.number(props.log.size)}

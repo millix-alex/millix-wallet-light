@@ -227,6 +227,11 @@ class Sidebar extends Component {
                                 peers
                             </NavText>
                         </NavItem>
+                        <NavItem key={'event-list'} eventKey="/event-list">
+                            <NavText>
+                                event list
+                            </NavText>
+                        </NavItem>
                     </NavItem>
                     <NavItem eventKey="help">
 
