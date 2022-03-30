@@ -2,11 +2,12 @@ import React, {Component} from 'react';
 import SideNav, {NavItem, NavText} from '@trendmicro/react-sidenav';
 import {connect} from 'react-redux';
 import {lockWallet} from '../redux/actions/index';
-import moment from 'moment';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import ModalView from './utils/modal-view';
 import * as format from '../helper/format';
 import API from '../api';
+import {Badge} from 'react-bootstrap';
+import compareVersions from 'compare-versions';
 
 
 class Sidebar extends Component {
@@ -18,7 +19,8 @@ class Sidebar extends Component {
             fileKeyImport      : 'import_' + now,
             date               : new Date(),
             modalShow          : false,
-            node_millix_version: ''
+            node_millix_version: '',
+            is_new_version_available: false
         };
     }
 
@@ -27,6 +29,7 @@ class Sidebar extends Component {
             this.setState({
                 node_millix_version: response.node_millix_version
             });
+            this.setIsNewVersionAvailable();
         });
 
         this.timerID = setInterval(
@@ -52,6 +55,39 @@ class Sidebar extends Component {
         }
 
         return defaultSelected;
+    }
+
+    getNewVersionLink() {
+        if(this.state.node_millix_version && !this.state.new_version_available){
+            return ;
+        }
+        return (
+            <React.Fragment>
+                <a href={'https://tangled.com/download.html'} target={'_blank'} rel="noreferrer">
+                    <Badge className={'new_version_badge'}>new version available</Badge>
+                </a>
+            </React.Fragment>
+        );
+    }
+
+    setIsNewVersionAvailable() {
+        try {
+            API.getLatestMillixVersion().then(response => {
+                if(!response.api_message) {
+                    this.setState({
+                        new_version_available: false
+                    });
+                    return;
+                }
+                this.setState({
+                    new_version_available: compareVersions(response.api_message, this.state.node_millix_version) === 1
+                });
+            });
+        } catch (e) {
+            this.setState({
+                new_version_available: false
+            });
+        }
     }
 
     isExpanded(section, defaultSelected) {
@@ -101,6 +137,7 @@ class Sidebar extends Component {
     render() {
         let props           = this.props;
         let defaultSelected = this.highlightSelected(props.location.pathname);
+        let new_version_link = this.getNewVersionLink();
 
         return (<aside className={'navigation'} style={{
             height   : '100%',
@@ -257,6 +294,7 @@ class Sidebar extends Component {
                 </SideNav.Nav>
                 <div className="nav-info">
                     <span>version {this.state.node_millix_version}</span>
+                    {new_version_link}
                 </div>
             </SideNav>
         </aside>);
