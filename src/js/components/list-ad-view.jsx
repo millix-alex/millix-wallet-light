@@ -46,6 +46,19 @@ class ListAdView extends Component {
         API.resetAd(advertisement_guid).then(_ => _);
     }
 
+
+    getEditButton(item) {
+        return <Button
+            id={item.advertisement_guid}
+            variant="outline-default"
+            className={'btn-xs icon_only ms-auto'}
+            onClick={() => this.openEdit(item)}>
+            <FontAwesomeIcon
+                icon="pencil"
+                size="1x"/>
+        </Button>;
+    }
+
     getStatusButton(item) {
         let icon = item.status === 1 ? 'pause' : 'play';
         return <Button
@@ -73,6 +86,7 @@ class ListAdView extends Component {
 
     getActionButton(item) {
         return <div>
+            {this.getEditButton(item)}
             {this.getStatusButton(item)}
             {this.getResetButton(item)}
         </div>;
@@ -123,6 +137,11 @@ class ListAdView extends Component {
         return category;
     }
 
+    openEdit(advertisement) {   
+        console.log(advertisement);     
+        this.props.history.push('/advertisement-form/', [advertisement]);        
+    }
+
     async reloadDatatable() {
         this.setState({
             datatable_loading: true
@@ -135,6 +154,7 @@ class ListAdView extends Component {
                 API.listAds().then(data => {
                     if (typeof data.api_status != 'undefined' && data.api_status === 'ok') {
                         let ad_list = [];
+                        console.log(data.advertisement_list)
                         if (typeof data.advertisement_list != 'undefined') {
                             data.advertisement_list.forEach((item, idx) => {
                                 ad_list.push({
@@ -157,7 +177,7 @@ class ListAdView extends Component {
                                     create_date                : format.date(item.create_date)
                                 });
                             });
-
+                            console.log(ad_list);
                             this.setState({
                                 ad_list                   : ad_list,
                                 datatable_reload_timestamp: new Date(),
@@ -200,7 +220,7 @@ class ListAdView extends Component {
                             datatable_reload_timestamp={this.state.datatable_reload_timestamp}
                             action_button={{
                                 label   : 'create advertisement',
-                                on_click: () => this.props.history.push('/advertisement-create')
+                                on_click: () => this.props.history.push('/advertisement-form/')
                             }}
                             value={this.state.ad_list}
                             sortField={'date'}

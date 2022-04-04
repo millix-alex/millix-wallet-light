@@ -68,6 +68,16 @@ class API {
         }
     }
 
+    getAdById(advertisement_id) {
+        try {
+            return fetch(this.getTangledApiURL() + `/ae60ccb743cd3c79?p0=${advertisement_id}`)
+                .then(response => response.ok ? response.json() : Promise.reject());
+        }
+        catch (e) {
+            return Promise.reject(e);
+        }
+    }
+
     listAdTypes() {
         try {
             return fetch(this.getTangledApiURL() + '/jbUwv8IG6XeYMqCq')
@@ -100,9 +110,19 @@ class API {
 
     }
 
-    submitAdForm(formData) {
+    submitCreateAd(formData) {
         try {
             return fetch(this.getTangledApiURL() + `/scWZ0yhuk5hHLd8s?p0=${encodeURIComponent(JSON.stringify(formData))}`)
+                .then(response => response.ok ? response.json() : Promise.reject());
+        }
+        catch (e) {
+            return Promise.reject(e);
+        }
+    }
+
+    submitUpdateAd(formData) {
+        try {
+            return fetch(this.getTangledApiURL() + `/ef710ca33ad9d2fb?p0=${encodeURIComponent(JSON.stringify(formData))}`)
                 .then(response => response.ok ? response.json() : Promise.reject());
         }
         catch (e) {
