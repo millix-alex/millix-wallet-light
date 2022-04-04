@@ -198,3 +198,44 @@ ul {
     font-size: 1.4rem;
   }
 }
+
+.p-column-filter-overlay {
+  .p-button:enabled:hover, .p-button:not(button):not(a):not(.p-disabled):hover {
+    color: #fff !important;
+    background-color: #9400ce !important;
+    border-color: #9400ce !important;
+  }
+
+  .p-button {
+    color: #949ba2 !important;
+    background-color: transparent !important;
+    border-color: #9400ce !important;
+  }
+}
+.p-multiselect-panel .p-multiselect-items .p-multiselect-item.p-highlight, .p-checkbox .p-checkbox-box.p-highlight {
+  color: #fff !important;
+  background-color: #9400ce !important;
+  border-color: #9400ce !important;
+
+  span {
+    color: #fff;
+  }
+}
+.p-multiselect-items-wrapper {
+
+
+  .p-highlight.p-checkbox-box {
+
+    color: #fff !important;
+    background-color: transparent !important;
+    border-color: black !important;
+  }
+
+  .p-checkbox .p-checkbox-box .p-checkbox-icon {
+    color: #fff;
+  }
+}
+.p-column-filter-menu-button.p-column-filter-menu-button-active, .p-column-filter-menu-button.p-column-filter-menu-button-active:hover {
+  background-color: transparent !important;
+  color: #949ba2;
+}

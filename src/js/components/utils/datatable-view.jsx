@@ -6,10 +6,10 @@ import {Dropdown} from 'primereact/dropdown';
 import {Ripple} from 'primereact/ripple';
 import {classNames} from 'primereact/utils';
 import * as format from '../../helper/format';
-import {Button} from 'primereact/button';
 import {MultiSelect} from 'primereact/multiselect';
 import {FilterMatchMode, FilterOperator} from 'primereact/api';
 import DatatableHeaderView from './datatable-header-view';
+import {Calendar} from 'primereact/calendar';
 
 
 class DatatableView extends Component {
@@ -20,6 +20,7 @@ class DatatableView extends Component {
             rows                      : 20,
             currentPage               : 1,
             result_column             : [],
+            select_options            : [],
             result_filter             : {
                 global: {
                     value    : null,
@@ -27,15 +28,61 @@ class DatatableView extends Component {
                 }
             },
             result_global_search_field: [],
-            global_search_value       : ''
+            filters                   : null,
+            filter_rules              : {
+                'multi_select': {
+                    value    : null,
+                    matchMode: FilterMatchMode.IN
+                },
+                'date'        :
+                    {
+                        operator   : FilterOperator.AND,
+                        constraints: [
+                            {
+                                value    : null,
+                                matchMode: FilterMatchMode.DATE_AFTER
+                            },
+                            {
+                                value    : null,
+                                matchMode: FilterMatchMode.DATE_BEFORE
+                            }
+                        ]
+                    },
+
+            }
         };
 
         this.onCustomPage       = this.onCustomPage.bind(this);
         this.bodyTemplateAmount = this.bodyTemplateAmount.bind(this);
+        this.bodyTemplateDate = this.bodyTemplateDate.bind(this);
+        this.filterTemplate     = this.filterTemplate.bind(this);
+        this.initFilters        = this.initFilters.bind(this);
     }
 
     componentDidMount() {
         this.generateResultColumn();
+        this.initFilters();
+    }
+
+    initFilters() {
+        let result_col   = this.props.resultColumn;
+        let filter       = {};
+        let filter_rules = this.state.filter_rules;
+        Object.keys(result_col).forEach(function(key) {
+            if (result_col[key].filter_type) {
+                filter[result_col[key].field] = filter_rules[result_col[key].filter_type];
+            }
+        });
+        this.setState({
+            result_filter: {
+                ...this.state.result_filter,
+                ...filter
+            }
+        });
+    }
+
+    clearFilters() {
+        this.initFilters();
     }
 
     generateResultColumn() {
@@ -54,7 +101,11 @@ class DatatableView extends Component {
                 item.body = (rowData) => this.bodyTemplateAmount(rowData, item.field);
             }
 
-            if (typeof (item.filter_type) !== 'undefined' && item.filter_type === 'multi_select') {
+            if (typeof (item.format) !== 'undefined' && item.format === 'date') {
+                item.body = (rowData) => this.bodyTemplateDate(rowData);
+            }
+
+            if (typeof (item.filter_type) !== 'undefined') {
                 item.filter = true;
             }
 
@@ -63,11 +114,11 @@ class DatatableView extends Component {
                 key={index}
                 field={item.field}
                 header={item.header}
-                // filter={item.filter}
-                // filterField={item.field}
-                // filterElement={this.filterTemplateMultiSelect}
-
-                showFilterMatchModes={false}
+                filter={item.filter}
+                filterField={item.field}
+                dataType={item.data_type}
+                filterElement={this.filterTemplate}
+                showFilterMatchModes={item.match_mode}
                 sortable={item.sortable}
                 body={item.body}/>);
         });
@@ -95,6 +146,10 @@ class DatatableView extends Component {
 
     bodyTemplateAmount(rowData, field) {
         return format.millix(rowData[field], false);
+    }
+
+    bodyTemplateDate(rowData) {
+        return format.date(rowData.create_date);
     }
 
     getPaginatorTemplate() {
@@ -168,23 +223,44 @@ class DatatableView extends Component {
         };
     }
 
-    // filterTemplateMultiSelect(options) {
-    //     console.log(options);
-    //     return <MultiSelect value={options.value} options={this.representatives} //itemTemplate={this.representativesItemTemplate}
-    //                         onChange={(e) => options.filterCallback(e.value)} optionLabel="name" placeholder="Any" className="p-column-filter"/>;
-    // }
+    getGroupedOptions(field) {
+        return [...new Set(this.props.value.map(item => item[field]))];
+    }
 
-    // filterClearTemplate(options) {
-    //     return <Button type="button" icon="pi pi-times" onClick={options.filterClearCallback} className="p-button-secondary"></Button>;
-    // }
-    //
-    // filterApplyTemplate(options) {
-    //     return <Button type="button" icon="pi pi-check" onClick={options.filterApplyCallback} className="p-button-success"></Button>;
-    // }
-    //
-    // filterFooterTemplate() {
-    //     return <div className="px-3 pt-0 pb-3 text-center font-bold">Customized Buttons</div>;
-    // }
+    filterTemplate(data) {
+        let result = null;
+        Object.keys(this.props.resultColumn).forEach((key) => {
+            if (this.props.resultColumn[key].field === data.field && this.props.resultColumn[key].filter_type) {
+                switch (this.props.resultColumn[key].filter_type) {
+                    case 'multi_select':
+                        result = (<MultiSelect value={data.value} options={this.getGroupedOptions(data.field)} itemTemplate={this.multiselectItemTemplate}
+                                               onChange={(e) => {data.filterCallback(e.value)}} optionLabel="label" placeholder="Any"
+                                               className="p-column-filter"/>);
+                        break;
+                    case 'date':
+                        result = <Calendar value={data.value} onChange={(e) => data.filterCallback(e.value, data.index)} dateFormat="yy/mm/dd"
+                                           placeholder="yyyy/mm/dd/" mask="9999/99/99/"/>;
+                        break;
+                    default:
+                        result = (<MultiSelect value={data.value} options={this.getGroupedOptions(data.field)} itemTemplate={this.multiselectItemTemplate}
+                                               onChange={(e) => data.filterCallback(e.value)} optionLabel="label" placeholder="Any"
+                                               className="p-column-filter"/>);
+                        break;
+                }
+            }
+        });
+        return result;
+
+    }
+
+
+    multiselectItemTemplate(option) {
+        return (
+            <div className="p-multiselect-representative-option">
+                <span className="image-text">{option}</span>
+            </div>
+        );
+    }
 
     on_global_search_change(e) {
         const value                   = e.target.value;
