@@ -245,6 +245,7 @@ ul {
     color: $color-white;
   }
 }
+
 .p-column-filter-menu-button.p-column-filter-menu-button-active, .p-column-filter-menu-button.p-column-filter-menu-button-active:hover {
   background-color: $color-panel-filed-background !important;
   color: $color-body-font;
@@ -257,4 +258,12 @@ ul {
 
 .p-multiselect-panel .p-multiselect-items .p-multiselect-item.p-highlight, .p-checkbox .p-checkbox-box.p-highlight {
   box-shadow: none;
+}
+
+.p-column-filter-overlay, .p-multiselect-panel, .p-multiselect-header {
+  background: #21242a !important;
+}
+
+.p-column-filter-overlay-menu .p-column-filter-operator {
+  background: #21242a !important;
 }

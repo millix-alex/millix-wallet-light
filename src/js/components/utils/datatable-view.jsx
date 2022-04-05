@@ -7,7 +7,7 @@ import {Ripple} from 'primereact/ripple';
 import {classNames} from 'primereact/utils';
 import * as format from '../../helper/format';
 import {MultiSelect} from 'primereact/multiselect';
-import {FilterMatchMode, FilterOperator} from 'primereact/api';
+import {FilterMatchMode, FilterOperator, updateLocaleOption} from 'primereact/api';
 import DatatableHeaderView from './datatable-header-view';
 import {Calendar} from 'primereact/calendar';
 
@@ -65,6 +65,22 @@ class DatatableView extends Component {
     componentDidMount() {
         this.generateResultColumn();
         this.initFilters();
+        this.changeLocales();
+    }
+
+    changeLocales() {
+        updateLocaleOption('matchAll', 'match all', 'en');
+        updateLocaleOption('dateAfter', 'date is after', 'en');
+        updateLocaleOption('dateBefore', 'date is before', 'en');
+        updateLocaleOption('removeRule', 'remove rule', 'en');
+        updateLocaleOption('matchAny', 'match any', 'en');
+        updateLocaleOption('dateIs', 'date is', 'en');
+        updateLocaleOption('dateIsNot', 'date is not', 'en');
+
+
+
+
+
     }
 
     onColumnToggle(event) {
@@ -271,7 +287,7 @@ class DatatableView extends Component {
                         result = (<MultiSelect value={data.value} options={this.getGroupedOptions(data.field)} itemTemplate={this.multiselectItemTemplate}
                                                onChange={(e) => {
                                                    data.filterCallback(e.value);
-                                               }} optionLabel="label" placeholder="Any"
+                                               }} optionLabel="label" placeholder="any"
                                                className="p-column-filter"/>);
                         break;
                     case 'date':
@@ -280,7 +296,7 @@ class DatatableView extends Component {
                         break;
                     default:
                         result = (<MultiSelect value={data.value} options={this.getGroupedOptions(data.field)} itemTemplate={this.multiselectItemTemplate}
-                                               onChange={(e) => data.filterCallback(e.value)} optionLabel="label" placeholder="Any"
+                                               onChange={(e) => data.filterCallback(e.value)} optionLabel="label" placeholder="any"
                                                className="p-column-filter"/>);
                         break;
                 }
