@@ -201,41 +201,60 @@ ul {
 
 .p-column-filter-overlay {
   .p-button:enabled:hover, .p-button:not(button):not(a):not(.p-disabled):hover {
-    color: #fff !important;
-    background-color: #9400ce !important;
-    border-color: #9400ce !important;
+    color:  $color-white !important;
+    background-color:  $color-primary !important;
+    border-color:  $color-primary !important;
   }
 
   .p-button {
-    color: #949ba2 !important;
-    background-color: transparent !important;
-    border-color: #9400ce !important;
+    color: $color-body-font !important;
+    background-color: $color-panel-filed-background !important;
+    border-color:  $color-primary !important;
   }
 }
 .p-multiselect-panel .p-multiselect-items .p-multiselect-item.p-highlight, .p-checkbox .p-checkbox-box.p-highlight {
-  color: #fff !important;
-  background-color: #9400ce !important;
+  color:  $color-white !important;
+  background-color: transparent !important;
   border-color: #9400ce !important;
 
   span {
-    color: #fff;
+    color:  $color-white;
   }
 }
+
+.p-multiselect{
+  border-color:  $color-primary !important;
+}
+
+.p-inputwrapper-focus, .p-inputwrapper-filled {
+  border-color: $color-primary !important;
+  box-shadow: none !important;
+  background: $color-panel-filed-background;
+}
+
 .p-multiselect-items-wrapper {
 
-
   .p-highlight.p-checkbox-box {
-
-    color: #fff !important;
-    background-color: transparent !important;
-    border-color: black !important;
+    color: $color-white !important;
+    background-color: $color-panel-filed-background !important;
+    border-color: $color-primary !important;
+    box-shadow: none !important;
   }
 
   .p-checkbox .p-checkbox-box .p-checkbox-icon {
-    color: #fff;
+    color: $color-white;
   }
 }
 .p-column-filter-menu-button.p-column-filter-menu-button-active, .p-column-filter-menu-button.p-column-filter-menu-button-active:hover {
-  background-color: transparent !important;
-  color: #949ba2;
+  background-color: $color-panel-filed-background !important;
+  color: $color-body-font;
+  box-shadow: none !important;
+}
+
+.p-multiselect-panel .p-multiselect-items .p-multiselect-item:focus {
+  box-shadow: none !important;
+}
+
+.p-multiselect-panel .p-multiselect-items .p-multiselect-item.p-highlight, .p-checkbox .p-checkbox-box.p-highlight {
+  box-shadow: none;
 }

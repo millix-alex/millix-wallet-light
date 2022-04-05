@@ -47,21 +47,35 @@ class DatatableView extends Component {
                                 matchMode: FilterMatchMode.DATE_BEFORE
                             }
                         ]
-                    },
+                    }
+            },
+            selected_columns          : this.props.resultColumn,
+            toggle_col_options          : this.props.resultColumn
 
-            }
         };
 
         this.onCustomPage       = this.onCustomPage.bind(this);
         this.bodyTemplateAmount = this.bodyTemplateAmount.bind(this);
-        this.bodyTemplateDate = this.bodyTemplateDate.bind(this);
+        this.bodyTemplateDate   = this.bodyTemplateDate.bind(this);
         this.filterTemplate     = this.filterTemplate.bind(this);
         this.initFilters        = this.initFilters.bind(this);
+        this.onColumnToggle     = this.onColumnToggle.bind(this);
     }
 
     componentDidMount() {
         this.generateResultColumn();
         this.initFilters();
+    }
+
+    onColumnToggle(event) {
+        let selected_columns         = event.value;
+        let ordered_selected_columns = this.state.toggle_col_options.filter(col => selected_columns.some(sCol => sCol.field === col.field));
+        this.setState({
+            selected_columns: ordered_selected_columns,
+        }, () => {
+            this.generateResultColumn();
+        });
+
     }
 
     initFilters() {
@@ -88,7 +102,7 @@ class DatatableView extends Component {
     generateResultColumn() {
         const result_global_search_field = [];
         const result_column              = [];
-        this.props.resultColumn.forEach((item, index) => {
+        this.state.selected_columns.forEach((item, index) => {
             if (typeof (item.header) === 'undefined') {
                 item.header = item.field.replaceAll('_', ' ');
             }
@@ -227,6 +241,27 @@ class DatatableView extends Component {
         return [...new Set(this.props.value.map(item => item[field]))];
     }
 
+    getToggleSelect() {
+        if (this.props.show_toggle_col) {
+            return (
+                <div style={{textAlign: 'left'}}>
+                    <MultiSelect value={this.state.selected_columns} options={this.state.toggle_col_options} optionLabel="header" onChange={this.onColumnToggle}
+                                 style={{width: '20em'}} panelHeaderTemplate={this.panelHeaderTemplate}/>
+                </div>
+            );
+        }
+    }
+
+    panelHeaderTemplate(options) {
+        return (
+            <div className={'p-multiselect-header'}>
+                {options.checkboxElement}
+                <span className={'p-2'}>all</span>
+                {options.closeElement}
+            </div>
+        );
+    }
+
     filterTemplate(data) {
         let result = null;
         Object.keys(this.props.resultColumn).forEach((key) => {
@@ -234,7 +269,9 @@ class DatatableView extends Component {
                 switch (this.props.resultColumn[key].filter_type) {
                     case 'multi_select':
                         result = (<MultiSelect value={data.value} options={this.getGroupedOptions(data.field)} itemTemplate={this.multiselectItemTemplate}
-                                               onChange={(e) => {data.filterCallback(e.value)}} optionLabel="label" placeholder="Any"
+                                               onChange={(e) => {
+                                                   data.filterCallback(e.value);
+                                               }} optionLabel="label" placeholder="Any"
                                                className="p-column-filter"/>);
                         break;
                     case 'date':
@@ -276,6 +313,7 @@ class DatatableView extends Component {
     render() {
         return (
             <>
+                {this.getToggleSelect()}
                 <DatatableHeaderView
                     reload_datatable={() => this.props.reload_datatable()}
                     datatable_reload_timestamp={this.props.datatable_reload_timestamp}
