@@ -76,11 +76,8 @@ class DatatableView extends Component {
         updateLocaleOption('matchAny', 'match any', 'en');
         updateLocaleOption('dateIs', 'date is', 'en');
         updateLocaleOption('dateIsNot', 'date is not', 'en');
-
-
-
-
-
+        updateLocaleOption('apply', 'apply', 'en');
+        updateLocaleOption('clear', 'clear', 'en');
     }
 
     onColumnToggle(event) {
@@ -292,7 +289,7 @@ class DatatableView extends Component {
                         break;
                     case 'date':
                         result = <Calendar value={data.value} onChange={(e) => data.filterCallback(e.value, data.index)} dateFormat="yy/mm/dd"
-                                           placeholder="yyyy/mm/dd/" mask="9999/99/99/"/>;
+                                           placeholder="yyyy-mm-dd" mask="9999-99-99"/>;
                         break;
                     default:
                         result = (<MultiSelect value={data.value} options={this.getGroupedOptions(data.field)} itemTemplate={this.multiselectItemTemplate}

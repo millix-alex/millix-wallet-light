@@ -202,14 +202,14 @@ ul {
 .p-column-filter-overlay {
   .p-button:enabled:hover, .p-button:not(button):not(a):not(.p-disabled):hover {
     color:  $color-white !important;
-    background-color:  $color-primary !important;
     border-color:  $color-primary !important;
   }
 
   .p-button {
     color: $color-body-font !important;
-    background-color: $color-panel-filed-background !important;
-    border-color:  $color-primary !important;
+    border-color: $color-tab-hover !important;
+    box-shadow: none !important;
+    background: transparent !important;
   }
 }
 .p-multiselect-panel .p-multiselect-items .p-multiselect-item.p-highlight, .p-checkbox .p-checkbox-box.p-highlight {
@@ -227,9 +227,15 @@ ul {
 }
 
 .p-inputwrapper-focus, .p-inputwrapper-filled {
-  border-color: $color-primary !important;
+  /*
+  background-color: transparent;
+color: #949ba2;
+border-color: #494b54;
+  */
+  color: $color-body-font;
+  border-color: $color-tab-hover !important;
   box-shadow: none !important;
-  background: $color-panel-filed-background;
+  background: transparent;
 }
 
 .p-multiselect-items-wrapper {
