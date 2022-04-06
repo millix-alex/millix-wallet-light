@@ -354,16 +354,13 @@ class API {
 
     addWalletAddressVersion(data) {
         try {
+            console.log('addWalletAddressVersion')
             return fetch(this.getAuthenticatedMillixApiURL() + `/hMrav9QMiMyLQosB?p0=${data.version}&p1=${data.is_main_network}&p2=${data.regex_pattern}&p3=${data.is_default}`)
                 .then((response) => {
+
+                    console.log(response)
                     if (response.ok) {
-                        try {
-                            let response = this.listWalletAddressVersion();
-                            return response;
-                        }
-                        catch (e) {
-                            return Promise.reject(e);
-                        }
+                        return response.json();
                     }
                 });
         }

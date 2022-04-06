@@ -120,3 +120,13 @@
 .p-paginator .p-link:focus {
   box-shadow: none;
 }
+
+.action-col-width {
+  width: 7rem;
+  text-align: center !important;
+
+  .p-column-title {
+    margin: auto;
+  }
+
+}

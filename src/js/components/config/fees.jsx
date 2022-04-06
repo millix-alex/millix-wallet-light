@@ -2,8 +2,7 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 import {Button, Col, Form} from 'react-bootstrap';
-import {addWalletAddressVersion, removeWalletAddressVersion, walletUpdateConfig} from '../../redux/actions';
-import _ from 'lodash';
+import {walletUpdateConfig} from '../../redux/actions';
 import * as validate from '../../helper/validate';
 import ModalView from '../utils/modal-view';
 import ErrorList from '../utils/error-list-view';
@@ -90,11 +89,10 @@ class Fees extends Component {
     isValidFeesData() {
         let data       = this.state.fees_config_data;
         let error_list = [];
-        let valid = {isValid: true};
 
         data.TRANSACTION_FEE_PROXY = validate.required('transaction proxy fees', data.TRANSACTION_FEE_PROXY, error_list);
         if(data.TRANSACTION_FEE_PROXY) {
-            validate.positiveInteger('min connections in', data.TRANSACTION_FEE_PROXY, error_list);
+            validate.positiveInteger('transaction proxy feess', data.TRANSACTION_FEE_PROXY, error_list);
         }
         data.TRANSACTION_FEE_DEFAULT = validate.required('transaction fees', data.TRANSACTION_FEE_DEFAULT, error_list);
         if(data.TRANSACTION_FEE_DEFAULT) {
@@ -189,12 +187,8 @@ class Fees extends Component {
 
 export default connect(
     state => ({
-        config    : state.config,
-        configType: state.configType,
-        wallet    : state.wallet
+        config    : state.config
     }),
     {
-        walletUpdateConfig,
-        addWalletAddressVersion,
-        removeWalletAddressVersion
+        walletUpdateConfig
     })(withRouter(Fees));

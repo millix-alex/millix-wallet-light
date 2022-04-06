@@ -2,8 +2,7 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 import {Button, Col, Form} from 'react-bootstrap';
-import {addWalletAddressVersion, removeWalletAddressVersion, walletUpdateConfig} from '../../redux/actions';
-import _ from 'lodash';
+import {walletUpdateConfig} from '../../redux/actions';
 import * as validate from '../../helper/validate';
 import ModalView from '../utils/modal-view';
 import ErrorList from '../utils/error-list-view';
@@ -17,7 +16,7 @@ class Consensus extends Component {
             sending              : false,
             consensus_config_data: {},
             error_list           : {},
-            modalShowSendResult  : false,
+            modal_show_send_result  : false,
             reload               : false
         };
     }
@@ -41,7 +40,7 @@ class Consensus extends Component {
 
     changeModalShowSendResult(value = true) {
         this.setState({
-            modalShowSendResult: value
+            modal_show_send_result: value
         });
         if (value === false) {
             this.refreshPage();
@@ -69,7 +68,6 @@ class Consensus extends Component {
         });
 
         if (!this.isValidConsensusData()) {
-            console.log('not valid')
             return;
         }
 
@@ -130,7 +128,7 @@ class Consensus extends Component {
     render() {
         return <div>
             <ModalView
-                show={this.state.modalShowSendResult}
+                show={this.state.modal_show_send_result}
                 size={'lg'}
                 on_close={() => this.changeModalShowSendResult(false)}
                 heading={'success'}
@@ -270,11 +268,7 @@ class Consensus extends Component {
 export default connect(
     state => ({
         config    : state.config,
-        configType: state.configType,
-        wallet    : state.wallet
     }),
     {
-        walletUpdateConfig,
-        addWalletAddressVersion,
-        removeWalletAddressVersion
+        walletUpdateConfig
     })(withRouter(Consensus));

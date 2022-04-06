@@ -59,7 +59,7 @@ export function positiveInteger(field_name, value, error_list, allow_zero = fals
     let value_escaped;
     if (typeof value === 'string') {
         value_escaped = value.trim();
-        value_escaped = parseInt(value_escaped.replace(/\D/g, ''));
+        value_escaped = Number(value_escaped);
     } else {
         value_escaped = value;
     }
@@ -141,7 +141,6 @@ export function handleAmountInputChange(e) {
 
     amount         = parseInt(amount);
     e.target.value = !isNaN(amount) ? format.millix(amount, false) : 0;
-    console.log(e.target.value)
 
     e.target.setSelectionRange(cursorStart + offset, cursorEnd + offset);
 }

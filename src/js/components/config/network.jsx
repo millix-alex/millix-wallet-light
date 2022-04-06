@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 import {Button, Col, Form, Row} from 'react-bootstrap';
-import {addWalletAddressVersion, removeWalletAddressVersion, walletUpdateConfig} from '../../redux/actions';
+import {walletUpdateConfig} from '../../redux/actions';
 import API from '../../api';
 import ErrorList from '../utils/error-list-view';
 import ModalView from '../utils/modal-view';
@@ -13,27 +13,29 @@ class Network extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            node_public_ip       : '',
-            sending              : false,
-            network_config_data  : {},
-            error_list           : {},
-            modalShowSendResult  : false,
-            reload               : false,
-            prepared_network_data: {}
+            node_public_ip        : '',
+            sending               : false,
+            network_config_data   : {},
+            error_list            : {},
+            modal_show_send_result: false,
+            reload                : false,
+            prepared_network_data : {}
         };
-    }
 
-    async getNodePublicIP() {
-        API.getNodePublicIP().then(data => {
-            this.setState({
-                node_public_ip: data.node_public_ip
-            });
-        });
+        this.validateNetworkData = this.validateNetworkData.bind(this);
     }
 
     componentDidMount() {
         this.getNodePublicIP();
         this.loadConfigToState();
+    }
+
+    getNodePublicIP() {
+        API.getNodePublicIP().then(data => {
+            this.setState({
+                node_public_ip: data.node_public_ip
+            });
+        });
     }
 
     loadConfigToState() {
@@ -51,7 +53,7 @@ class Network extends Component {
 
     changeModalShowSendResult(value = true) {
         this.setState({
-            modalShowSendResult: value
+            modal_show_send_result: value
         });
         if (value === false) {
             this.refreshPage();
@@ -63,12 +65,11 @@ class Network extends Component {
     };
 
     setNetworkConfig(data) {
-        for (let key in data) {
-            this.state.network_config_data[key] = data[key];
-        }
-
         this.setState({
-            network_config_data: this.state.network_config_data
+            network_config_data: {
+                ...this.state.network_config_data,
+                ...data
+            }
         });
     }
 
@@ -78,13 +79,13 @@ class Network extends Component {
             error_list: []
         });
 
-        if (!this.isValidNetworkData()) {
-            this.refreshPage();
+        let prepared_network_data = this.validateNetworkData();
+        if (!prepared_network_data) {
             return;
         }
 
         try {
-            this.props.walletUpdateConfig(this.state.prepared_network_data).then(() => {
+            this.props.walletUpdateConfig(prepared_network_data).then(() => {
                 this.setState({
                     sending: false
                 });
@@ -103,32 +104,31 @@ class Network extends Component {
         }
     }
 
-    isValidNetworkData() {
-        this.state.prepared_network_data     = {...this.state.network_config_data};
-        let error_list = [];
+    validateNetworkData() {
+        let prepared_data = {...this.state.network_config_data};
+        let error_list    = [];
 
-        this.state.prepared_network_data.NODE_INITIAL_LIST = validate.json('nodes', this.state.prepared_network_data.NODE_INITIAL_LIST.split(','), error_list);
-        this.state.prepared_network_data.NODE_PORT = validate.required('node port', this.state.prepared_network_data.NODE_PORT, error_list);
-        if (this.state.prepared_network_data.NODE_PORT) {
-            validate.positiveInteger('node port', this.state.prepared_network_data.NODE_PORT, error_list);
+        prepared_data.NODE_INITIAL_LIST = validate.json('nodes', prepared_data.NODE_INITIAL_LIST.split(','), error_list);
+        prepared_data.NODE_PORT         = validate.required('node port', prepared_data.NODE_PORT, error_list);
+        if (prepared_data.NODE_PORT) {
+            validate.positiveInteger('node port', prepared_data.NODE_PORT, error_list);
         }
-        this.state.prepared_network_data.NODE_PORT_API = validate.required('rpc port', this.state.prepared_network_data.NODE_PORT_API, error_list);
-        if (this.state.prepared_network_data.NODE_PORT_API) {
-            validate.positiveInteger('rpc port', this.state.prepared_network_data.NODE_PORT_API, error_list);
+        prepared_data.NODE_PORT_API = validate.required('rpc port', prepared_data.NODE_PORT_API, error_list);
+        if (prepared_data.NODE_PORT_API) {
+            validate.positiveInteger('rpc port', prepared_data.NODE_PORT_API, error_list);
         }
-        this.state.prepared_network_data.NODE_CONNECTION_INBOUND_MAX = validate.required('max connections in', this.state.prepared_network_data.NODE_CONNECTION_INBOUND_MAX, error_list);
-        if (this.state.prepared_network_data.NODE_CONNECTION_INBOUND_MAX) {
-            validate.positiveInteger('max connections in', this.state.prepared_network_data.NODE_CONNECTION_INBOUND_MAX, error_list);
+        prepared_data.NODE_CONNECTION_INBOUND_MAX = validate.required('max connections in', prepared_data.NODE_CONNECTION_INBOUND_MAX, error_list);
+        if (prepared_data.NODE_CONNECTION_INBOUND_MAX) {
+            validate.positiveInteger('max connections in', prepared_data.NODE_CONNECTION_INBOUND_MAX, error_list);
         }
-        this.state.prepared_network_data.NODE_CONNECTION_OUTBOUND_MAX = validate.required('min connections in', this.state.prepared_network_data.NODE_CONNECTION_OUTBOUND_MAX, error_list);
-        if (this.state.prepared_network_data.NODE_CONNECTION_OUTBOUND_MAX) {
-            validate.positiveInteger('min connections in', this.state.prepared_network_data.NODE_CONNECTION_OUTBOUND_MAX, error_list);
+        prepared_data.NODE_CONNECTION_OUTBOUND_MAX = validate.required('min connections in', prepared_data.NODE_CONNECTION_OUTBOUND_MAX, error_list);
+        if (prepared_data.NODE_CONNECTION_OUTBOUND_MAX) {
+            validate.positiveInteger('min connections in', prepared_data.NODE_CONNECTION_OUTBOUND_MAX, error_list);
         }
-        validate.required('bind address', this.state.prepared_network_data.NODE_HOST, error_list);
-        if (this.state.prepared_network_data.NODE_HOST) {
-            validate.ipAddress('bind address', this.state.prepared_network_data.NODE_HOST, error_list);
+        validate.required('bind address', prepared_data.NODE_HOST, error_list);
+        if (prepared_data.NODE_HOST) {
+            validate.ipAddress('bind address', prepared_data.NODE_HOST, error_list);
         }
-
 
         if (error_list.length > 0) {
             this.setState({
@@ -138,13 +138,13 @@ class Network extends Component {
             return false;
         }
 
-        return true;
+        return prepared_data;
     }
 
     render() {
         return <div>
             <ModalView
-                show={this.state.modalShowSendResult}
+                show={this.state.modal_show_send_result}
                 size={'lg'}
                 on_close={() => this.changeModalShowSendResult(false)}
                 heading={'success'}
@@ -284,12 +284,8 @@ class Network extends Component {
 
 export default connect(
     state => ({
-        config    : state.config,
-        configType: state.configType,
-        wallet    : state.wallet
+        config: state.config
     }),
     {
-        walletUpdateConfig,
-        addWalletAddressVersion,
-        removeWalletAddressVersion
+        walletUpdateConfig
     })(withRouter(Network));

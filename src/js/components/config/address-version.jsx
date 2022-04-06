@@ -2,11 +2,12 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 import {Button, Col, Form, Row} from 'react-bootstrap';
-import {addWalletAddressVersion, removeWalletAddressVersion, walletUpdateConfig} from '../../redux/actions';
-import _ from 'lodash';
+import {removeWalletAddressVersion, walletUpdateConfig} from '../../redux/actions';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import DatatableView from '../utils/datatable-view';
 import ModalView from '../utils/modal-view';
+import ErrorList from '../utils/error-list-view';
+import API from '../../api/index';
 
 
 class AddressVersion extends Component {
@@ -14,34 +15,23 @@ class AddressVersion extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            modalAddAddressVersion: {
+            modalAddAddressVersion    : {
                 status: false,
                 title : ''
             },
-            address_version_name  : '',
-            address_version_regex : '',
-            address_is_default    : false,
-            node_public_ip        : '',
-            datatables            : [],
-            datatable_reload_timestamp: new Date()
+            address_version_name      : '',
+            address_version_regex     : '',
+            address_is_default        : false,
+            node_public_ip            : '',
+            datatables                : [],
+            datatable_reload_timestamp: new Date(),
+            error_list                : []
         };
     }
 
     componentDidMount() {
         this.setConfigToState();
     }
-
-    setConfig(data) {
-        _.each(_.keys(data), key => {
-            switch (this.props.configType[key]) {
-                case 'number':
-                    data[key] = JSON.parse(data[key]);
-            }
-        });
-
-        return this.props.walletUpdateConfig(data);
-    }
-
 
     showModalAddAddressVersion(callback, title) {
         this.setState({
@@ -53,6 +43,9 @@ class AddressVersion extends Component {
     }
 
     addAddressVersion() {
+        this.setState({
+            error_list: []
+        });
         const data = {
             version        : this._address_version_name.value,
             is_main_network: this.props.config.MODE_TEST_NETWORK ? 0 : 1,
@@ -60,40 +53,74 @@ class AddressVersion extends Component {
             is_default     : this.state.address_is_default ? 1 : 0
         };
 
-        let result = this.props.addWalletAddressVersion(data);
-        result.then((response) => {
-            Object.keys(response.payload).forEach(key => {
-                if (response.payload[key].version === this.state.address_version_name && response.payload[key].regex_pattern === this.state.address_version_regex) {
-                    console.log('saved');
-                }
-            });
+        API.addWalletAddressVersion(data)
+           .then(data => {
+               if (data.api_status === 'fail') {
+                   this.hideModalAddAddressVersion();
+                   this.setState({
+                       error_list: [
+                           {
+                               name   : 'api error',
+                               message: data.api_message
+                           }
+                       ]
+                   });
+                   return;
+               }
+               this.setState({
+                   address_version_name : '',
+                   address_version_regex: '',
+                   address_is_default   : false
+               });
 
-            this.setState({
-                address_version_name : '',
-                address_version_regex: '',
-                address_is_default   : false
-            });
+               this.setConfigToState(true);
+               this.hideModalAddAddressVersion();
+           });
 
-            this.hideModalAddAddressVersion();
-            this.setConfigToState(response.payload);
-        });
     }
 
 
     removeFromConfigList(addressVersion) {
         let result = this.props.removeWalletAddressVersion(addressVersion);
         result.then(() => {
-            this.setConfigToState();
+            this.setConfigToState(true);
         });
     }
 
-    setConfigToState(address_version_list = null) {
-        if (address_version_list === null) {
-            address_version_list = this.props.wallet.address_version_list;
+    setConfigToState(load_from_api = false) {
+        let address_version_list = this.props.wallet.address_version_list;
+        if (load_from_api) {
+            try {
+                API.listWalletAddressVersion()
+                   .then(data => {
+                       this.setState({
+                           datatable_reload_timestamp: new Date(),
+                           datatables                : {
+                               address_version_list: data.map((input) => ({
+                                   version        : input.version,
+                                   regex_pattern  : input.regex_pattern,
+                                   default_address: input.is_default === 1 ? 'yes' : 'no',
+                                   action         : this.getRemoveWalletAddressVersionButton(input)
+                               }))
+                           }
+                       });
+                   });
+                return;
+            }
+            catch (e) {
+                this.setState({
+                    error_list: [
+                        {
+                            name   : 'api error',
+                            message: 'error'
+                        }
+                    ]
+                });
+            }
         }
         this.setState({
             datatable_reload_timestamp: new Date(),
-            datatables: {
+            datatables                : {
                 address_version_list: address_version_list.map((input) => ({
                     version        : input.version,
                     regex_pattern  : input.regex_pattern,
@@ -117,23 +144,23 @@ class AddressVersion extends Component {
             <Col>
                 <Form.Group className="form-group">
                     <label>default address</label>
-                        <Form.Select
-                            className={'paginator-dropdown-wrapper'}
-                            as="select"
-                            value={this.state.address_is_default ? 'yes' : 'no'}
-                            onChange={(e) => {
-                                this.setState({address_is_default: e.target.value === 'yes'});
-                            }}
-                        >
-                            {Array.from([
-                                'yes',
-                                'no'
-                            ]).map(type =>
-                                <option
-                                    key={type}
-                                >{type}</option>
-                            )}
-                        </Form.Select>
+                    <Form.Select
+                        className={'paginator-dropdown-wrapper'}
+                        as="select"
+                        value={this.state.address_is_default ? 'yes' : 'no'}
+                        onChange={(e) => {
+                            this.setState({address_is_default: e.target.value === 'yes'});
+                        }}
+                    >
+                        {Array.from([
+                            'yes',
+                            'no'
+                        ]).map(type =>
+                            <option
+                                key={type}
+                            >{type}</option>
+                        )}
+                    </Form.Select>
                 </Form.Group>
             </Col>
 
@@ -210,9 +237,11 @@ class AddressVersion extends Component {
                         address version
                     </div>
                     <div className={'panel-body'}>
+                        <ErrorList error_list={this.state.error_list}/>
+
                         <div>
                             <DatatableView
-                                reload_datatable={() => this.setConfigToState()}
+                                reload_datatable={() => this.setConfigToState(true)}
                                 datatable_reload_timestamp={this.state.datatable_reload_timestamp}
                                 action_button_label={'add address version'}
                                 action_button={{
@@ -250,6 +279,5 @@ export default connect(
     }),
     {
         walletUpdateConfig,
-        addWalletAddressVersion,
         removeWalletAddressVersion
     })(withRouter(AddressVersion));

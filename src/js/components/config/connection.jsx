@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 import {Button, Col, Form} from 'react-bootstrap';
-import {addWalletAddressVersion, removeWalletAddressVersion, walletUpdateConfig} from '../../redux/actions';
+import {removeWalletAddressVersion, walletUpdateConfig} from '../../redux/actions';
 import _ from 'lodash';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import DatatableView from '../utils/datatable-view';
@@ -194,7 +194,9 @@ class Connection extends Component {
                                     {
                                         field: 'node_id'
                                     }
-                                ]}/>
+                                ]}
+                                actionColumnClass={'action-col-width'}
+                            />
                         </Col>
                     </div>
                 </div>
@@ -219,7 +221,9 @@ class Connection extends Component {
                                     {
                                         field: 'node_id'
                                     }
-                                ]}/>
+                                ]}
+                                actionColumnClass={'action-col-width'}
+                            />
                         </Col>
                     </div>
                 </div>
@@ -244,7 +248,9 @@ class Connection extends Component {
                                     {
                                         field: 'node_id'
                                     }
-                                ]}/>
+                                ]}
+                                actionColumnClass={'action-col-width'}
+                            />
                         </Col>
                     </div>
                 </div>
@@ -262,6 +268,5 @@ export default connect(
     }),
     {
         walletUpdateConfig,
-        addWalletAddressVersion,
         removeWalletAddressVersion
     })(withRouter(Connection));
