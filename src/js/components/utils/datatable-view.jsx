@@ -159,13 +159,11 @@ class DatatableView extends Component {
                 ];
 
                 return <div
-                    className={'paginator-dropdown-wrapper'}>
-                    show
-                    <Dropdown
+                    className={'paginator-dropdown-wrapper'}>show<Dropdown
                     value={options.value} options={dropdownOptions}
                     onChange={options.onChange} className={'align-middle'}/>
                     records
-                </div>;
+                . total records {options.totalRecords}.</div>;
             }
         };
     }
