@@ -24,7 +24,6 @@ import StatsView from './stats-view';
 import ReportIssueView from './report-issue-view';
 import FaqView from './faq-view';
 import AddressListView from './address-list-view';
-import { loaderStatus} from './utils/loader-status';
 
 class AppContainer extends Component {
     constructor(props) {
@@ -41,18 +40,9 @@ class AppContainer extends Component {
          }
          setInterval(() => scroll.resize(), 500);*/
 
-         // Simulation function to show and hide the loading screen
-        
-         this.onShowLoading()
-
+         // Simulation function to show and hide the loading screen 
     }
 
-    onShowLoading() {
-        loaderStatus.next(true); // Emitting true for loaderStatus to turn on loading screen
-        setTimeout(() => {
-        loaderStatus.next(false); // Emitting false for loaderStatus to turn on loading screen
-        }, 2000);
-    }
 
     render() {
         return <Provider store={this.props.store}>

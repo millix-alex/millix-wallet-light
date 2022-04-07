@@ -3,6 +3,7 @@ import API from '../../api/index';
 import async from 'async';
 import _ from 'lodash';
 
+
 export function updateNodeAttribute(payload) {
     return {
         type: UPDATE_NODE_ATTRIBUTE,

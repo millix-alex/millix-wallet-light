@@ -1,10 +1,12 @@
 import React from "react";
-import { loaderStatus } from "./utils/loader-status";
+import { Subject } from "rxjs";
+
+export const loaderStatus = new Subject();
 
 const LoadingContainer = props => {
   return (
     <div className="loader-container">
-      <div className="loader">
+      <div className="loader">  
         <div className="circle">         
         </div>
       </div>
