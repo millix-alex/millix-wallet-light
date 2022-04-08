@@ -67,9 +67,10 @@ class Fees extends Component {
             return;
         }
 
+        console.log(this.state.fees_config_data);
         let fees_config = {
-            TRANSACTION_FEE_PROXY  : this.state.fees_config_data.TRANSACTION_FEE_PROXY.replace(/,/g, ''),
-            TRANSACTION_FEE_DEFAULT: this.state.fees_config_data.TRANSACTION_FEE_DEFAULT.replace(/,/g, '')
+            TRANSACTION_FEE_PROXY  : this.state.fees_config_data.TRANSACTION_FEE_PROXY.toString().replace(/,/g, ''),
+            TRANSACTION_FEE_DEFAULT: this.state.fees_config_data.TRANSACTION_FEE_DEFAULT.toString().replace(/,/g, '')
         };
         try {
             this.props.walletUpdateConfig(fees_config).then(() => {
