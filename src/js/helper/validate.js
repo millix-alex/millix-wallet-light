@@ -1,7 +1,7 @@
 import * as format from './format';
 
 export function required(field_name, value, error_list) {
-    if(typeof value === "string"){
+    if (typeof value === 'string') {
         value = value.trim();
     }
     if (!value) {
@@ -55,20 +55,16 @@ export function integer(field_name, value, error_list) {
     return value_escaped;
 }
 
-export function positiveInteger(field_name, value, error_list, allow_zero = false, allow_comma = false) {
+export function positiveInteger(field_name, value, error_list, allow_zero = false) {
     let value_escaped;
-    if (typeof value === 'string') {
-        value_escaped = value.trim();
-        if(allow_comma) {
-            value_escaped = value_escaped.replace(/,/g, '');
-        }
-        if(!value_escaped.match(/^-?[0-9]+$/)) {
-            value_escaped = NaN;
-        }
-    } else {
-        value_escaped = value;
+    value         = value.toString();
+    value_escaped = value.trim();
+    value_escaped = value_escaped.replace(/,/g, '');
+    if (!value_escaped.match(/^-?[0-9]+$/)) {
+        value_escaped = NaN;
     }
-    value_escaped = Number(value_escaped)
+
+    value_escaped = Number(value_escaped);
     if (!Number.isInteger(value_escaped)) {
         error_list.push({
             name   : get_error_name('amount_is_not_integer', field_name),
@@ -94,14 +90,14 @@ export function positiveInteger(field_name, value, error_list, allow_zero = fals
 
 export function ipAddress(field_name, value, error_list) {
     let ipAddressArray = value.split('.');
-    if(ipAddressArray.length !== 4 ){
+    if (ipAddressArray.length !== 4) {
         error_list.push({
             name   : get_error_name('amount_format_is_wrong', field_name),
             message: `${field_name} must be a valid ip address`
         });
     }
     ipAddressArray.forEach(element => {
-        if(isNaN(Number(element)) || element > 255 || element < 0 || element === ''){
+        if (isNaN(Number(element)) || element > 255 || element < 0 || element === '') {
             error_list.push({
                 name   : get_error_name('amount_format_is_wrong', field_name),
                 message: `${field_name} must be a valid ip address`
@@ -113,13 +109,13 @@ export function ipAddress(field_name, value, error_list) {
 
 export function string(field_name, value, error_list, length) {
     let is_alphabetical_string = /^[a-zA-Z0-9]+$/.test(value);
-    if(typeof value !== "string" || !is_alphabetical_string){
+    if (typeof value !== 'string' || !is_alphabetical_string) {
         error_list.push({
             name   : get_error_name('amount_format_is_wrong', field_name),
             message: `${field_name} must be alphanumeric string`
         });
     }
-    if(value.length > length){
+    if (value.length > length) {
         error_list.push({
             name   : get_error_name('amount_format_is_wrong', field_name),
             message: `${field_name} max length is ${length} `
@@ -172,7 +168,7 @@ export function handleAmountInputChangeValue(inputAmount) {
         return;
     }
     inputAmount = inputAmount.toString();
-    let amount      = inputAmount.replace(/[,.]/g, '');
-    amount         = parseInt(amount);
+    let amount  = inputAmount.replace(/[,.]/g, '');
+    amount      = parseInt(amount);
     return !isNaN(amount) ? format.millix(amount, false) : 0;
 }

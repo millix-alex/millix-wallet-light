@@ -7,6 +7,7 @@ import * as validate from '../../helper/validate';
 import ModalView from '../utils/modal-view';
 import ErrorList from '../utils/error-list-view';
 
+
 class Fees extends Component {
 
     constructor(props) {
@@ -66,8 +67,12 @@ class Fees extends Component {
             return;
         }
 
+        let fees_config = {
+            TRANSACTION_FEE_PROXY  : this.state.fees_config_data.TRANSACTION_FEE_PROXY.replace(/,/g, ''),
+            TRANSACTION_FEE_DEFAULT: this.state.fees_config_data.TRANSACTION_FEE_DEFAULT.replace(/,/g, '')
+        };
         try {
-            this.props.walletUpdateConfig(this.state.fees_config_data).then(() => {
+            this.props.walletUpdateConfig(fees_config).then(() => {
                 this.setState({
                     sending: false
                 });
@@ -91,18 +96,18 @@ class Fees extends Component {
         let error_list = [];
 
         data.TRANSACTION_FEE_PROXY = validate.required('transaction proxy fees', data.TRANSACTION_FEE_PROXY, error_list);
-        if(data.TRANSACTION_FEE_PROXY) {
-            validate.positiveInteger('transaction proxy fees', data.TRANSACTION_FEE_PROXY, error_list, false, true);
+        if (data.TRANSACTION_FEE_PROXY) {
+            validate.positiveInteger('transaction proxy fees', data.TRANSACTION_FEE_PROXY, error_list, false);
         }
         data.TRANSACTION_FEE_DEFAULT = validate.required('transaction fees', data.TRANSACTION_FEE_DEFAULT, error_list, false, true);
-        if(data.TRANSACTION_FEE_DEFAULT) {
-            validate.positiveInteger('transaction fees', data.TRANSACTION_FEE_DEFAULT, error_list);
+        if (data.TRANSACTION_FEE_DEFAULT) {
+            validate.positiveInteger('transaction fees', data.TRANSACTION_FEE_DEFAULT, error_list,);
         }
 
         if (error_list.length > 0) {
             this.setState({
                 error_list: error_list,
-                sending: false
+                sending   : false
             });
             return false;
         }
@@ -187,7 +192,7 @@ class Fees extends Component {
 
 export default connect(
     state => ({
-        config    : state.config
+        config: state.config
     }),
     {
         walletUpdateConfig
