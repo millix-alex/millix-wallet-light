@@ -122,7 +122,7 @@ export function string(field_name, value, error_list, length) {
     if(value.length > length){
         error_list.push({
             name   : get_error_name('amount_format_is_wrong', field_name),
-            message: `max length is ${length} `
+            message: `${field_name} max length is ${length} `
         });
     }
 }

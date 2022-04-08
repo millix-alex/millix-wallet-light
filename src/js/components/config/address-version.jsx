@@ -8,6 +8,7 @@ import DatatableView from '../utils/datatable-view';
 import ModalView from '../utils/modal-view';
 import ErrorList from '../utils/error-list-view';
 import API from '../../api/index';
+import * as validate from '../../helper/validate';
 
 
 class AddressVersion extends Component {
@@ -23,7 +24,7 @@ class AddressVersion extends Component {
             address_version_regex     : '',
             address_is_default        : false,
             node_public_ip            : '',
-            datatables                : [],
+            address_version_list      : [],
             datatable_reload_timestamp: new Date(),
             error_list                : []
         };
@@ -46,21 +47,34 @@ class AddressVersion extends Component {
         this.setState({
             error_list: []
         });
+        let error_list = [];
+        validate.required('version', this._address_version_name.value, error_list);
+        validate.string('version', this._address_version_name.value, error_list, 4);
+        validate.required('regex pattern', this._address_version_regex.value, error_list);
+
+        if (error_list.length > 0) {
+            this.setState({
+                error_list: [
+                    ...error_list
+                ]
+            });
+            return;
+        }
+
         const data = {
             version        : this._address_version_name.value,
             is_main_network: this.props.config.MODE_TEST_NETWORK ? 0 : 1,
             regex_pattern  : this._address_version_regex.value,
             is_default     : this.state.address_is_default ? 1 : 0
         };
-
         API.addWalletAddressVersion(data)
            .then(data => {
-               if (data.api_status === 'fail') {
+               if (!data || data.api_status === 'fail') {
                    this.setState({
                        error_list: [
                            {
                                name   : 'api error',
-                               message: data.api_message
+                               message: data.api_message ? data.api_message : 'bad request'
                            }
                        ]
                    });
@@ -75,7 +89,6 @@ class AddressVersion extends Component {
                this.setConfigToState(true);
                this.hideModalAddAddressVersion();
            });
-
     }
 
 
@@ -94,14 +107,12 @@ class AddressVersion extends Component {
                    .then(data => {
                        this.setState({
                            datatable_reload_timestamp: new Date(),
-                           datatables                : {
-                               address_version_list: data.map((input) => ({
-                                   version        : input.version,
-                                   regex_pattern  : input.regex_pattern,
-                                   default_address: input.is_default === 1 ? 'yes' : 'no',
-                                   action         : this.getRemoveWalletAddressVersionButton(input)
-                               }))
-                           }
+                           address_version_list      : data.map((input) => ({
+                               version        : input.version,
+                               regex_pattern  : input.regex_pattern,
+                               default_address: input.is_default === 1 ? 'yes' : 'no',
+                               action         : this.getRemoveWalletAddressVersionButton(input)
+                           }))
                        });
                    });
                 return;
@@ -119,14 +130,12 @@ class AddressVersion extends Component {
         }
         this.setState({
             datatable_reload_timestamp: new Date(),
-            datatables                : {
-                address_version_list: address_version_list.map((input) => ({
-                    version        : input.version,
-                    regex_pattern  : input.regex_pattern,
-                    default_address: input.is_default === 1 ? 'yes' : 'no',
-                    action         : this.getRemoveWalletAddressVersionButton(input)
-                }))
-            }
+            address_version_list      : address_version_list.map((input) => ({
+                version        : input.version,
+                regex_pattern  : input.regex_pattern,
+                default_address: input.is_default === 1 ? 'yes' : 'no',
+                action         : this.getRemoveWalletAddressVersionButton(input)
+            }))
         });
     }
 
@@ -247,7 +256,7 @@ class AddressVersion extends Component {
                                     label   : 'add address version',
                                     on_click: () => this.showModalAddAddressVersion(this.getAddressVersionModal, 'address version')
                                 }}
-                                value={this.state.datatables.address_version_list}
+                                value={this.state.address_version_list}
                                 sortOrder={1}
                                 showActionColumn={true}
                                 resultColumn={[
