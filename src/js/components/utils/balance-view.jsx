@@ -6,6 +6,7 @@ import {withRouter} from 'react-router-dom';
 import * as svg from '../../helper/svg';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import Accordion from 'react-bootstrap/Accordion'
+import APIExternal from '../../api/external';
 
 class BalanceView extends Component {
     constructor(props) {
@@ -16,7 +17,9 @@ class BalanceView extends Component {
     }
 
     componentDidMount() {
-
+        APIExternal.getFiatleakPriceUSD().then(data => {
+            console.log(data)
+        })
     }
 
     componentWillUnmount() {

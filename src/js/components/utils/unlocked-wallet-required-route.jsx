@@ -11,6 +11,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import HelpIconView from './help-icon-view';
 import config from '../../../config.js';
 import { MILLIX_VALUE_REFRESH_INTERVAL_MS } from '../../../config.js';
+import APIExternal from '../../api/external';
 
 const UnlockedWalletRequiredRoute = ({
                                          component: Component,
@@ -49,15 +50,11 @@ const UnlockedWalletRequiredRoute = ({
 
         let fetch_fiatleak_api_timeout_id
         const getFiatValuesInterval = () => { 
-            console.log('fetching fiatleak api');	
-            //API.getNodeStat().then(data => {
-                rest.currencyPriceUpdate({usd_value:0.0000005611000000});
-            //}).catch(() => {
-            //}).finally(() => {
-             if(rest.wallet.unlocked)
-               fetch_fiatleak_api_timeout_id = setTimeout( ()=>{ getFiatValuesInterval()}, MILLIX_VALUE_REFRESH_INTERVAL_MS);
-            //});      
-            
+            APIExternal.getFiatleakPriceUSD().then(resp => {
+                rest.currencyPriceUpdate({usd_value:resp.data.price});
+            })	
+            if(rest.wallet.unlocked)
+               fetch_fiatleak_api_timeout_id = setTimeout( ()=>{ getFiatValuesInterval()}, MILLIX_VALUE_REFRESH_INTERVAL_MS);           
         };
         getFiatValuesInterval();       
 
@@ -120,3 +117,5 @@ export default connect(
         setLogSize,
         currencyPriceUpdate
     })(UnlockedWalletRequiredRoute);
+
+    

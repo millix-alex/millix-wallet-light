@@ -29,12 +29,11 @@ export function is_currency_price_available(){
 
 export function usd(amount, append_name = true) {
     let currency_prices = store.getState().currency_price;
-    let millix_usd_value =  amount * currency_prices.usd_value;
-    let result = millix_usd_value.toLocaleString('en-US');
+    let millix_usd_value = amount * currency_prices.usd_value;
     if (append_name) {
-        result += ' usd';
+        millix_usd_value += ' usd';
     }
-    return result;
+    return millix_usd_value;
 }
 
 export function fiat(amount) {
