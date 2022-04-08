@@ -109,9 +109,9 @@ class Network extends Component {
         let error_list    = [];
 
         prepared_data.NODE_INITIAL_LIST = validate.json('nodes', prepared_data.NODE_INITIAL_LIST.split(','), error_list);
-        prepared_data.NODE_PORT         = validate.required('node port', prepared_data.NODE_PORT, error_list);
+        prepared_data.NODE_PORT         = validate.required('network port', prepared_data.NODE_PORT, error_list);
         if (prepared_data.NODE_PORT) {
-            validate.positiveInteger('node port', prepared_data.NODE_PORT, error_list);
+            validate.positiveInteger('network port', prepared_data.NODE_PORT, error_list);
         }
         prepared_data.NODE_PORT_API = validate.required('rpc port', prepared_data.NODE_PORT_API, error_list);
         if (prepared_data.NODE_PORT_API) {

@@ -92,9 +92,9 @@ class Fees extends Component {
 
         data.TRANSACTION_FEE_PROXY = validate.required('transaction proxy fees', data.TRANSACTION_FEE_PROXY, error_list);
         if(data.TRANSACTION_FEE_PROXY) {
-            validate.positiveInteger('transaction proxy feess', data.TRANSACTION_FEE_PROXY, error_list);
+            validate.positiveInteger('transaction proxy fees', data.TRANSACTION_FEE_PROXY, error_list, false, true);
         }
-        data.TRANSACTION_FEE_DEFAULT = validate.required('transaction fees', data.TRANSACTION_FEE_DEFAULT, error_list);
+        data.TRANSACTION_FEE_DEFAULT = validate.required('transaction fees', data.TRANSACTION_FEE_DEFAULT, error_list, false, true);
         if(data.TRANSACTION_FEE_DEFAULT) {
             validate.positiveInteger('transaction fees', data.TRANSACTION_FEE_DEFAULT, error_list);
         }

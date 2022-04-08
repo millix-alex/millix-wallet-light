@@ -55,14 +55,20 @@ export function integer(field_name, value, error_list) {
     return value_escaped;
 }
 
-export function positiveInteger(field_name, value, error_list, allow_zero = false) {
+export function positiveInteger(field_name, value, error_list, allow_zero = false, allow_comma = false) {
     let value_escaped;
     if (typeof value === 'string') {
         value_escaped = value.trim();
-        value_escaped = Number(value_escaped);
+        if(allow_comma) {
+            value_escaped = value_escaped.replace(/,/g, '');
+        }
+        if(!value_escaped.match(/^-?[0-9]+$/)) {
+            value_escaped = NaN;
+        }
     } else {
         value_escaped = value;
     }
+    value_escaped = Number(value_escaped)
     if (!Number.isInteger(value_escaped)) {
         error_list.push({
             name   : get_error_name('amount_is_not_integer', field_name),
@@ -95,7 +101,7 @@ export function ipAddress(field_name, value, error_list) {
         });
     }
     ipAddressArray.forEach(element => {
-        if(element > 255 || element < 0 || element === ''){
+        if(isNaN(Number(element)) || element > 255 || element < 0 || element === ''){
             error_list.push({
                 name   : get_error_name('amount_format_is_wrong', field_name),
                 message: `${field_name} must be a valid ip address`
@@ -103,6 +109,22 @@ export function ipAddress(field_name, value, error_list) {
             return false;
         }
     });
+}
+
+export function string(field_name, value, error_list, length) {
+    let is_alphabetical_string = /^[a-zA-Z0-9]+$/.test(value);
+    if(typeof value !== "string" || !is_alphabetical_string){
+        error_list.push({
+            name   : get_error_name('amount_format_is_wrong', field_name),
+            message: `${field_name} must be alphanumeric string`
+        });
+    }
+    if(value.length > length){
+        error_list.push({
+            name   : get_error_name('amount_format_is_wrong', field_name),
+            message: `max length is ${length} `
+        });
+    }
 }
 
 export function json(field_name, value, error_list) {

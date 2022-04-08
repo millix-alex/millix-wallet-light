@@ -56,7 +56,6 @@ class AddressVersion extends Component {
         API.addWalletAddressVersion(data)
            .then(data => {
                if (data.api_status === 'fail') {
-                   this.hideModalAddAddressVersion();
                    this.setState({
                        error_list: [
                            {
@@ -142,6 +141,7 @@ class AddressVersion extends Component {
     getAddressVersionBody() {
         return <div>
             <Col>
+                <ErrorList error_list={this.state.error_list}/>
                 <Form.Group className="form-group">
                     <label>default address</label>
                     <Form.Select
@@ -227,6 +227,7 @@ class AddressVersion extends Component {
             <ModalView
                 show={this.state.modalAddAddressVersion.status}
                 size={'lg'}
+                prevent_close_after_accept={true}
                 on_close={() => this.hideModalAddAddressVersion()}
                 on_accept={() => this.addAddressVersion()}
                 heading={this.state.modalAddAddressVersion.title}
@@ -237,8 +238,6 @@ class AddressVersion extends Component {
                         address version
                     </div>
                     <div className={'panel-body'}>
-                        <ErrorList error_list={this.state.error_list}/>
-
                         <div>
                             <DatatableView
                                 reload_datatable={() => this.setConfigToState(true)}
