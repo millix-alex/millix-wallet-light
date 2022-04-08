@@ -160,7 +160,8 @@ const getNodeConfig = () => {
                    configType: {}
                };
                configList.forEach(config => {
-                   newConfig.config[config.config_name]     = config.type !== 'string' ? JSON.parse(config.value) : config.value;
+                   console.log(config.config_name, config.value, config.type);
+                   newConfig.config[config.config_name]     = (config.type !== 'string' && config.type !== 'number') ? JSON.parse(config.value) : config.value;
                    newConfig.configType[config.config_name] = config.type;
                });
                store.dispatch(addWalletConfig(newConfig));
