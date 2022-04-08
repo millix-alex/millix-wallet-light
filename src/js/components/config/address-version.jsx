@@ -1,14 +1,15 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
-import {Button, Col, Form, Row} from 'react-bootstrap';
+import {Col, Form, Row} from 'react-bootstrap';
 import {removeWalletAddressVersion, walletUpdateConfig} from '../../redux/actions';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import DatatableView from '../utils/datatable-view';
 import ModalView from '../utils/modal-view';
 import ErrorList from '../utils/error-list-view';
 import API from '../../api/index';
 import * as validate from '../../helper/validate';
+import {bool_label} from '../../helper/format';
+import DatatableActionButtonView from '../utils/datatable-action-button-view';
 
 
 class AddressVersion extends Component {
@@ -34,11 +35,10 @@ class AddressVersion extends Component {
         this.setConfigToState();
     }
 
-    showModalAddAddressVersion(callback, title) {
+    showModalAddAddressVersion() {
         this.setState({
             modalAddAddressVersion: {
-                status: true,
-                title : title
+                status: true
             }
         });
     }
@@ -100,41 +100,29 @@ class AddressVersion extends Component {
     }
 
     setConfigToState(load_from_api = false) {
-        let address_version_list = this.props.wallet.address_version_list;
         if (load_from_api) {
-            try {
-                API.listWalletAddressVersion()
-                   .then(data => {
-                       this.setState({
-                           datatable_reload_timestamp: new Date(),
-                           address_version_list      : data.map((input) => ({
-                               version        : input.version,
-                               regex_pattern  : input.regex_pattern,
-                               default_address: input.is_default === 1 ? 'yes' : 'no',
-                               action         : this.getRemoveWalletAddressVersionButton(input)
-                           }))
-                       });
-                   });
-                return;
-            }
-            catch (e) {
-                this.setState({
-                    error_list: [
-                        {
-                            name   : 'api error',
-                            message: 'error'
-                        }
-                    ]
-                });
-            }
+            API.listWalletAddressVersion()
+               .then(data => {
+                   this.setAddressVersionList(data);
+               });
         }
+        else {
+            this.setAddressVersionList(this.props.wallet.address_version_list);
+        }
+    }
+
+    setAddressVersionList(data) {
         this.setState({
             datatable_reload_timestamp: new Date(),
-            address_version_list      : address_version_list.map((input) => ({
+            address_version_list      : data.map((input) => ({
                 version        : input.version,
                 regex_pattern  : input.regex_pattern,
-                default_address: input.is_default === 1 ? 'yes' : 'no',
-                action         : this.getRemoveWalletAddressVersionButton(input)
+                default_address: bool_label(input.is_default),
+                action         : <DatatableActionButtonView
+                    icon={'trash'}
+                    callback={() => this.removeFromConfigList(input)}
+                    callback_args={input}
+                />
             }))
         });
     }
@@ -156,14 +144,14 @@ class AddressVersion extends Component {
                     <Form.Select
                         className={'paginator-dropdown-wrapper'}
                         as="select"
-                        value={this.state.address_is_default ? 'yes' : 'no'}
+                        value={bool_label(this.state.address_is_default)}
                         onChange={(e) => {
                             this.setState({address_is_default: e.target.value === 'yes'});
                         }}
                     >
                         {Array.from([
-                            'yes',
-                            'no'
+                            bool_label(1),
+                            bool_label(0)
                         ]).map(type =>
                             <option
                                 key={type}
@@ -209,28 +197,6 @@ class AddressVersion extends Component {
         </div>;
     }
 
-    getRemoveWalletAddressVersionButton(addressVersion) {
-        return <Button
-            variant="outline-default"
-            onClick={() => this.removeFromConfigList(addressVersion)}
-            className={'btn-xs icon_only ms-auto'}>
-            <FontAwesomeIcon
-                icon={'trash'}
-                size="1x"/>
-        </Button>;
-    }
-
-    getAddressVersionModal() {
-        return <Form>
-            <Form.Control
-                type="text"
-                placeholder="node id"
-                onChange={(e) => {
-                    this.setState({current_connections: {NODE_CONNECTION_INBOUND_WHITELIST: e.target.value}});
-                }}/>
-        </Form>;
-    }
-
     render() {
         return <div>
             <ModalView
@@ -239,7 +205,7 @@ class AddressVersion extends Component {
                 prevent_close_after_accept={true}
                 on_close={() => this.hideModalAddAddressVersion()}
                 on_accept={() => this.addAddressVersion()}
-                heading={this.state.modalAddAddressVersion.title}
+                heading={'address version'}
                 body={this.getAddressVersionBody()}/>
             <Form>
                 <div className={'panel panel-filled'}>
@@ -254,7 +220,7 @@ class AddressVersion extends Component {
                                 action_button_label={'add address version'}
                                 action_button={{
                                     label   : 'add address version',
-                                    on_click: () => this.showModalAddAddressVersion(this.getAddressVersionModal, 'address version')
+                                    on_click: () => this.showModalAddAddressVersion()
                                 }}
                                 value={this.state.address_version_list}
                                 sortOrder={1}

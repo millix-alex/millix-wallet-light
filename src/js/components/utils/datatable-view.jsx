@@ -73,7 +73,7 @@ class DatatableView extends Component {
         if (this.props.showActionColumn) {
             result_column.push(<Column
                 key={'action'}
-                className={this.props.actionColumnClass}
+                className={'datatable_action_column'}
                 field={'action'}
                 header={'action'}
                 sortable={false}/>);

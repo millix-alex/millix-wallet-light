@@ -15,7 +15,11 @@ export function required(field_name, value, error_list) {
 }
 
 export function amount(field_name, value, error_list, allow_zero = false) {
-    let value_escaped = value.trim();
+    return integerPositive(field_name, value, error_list, allow_zero);
+}
+
+export function integerPositive(field_name, value, error_list, allow_zero = false) {
+    let value_escaped = value.toString().trim();
     value_escaped     = parseInt(value_escaped.replace(/\D/g, ''));
 
     if (!allow_zero && value_escaped <= 0) {
@@ -39,53 +43,6 @@ export function amount(field_name, value, error_list, allow_zero = false) {
     }
 
     return value_escaped;
-}
-
-export function integer(field_name, value, error_list) {
-    let value_escaped = value.trim();
-    value_escaped     = parseInt(value_escaped.replace(/\D/g, ''));
-
-    if (!Number.isInteger(value_escaped)) {
-        error_list.push({
-            name   : get_error_name('amount_is_not_integer', field_name),
-            message: `${field_name} must be a number`
-        });
-    }
-
-    return value_escaped;
-}
-
-export function positiveInteger(field_name, value, error_list, allow_zero = false) {
-    let value_escaped;
-    value         = value.toString();
-    value_escaped = value.trim();
-    value_escaped = value_escaped.replace(/,/g, '');
-    if (!value_escaped.match(/^-?[0-9]+$/)) {
-        value_escaped = NaN;
-    }
-
-    value_escaped = Number(value_escaped);
-    if (!Number.isInteger(value_escaped)) {
-        error_list.push({
-            name   : get_error_name('amount_is_not_integer', field_name),
-            message: `${field_name} must be a number`
-        });
-        return false;
-    }
-    else if (!allow_zero && value_escaped <= 0) {
-        error_list.push({
-            name   : get_error_name('amount_is_lt_zero', field_name),
-            message: `${field_name} must be bigger than 0`
-        });
-        return false;
-    }
-    else if (allow_zero && value_escaped < 0) {
-        error_list.push({
-            name   : get_error_name('amount_is_lte_zero', field_name),
-            message: `${field_name} must be bigger than or equal to 0`
-        });
-        return false;
-    }
 }
 
 export function ipAddress(field_name, value, error_list) {
@@ -136,6 +93,7 @@ export function json(field_name, value, error_list) {
 
         return value;
     }
+
     return validJson;
 }
 
@@ -144,7 +102,7 @@ function get_error_name(prefix, field_name) {
     return `${prefix}_${field_name.replaceAll(' ', '_')}`;
 }
 
-export function handleAmountInputChange(e) {
+export function handleInputChangeInteger(e, allow_negative = true, formatter = 'number') {
     if (e.target.value.length === 0) {
         return;
     }
@@ -152,23 +110,32 @@ export function handleAmountInputChange(e) {
     let cursorStart = e.target.selectionStart,
         cursorEnd   = e.target.selectionEnd;
     let amount      = e.target.value.replace(/[,.]/g, '');
-    let offset      = 0;
+    if (!allow_negative) {
+        amount = amount.replace(/-/g, '');
+    }
+
+    let offset = 0;
     if ((amount.length - 1) % 3 === 0) {
         offset = 1;
     }
 
-    amount         = parseInt(amount);
-    e.target.value = !isNaN(amount) ? format.millix(amount, false) : 0;
+    amount = parseInt(amount);
 
+    let value = 0;
+    if (!isNaN(amount)) {
+        if (formatter === 'millix') {
+            value = format.millix(amount, false);
+        }
+        else {
+            value = format.number(amount);
+        }
+    }
+
+    e.target.value = value;
     e.target.setSelectionRange(cursorStart + offset, cursorEnd + offset);
 }
 
-export function handleAmountInputChangeValue(inputAmount) {
-    if (inputAmount === 0 || inputAmount === undefined) {
-        return;
-    }
-    inputAmount = inputAmount.toString();
-    let amount  = inputAmount.replace(/[,.]/g, '');
-    amount      = parseInt(amount);
-    return !isNaN(amount) ? format.millix(amount, false) : 0;
+
+export function handleAmountInputChange(e) {
+    handleInputChangeInteger(e, false, 'millix');
 }

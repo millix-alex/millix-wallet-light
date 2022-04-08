@@ -1,20 +1,19 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
-import {Button, Col, Form} from 'react-bootstrap';
+import {Col, Form} from 'react-bootstrap';
 import {addWalletConfig, removeWalletAddressVersion, walletUpdateConfig} from '../../redux/actions';
 import _ from 'lodash';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import DatatableView from '../utils/datatable-view';
 import ModalView from '../utils/modal-view';
 import ErrorList from '../utils/error-list-view';
 import * as validate from '../../helper/validate';
 import API from '../../api';
 import store from '../../redux/store';
+import DatatableActionButtonView from '../utils/datatable-action-button-view';
 
 
 class Connection extends Component {
-
     constructor(props) {
         super(props);
         this.state                      = {
@@ -76,10 +75,10 @@ class Connection extends Component {
             }
         });
 
-        return this.props.walletUpdateConfig(data);
+        this.setConfigToState();
     }
 
-    sendCurrentConnections() {
+    saveCurrentState() {
         let success = false;
         Object.entries(this.state.current_connections).forEach(([key]) => {
             success = this.addToConfigList(key);
@@ -113,34 +112,34 @@ class Connection extends Component {
                         this.showModalAddConnection(this.getStaticConnectionModal, 'add static connection');
                         break;
                     default:
-                        this.showModalAddConnection(this.getInboundConnectionModal, 'add inbound connection');
                         break;
                 }
             });
+
             return false;
         }
         const configList = this.props.config[configName];
         value            = value.trim();
         configList.push(value);
-        this.setState({[configName]: ''});
+        this.setState({
+            [configName]: ''
+        });
         this.setConfig({[configName]: configList});
-        this.setConfigToState();
+
         return true;
     }
-
 
     removeFromConfigList(configName, value) {
         _.pull(this.props.config[configName], value);
         this.setConfig({[configName]: this.props.config[configName]});
-        this.setConfigToState();
     }
 
     reloadConfig(datatable_name) {
-        let datatable_reload_time = {};
+        let datatable_reload_time             = {};
         datatable_reload_time[datatable_name] = new Date();
-            this.setState({
+        this.setState({
             ...datatable_reload_time
-        })
+        });
         API.getNodeConfig()
            .then(configList => {
                const newConfig = {
@@ -158,7 +157,7 @@ class Connection extends Component {
 
     setConfigToState() {
         this.setState({
-            datatables                : {
+            datatables: {
                 connection_inbound : this.props.config.NODE_CONNECTION_INBOUND_WHITELIST.map((input) => ({
                     node_id: input,
                     action : this.getConnectionDeleteButton(input, 'NODE_CONNECTION_INBOUND_WHITELIST')
@@ -214,14 +213,15 @@ class Connection extends Component {
         </Form>;
     }
 
-
     getConnectionDeleteButton(nodeID, configName) {
-        return <Button
-            variant="outline-default"
-            onClick={() => this.removeFromConfigList(configName, nodeID)}
-            className={'btn-xs icon_only ms-auto'}>
-            <FontAwesomeIcon icon={'trash'} size="1x"/>
-        </Button>;
+        return <DatatableActionButtonView
+            icon={'trash'}
+            callback={() => this.removeFromConfigList(configName, nodeID)}
+            callback_args={[
+                configName,
+                nodeID
+            ]}
+        />;
     }
 
     render() {
@@ -231,9 +231,7 @@ class Connection extends Component {
                 size={'lg'}
                 prevent_close_after_accept={true}
                 on_close={() => this.hideModalAddConnection()}
-                on_accept={() => {
-                    this.sendCurrentConnections();
-                }}
+                on_accept={() => this.saveCurrentState()}
                 heading={this.state.modalAddConnection.title}
                 body={this.state.modalAddConnection.body}/>
             <Form>
@@ -259,7 +257,6 @@ class Connection extends Component {
                                         field: 'node_id'
                                     }
                                 ]}
-                                actionColumnClass={'action-col-width'}
                             />
                         </Col>
                     </div>
@@ -286,7 +283,6 @@ class Connection extends Component {
                                         field: 'node_id'
                                     }
                                 ]}
-                                actionColumnClass={'action-col-width'}
                             />
                         </Col>
                     </div>
@@ -313,7 +309,6 @@ class Connection extends Component {
                                         field: 'node_id'
                                     }
                                 ]}
-                                actionColumnClass={'action-col-width'}
                             />
                         </Col>
                     </div>

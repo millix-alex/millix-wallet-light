@@ -9,15 +9,14 @@ import ErrorList from '../utils/error-list-view';
 
 
 class Consensus extends Component {
-
     constructor(props) {
         super(props);
         this.state = {
-            sending              : false,
-            consensus_config_data: {},
-            error_list           : {},
-            modal_show_send_result  : false,
-            reload               : false
+            sending               : false,
+            consensus_config_data : {},
+            error_list            : {},
+            modal_show_send_result: false,
+            reload                : false
         };
     }
 
@@ -43,13 +42,9 @@ class Consensus extends Component {
             modal_show_send_result: value
         });
         if (value === false) {
-            this.refreshPage();
+            this.loadConfigToState();
         }
     }
-
-    refreshPage = () => {
-        this.loadConfigToState();
-    };
 
     setConsensusConfig(data) {
         for (let key in data) {
@@ -97,22 +92,22 @@ class Consensus extends Component {
 
         data.CONSENSUS_ROUND_NODE_COUNT = validate.required('number of nodes', data.CONSENSUS_ROUND_NODE_COUNT, error_list);
         if (data.CONSENSUS_ROUND_NODE_COUNT) {
-            validate.positiveInteger('min connections in', data.CONSENSUS_ROUND_NODE_COUNT, error_list);
+            validate.integerPositive('min connections in', data.CONSENSUS_ROUND_NODE_COUNT, error_list);
         }
         data.CONSENSUS_ROUND_VALIDATION_MAX = validate.required('number of validation rounds', data.CONSENSUS_ROUND_VALIDATION_MAX, error_list);
         if (data.CONSENSUS_ROUND_VALIDATION_MAX) {
-            validate.positiveInteger('number of validation rounds', data.CONSENSUS_ROUND_VALIDATION_MAX, error_list);
+            validate.integerPositive('number of validation rounds', data.CONSENSUS_ROUND_VALIDATION_MAX, error_list);
         }
         data.CONSENSUS_ROUND_DOUBLE_SPEND_MAX = validate.required('max double spend bound', data.CONSENSUS_ROUND_DOUBLE_SPEND_MAX, error_list);
         if (data.CONSENSUS_ROUND_DOUBLE_SPEND_MAX) {
-            validate.positiveInteger('max double spend bound', data.CONSENSUS_ROUND_DOUBLE_SPEND_MAX, error_list);
+            validate.integerPositive('max double spend bound', data.CONSENSUS_ROUND_DOUBLE_SPEND_MAX, error_list);
         }
         data.CONSENSUS_ROUND_VALIDATION_REQUIRED = validate.required('number of validation required', data.CONSENSUS_ROUND_VALIDATION_REQUIRED, error_list);
         if (data.CONSENSUS_ROUND_VALIDATION_REQUIRED) {
-            validate.positiveInteger('number of validation required', data.CONSENSUS_ROUND_VALIDATION_REQUIRED, error_list);
+            validate.integerPositive('number of validation required', data.CONSENSUS_ROUND_VALIDATION_REQUIRED, error_list);
         }
-        validate.positiveInteger('max wait (sec)', data.CONSENSUS_VALIDATION_WAIT_TIME_MAX, error_list, true);
-        validate.positiveInteger('retry wait (sec)', data.CONSENSUS_VALIDATION_RETRY_WAIT_TIME, error_list, true);
+        validate.integerPositive('max wait (sec)', data.CONSENSUS_VALIDATION_WAIT_TIME_MAX, error_list, true);
+        validate.integerPositive('retry wait (sec)', data.CONSENSUS_VALIDATION_RETRY_WAIT_TIME, error_list, true);
 
         if (error_list.length > 0) {
             this.setState({
@@ -267,7 +262,7 @@ class Consensus extends Component {
 
 export default connect(
     state => ({
-        config    : state.config,
+        config: state.config
     }),
     {
         walletUpdateConfig

@@ -6,15 +6,14 @@ import {walletUpdateConfig} from '../../redux/actions';
 import * as validate from '../../helper/validate';
 import ModalView from '../utils/modal-view';
 import ErrorList from '../utils/error-list-view';
+import * as format from '../../helper/format';
 
 
 class Fees extends Component {
-
     constructor(props) {
         super(props);
         this.state = {
             sending            : false,
-            fees_config_data   : {},
             error_list         : {},
             modalShowSendResult: false,
             reload             : false
@@ -26,12 +25,8 @@ class Fees extends Component {
     }
 
     loadConfigToState() {
-        this.setState({
-            fees_config_data: {
-                TRANSACTION_FEE_PROXY  : this.props.config.TRANSACTION_FEE_PROXY,
-                TRANSACTION_FEE_DEFAULT: this.props.config.TRANSACTION_FEE_DEFAULT
-            }
-        });
+        this.transaction_fee_proxy_input.value   = format.millix(this.props.config.TRANSACTION_FEE_PROXY, false);
+        this.transaction_fee_default_input.value = format.millix(this.props.config.TRANSACTION_FEE_DEFAULT, false);
     }
 
     changeModalShowSendResult(value = true) {
@@ -39,81 +34,44 @@ class Fees extends Component {
             modalShowSendResult: value
         });
         if (value === false) {
-            this.refreshPage();
+            this.loadConfigToState();
         }
     }
 
-    refreshPage = () => {
-        this.loadConfigToState();
-    };
-
-    setFeesConfig(data) {
-        for (let key in data) {
-            this.state.fees_config_data[key] = data[key];
-        }
-
-        this.setState({
-            fees_config_data: this.state.fees_config_data
-        });
-    }
-
-    send() {
+    save() {
         this.setState({
             sending   : true,
             error_list: []
         });
 
-        if (!this.isValidFeesData()) {
-            return;
-        }
-
-        console.log(this.state.fees_config_data);
-        let fees_config = {
-            TRANSACTION_FEE_PROXY  : this.state.fees_config_data.TRANSACTION_FEE_PROXY.toString().replace(/,/g, ''),
-            TRANSACTION_FEE_DEFAULT: this.state.fees_config_data.TRANSACTION_FEE_DEFAULT.toString().replace(/,/g, '')
+        const error_list = [];
+        let fee_config   = {
+            TRANSACTION_FEE_PROXY  : validate.integerPositive('transaction fee proxy', this.transaction_fee_proxy_input.value, error_list),
+            TRANSACTION_FEE_DEFAULT: validate.integerPositive('transaction fee default', this.transaction_fee_default_input.value, error_list)
         };
-        try {
-            this.props.walletUpdateConfig(fees_config).then(() => {
-                this.setState({
-                    sending: false
+        if (error_list.length === 0) {
+            try {
+                this.props.walletUpdateConfig(fee_config).then(() => {
+                    this.setState({
+                        sending: false
+                    });
+                    this.changeModalShowSendResult();
                 });
-                this.changeModalShowSendResult();
-            });
-        }
-        catch (e) {
-            this.state.error_list.push({
-                name   : 'saveError',
-                message: 'error while saving occurred, please try again later'
-            });
-            this.setState({
-                error_list: this.state.error_list
-            });
-            return Promise.reject('server_error');
-        }
-    }
-
-    isValidFeesData() {
-        let data       = this.state.fees_config_data;
-        let error_list = [];
-
-        data.TRANSACTION_FEE_PROXY = validate.required('transaction proxy fees', data.TRANSACTION_FEE_PROXY, error_list);
-        if (data.TRANSACTION_FEE_PROXY) {
-            validate.positiveInteger('transaction proxy fees', data.TRANSACTION_FEE_PROXY, error_list, false);
-        }
-        data.TRANSACTION_FEE_DEFAULT = validate.required('transaction fees', data.TRANSACTION_FEE_DEFAULT, error_list, false, true);
-        if (data.TRANSACTION_FEE_DEFAULT) {
-            validate.positiveInteger('transaction fees', data.TRANSACTION_FEE_DEFAULT, error_list,);
+            }
+            catch (e) {
+                error_list.push({
+                    name   : 'save_error',
+                    message: 'error while saving occurred, please try again later'
+                });
+            }
         }
 
         if (error_list.length > 0) {
             this.setState({
-                error_list: error_list,
-                sending   : false
+                sending   : false,
+                error_list: error_list
             });
-            return false;
         }
-
-        return true;
     }
 
     render() {
@@ -138,30 +96,28 @@ class Fees extends Component {
                             error_list={this.state.error_list}/>
                         <Col>
                             <Form.Group className="form-group">
-                                <label>transaction proxy
-                                    fees</label>
+                                <label>transaction proxy fee</label>
                                 <Form.Control
                                     type="text"
                                     placeholder=""
-                                    ref={(c) => this._fee_proxy_fee = c}
+                                    ref={(c) => this.transaction_fee_proxy_input = c}
                                     onChange={(e) => {
-                                        this.setFeesConfig({TRANSACTION_FEE_PROXY: this._fee_proxy_fee.value});
+                                        return validate.handleInputChangeInteger(e, false);
                                     }}
-                                    value={validate.handleAmountInputChangeValue(this.state.fees_config_data.TRANSACTION_FEE_PROXY)}/>
+                                />
                             </Form.Group>
                         </Col>
                         <Col>
                             <Form.Group className="form-group">
-                                <label>transaction
-                                    fees</label>
+                                <label>transaction fee</label>
                                 <Form.Control
                                     type="text"
                                     placeholder=""
-                                    ref={(c) => this._fee_transaction_default = c}
-                                    onChange={() => {
-                                        this.setFeesConfig({TRANSACTION_FEE_DEFAULT: this._fee_transaction_default.value});
+                                    ref={(c) => this.transaction_fee_default_input = c}
+                                    onChange={(e) => {
+                                        return validate.handleInputChangeInteger(e, false);
                                     }}
-                                    value={validate.handleAmountInputChangeValue(this.state.fees_config_data.TRANSACTION_FEE_DEFAULT)}/>
+                                />
                             </Form.Group>
                         </Col>
                         <Col>
@@ -169,16 +125,11 @@ class Fees extends Component {
                                 className={'d-flex justify-content-center'}>
                                 <Button
                                     variant="outline-primary"
-                                    onClick={() => this.send()}
+                                    onClick={() => this.save()}
                                     disabled={this.state.sending}>
                                     {this.state.sending ?
                                      <>
-                                         <div style={{
-                                             fontSize: '6px',
-                                             float   : 'left'
-                                         }}
-                                              className="loader-spin"/>
-                                         {'continue'}
+                                         {'saving'}
                                      </> : <>continue</>}
                                 </Button>
                             </Form.Group>

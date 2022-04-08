@@ -111,19 +111,19 @@ class Network extends Component {
         prepared_data.NODE_INITIAL_LIST = validate.json('nodes', prepared_data.NODE_INITIAL_LIST.split(','), error_list);
         prepared_data.NODE_PORT         = validate.required('network port', prepared_data.NODE_PORT, error_list);
         if (prepared_data.NODE_PORT) {
-            validate.positiveInteger('network port', prepared_data.NODE_PORT, error_list);
+            validate.integerPositive('network port', prepared_data.NODE_PORT, error_list);
         }
         prepared_data.NODE_PORT_API = validate.required('rpc port', prepared_data.NODE_PORT_API, error_list);
         if (prepared_data.NODE_PORT_API) {
-            validate.positiveInteger('rpc port', prepared_data.NODE_PORT_API, error_list);
+            validate.integerPositive('rpc port', prepared_data.NODE_PORT_API, error_list);
         }
         prepared_data.NODE_CONNECTION_INBOUND_MAX = validate.required('max connections in', prepared_data.NODE_CONNECTION_INBOUND_MAX, error_list);
         if (prepared_data.NODE_CONNECTION_INBOUND_MAX) {
-            validate.positiveInteger('max connections in', prepared_data.NODE_CONNECTION_INBOUND_MAX, error_list);
+            validate.integerPositive('max connections in', prepared_data.NODE_CONNECTION_INBOUND_MAX, error_list);
         }
         prepared_data.NODE_CONNECTION_OUTBOUND_MAX = validate.required('min connections in', prepared_data.NODE_CONNECTION_OUTBOUND_MAX, error_list);
         if (prepared_data.NODE_CONNECTION_OUTBOUND_MAX) {
-            validate.positiveInteger('min connections in', prepared_data.NODE_CONNECTION_OUTBOUND_MAX, error_list);
+            validate.integerPositive('min connections in', prepared_data.NODE_CONNECTION_OUTBOUND_MAX, error_list);
         }
         validate.required('bind address', prepared_data.NODE_HOST, error_list);
         if (prepared_data.NODE_HOST) {
