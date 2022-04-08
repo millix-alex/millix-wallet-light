@@ -27,7 +27,7 @@ class ActionView extends Component {
             fileKeyExport: 'export_' + now,
             fileKeyImport: 'import_' + now,
             modalShow    : false,
-            modalShowPhrase : false,
+            modalShowMnemonicPhrase : false,
             mnemonic: []
         };
     }
@@ -35,11 +35,7 @@ class ActionView extends Component {
     componentDidMount() {
     }
 
-    exportKeys() {
-       
-        this.setState({exportingWallet: true});    
-
-
+    exportPrivateKey() {
         API.getMnemonicPhrase().then(phrase => {
             console.log(phrase)  
             let json = JSON.stringify(phrase);
@@ -47,8 +43,7 @@ class ActionView extends Component {
             const fileDownloadUrl = URL.createObjectURL(blob);
                
            this.setState ({
-               fileDownloadUrl: fileDownloadUrl,
-               exportingWallet: false
+               fileDownloadUrl: fileDownloadUrl
             }, // Step 5
             () => {
                 this.dofileDownload.click();                   // Step 6
@@ -58,14 +53,13 @@ class ActionView extends Component {
         })
     }
 
-    showPhrase(){
+    showMnemonicPhraseModal(){
 
         API.getMnemonicPhrase().then(phrase => {
-            console.log(phrase.mnemonic_phrase)
             this.setState({
                 mnemonic: phrase.mnemonic_phrase.split(' ')
             });
-            this.changeMnemonicModalShow()
+            this.changeMnemonicModalShow(true)
            
         })
         
@@ -144,9 +138,9 @@ class ActionView extends Component {
     }
 
     changeMnemonicModalShow(value = true) {
+        console.log(value)
         this.setState({
-            modalShowPhrase: value,
-            exportingWallet:value
+            modalShowMnemonicPhrase:value
         });
     }
 
@@ -257,11 +251,11 @@ class ActionView extends Component {
                          </div>
                          </div>*/
                          <div className={'panel panel-filled'}>
-                         <div className={'panel-heading bordered'}>export wallet</div>
+                         <div className={'panel-heading bordered'}>mnemonic phrase</div>
                          <div className={'panel-body'}>
                          <Row className="mb-1">
                          <Col style={styles.left}>
-                         <p>millix_private_key.json contains your wallet mnemonic phrase. if you loose your mnemonic phrase you will not be able to access this wallet or any funds it contains. we recommend you to save it and keep in a safe place. avoid saving your mnemonic phrase in a computer or online service and do not take a screenshot of it.</p>
+                         <p>mnemonic phrase is a unique string that allows you to access your wallet. if you loose your mnemonic phrase you will not be able to access this wallet or any funds it contains. we recommend you to write these words down and keep them in a safe place. avoid saving your mnemonic phrase in a computer or online service and do not take a screenshot of it. millix_private_key.json contains your wallet mnemonic phrase.</p>
                          </Col>
                          </Row>
                          <Row className="mb-3">
@@ -269,19 +263,20 @@ class ActionView extends Component {
                             <Button variant="outline-primary"
                             className={'btn btn-w-md btn-accent'}
                             onClick={() => {
-                                this.exportKeys();
-                                this.setState({exportingWallet: true});
+                                this.exportPrivateKey();
                             }} >
                             save millix_private_key.json
                             </Button>
 
                           </Col>
+                          </Row>
+                          <Row className="mb-3">
                           <Col style={styles.centered}>  
                             <Button variant="outline-primary"
                             className={'btn btn-w-md btn-accent'}
                             onClick={() => {
-                                this.showPhrase()
-                            }} >copy mnemonic phrase
+                                this.showMnemonicPhraseModal()
+                            }} >show mnemonic phrase
                             </Button>
 
                          </Col>
@@ -302,10 +297,11 @@ class ActionView extends Component {
                     ref={e=>this.dofileDownload = e}
                     >download it</a>
                 </div>
-
-                <ModalView show={this.state.modalShowPhrase}
-                           size={'lg'}
-                           heading={'copy mnemonic phrase'}
+ 
+                <ModalView show={this.state.modalShowMnemonicPhrase}
+                           size={'xl'}
+                           heading={'mnemonic phrase'}
+                           on_close={() => this.changeMnemonicModalShow(false)}
                            body={                            
                             <MnemonicView mnemonic={this.state.mnemonic}/>
                            }/>
