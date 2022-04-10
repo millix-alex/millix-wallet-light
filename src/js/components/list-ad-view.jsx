@@ -137,8 +137,7 @@ class ListAdView extends Component {
         return category;
     }
 
-    openEdit(advertisement) {   
-        console.log(advertisement);     
+    openEdit(advertisement) {      
         this.props.history.push('/advertisement-form/', [advertisement]);        
     }
 
@@ -154,7 +153,6 @@ class ListAdView extends Component {
                 API.listAds().then(data => {
                     if (typeof data.api_status != 'undefined' && data.api_status === 'ok') {
                         let ad_list = [];
-                        console.log(data.advertisement_list)
                         if (typeof data.advertisement_list != 'undefined') {
                             data.advertisement_list.forEach((item, idx) => {
                                 ad_list.push({
@@ -177,7 +175,6 @@ class ListAdView extends Component {
                                     create_date                : format.date(item.create_date)
                                 });
                             });
-                            console.log(ad_list);
                             this.setState({
                                 ad_list                   : ad_list,
                                 datatable_reload_timestamp: new Date(),
