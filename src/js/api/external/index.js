@@ -1,12 +1,10 @@
 class APIExternal {
 
-    constructor() {
-
-    }
+    static FIATLEAK_API  = 'https://fiatleak.com/api/';
 
     getFiatleakPriceUSD() {
         try {
-            return fetch('https://fiatleak.com/api/currency/pair/price/mlx/usd')
+            return fetch(APIExternal.FIATLEAK_API+'/currency/pair/price/mlx/usd')
                 .then(response => response.ok ? response.json() : Promise.reject());
         }
         catch (e) {

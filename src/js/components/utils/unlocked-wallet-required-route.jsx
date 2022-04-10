@@ -46,8 +46,6 @@ const UnlockedWalletRequiredRoute = ({
         };
         getNodeStat();
 
-        console.log(MILLIX_VALUE_REFRESH_INTERVAL_MS)
-
         let fetch_fiatleak_api_timeout_id
         const getFiatValuesInterval = () => { 
             APIExternal.getFiatleakPriceUSD().then(resp => {

@@ -16,16 +16,6 @@ class BalanceView extends Component {
         };
     }
 
-    componentDidMount() {
-        APIExternal.getFiatleakPriceUSD().then(data => {
-            console.log(data)
-        })
-    }
-
-    componentWillUnmount() {
-
-    }
-
     toggleMillixPrice() {
         this.state.showMillixPrice = !this.state.showMillixPrice;
     }
