@@ -89,4 +89,4 @@ ModalView.propTypes = {
     size     : PropTypes.string
 };
 
-export default withRouter(ModalView);
+export default ModalView;

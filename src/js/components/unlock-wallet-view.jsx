@@ -48,26 +48,28 @@ class UnlockWalletView extends Component {
 
     isPrivateKeyExist() {
         API.getIsPrivateKeyExist().then(response => {
-            if (typeof (response.private_key_exists) === 'boolean') {
-                if (response.private_key_exists) {
+            if(response){
+                if (typeof (response.private_key_exists) === 'boolean') {
+                    if (response.private_key_exists) {
+                        this.setState({
+                            private_key_exists: true
+                        });
+                    }
+                }
+                else {
+                    let error_list = [];
+                    error_list.push({
+                        name   : 'auth_error',
+                        message: 'millix_private_key.json not found'
+                    });
                     this.setState({
-                        private_key_exists: true
+                        private_key_exists  : false,
+                        defaultTabActiveKey: 2,
+                        error_list         : error_list
                     });
                 }
-            }
-            else {
-                let error_list = [];
-                error_list.push({
-                    name   : 'auth_error',
-                    message: 'millix_private_key.json not found'
-                });
-                this.setState({
-                    private_key_exists  : false,
-                    defaultTabActiveKey: 2,
-                    error_list         : error_list
-                });
-            }
-            clearInterval(this.private_key_exists_interval_id);
+                clearInterval(this.private_key_exists_interval_id);
+            }            
         });
     }
 

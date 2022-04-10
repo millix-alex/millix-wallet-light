@@ -1,8 +1,9 @@
 import React, {Component, useState } from 'react';
 import fetchIntercept from 'fetch-intercept';
 import {Button, Modal} from 'react-bootstrap';
+import ModalView from './modal-view';
 
-class HttpInteceptor extends Component {
+class RequestErrorHandler extends Component {
 
     
     constructor(props) {
@@ -35,7 +36,7 @@ class HttpInteceptor extends Component {
             responseError:  (error)=> {
 
                 if(error.message.includes('Failed to fetch')){
-                    error.message = 'Failed to request the node.'
+                    error.message = 'failed to request the node. please try to restart client/browser.'
                 }            
                 
                 if(error.message === this.state.message){
@@ -63,7 +64,7 @@ class HttpInteceptor extends Component {
     }   
 
     close(){
-        var timeAfter = new Date();
+        let timeAfter = new Date();
         timeAfter.setSeconds(timeAfter.getSeconds() + this.state.secondsBetween);   
         this.setState({
             modalShow: false,
@@ -73,26 +74,17 @@ class HttpInteceptor extends Component {
 
     render() { 
         return(              
-                <>
-                <Modal show={this.state.modalShow} onHide={() => this.show(false)}
-                    size={'lg'}
-                    animation={false}>
-                    <Modal.Header closeButton>
-                        <span
-                            className={'page_subtitle'}>{'Error'}</span>
-                    </Modal.Header>
-                    <Modal.Body>{this.state.message}</Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="outline-default" onClick={() => this.close(false)}>
-                            close
-                        </Button>
-                    </Modal.Footer>
-                </Modal>
-                </>
-        );
+            <>
+             <ModalView show={this.state.modalShow}
+                           size={'lg'}
+                           on_close={() => this.close()}
+                           heading={'error'}
+                           body={this.state.message}/>
+            </>
+        )
     }
-
-
 }
+export default RequestErrorHandler;
 
-export default HttpInteceptor;
+
+
