@@ -32,12 +32,8 @@ class ActionView extends Component {
         };
     }
 
-    componentDidMount() {
-    }
-
     exportPrivateKey() {
         API.getMnemonicPhrase().then(phrase => {
-            console.log(phrase)  
             let json = JSON.stringify(phrase);
             const blob = new Blob([json]);
             const fileDownloadUrl = URL.createObjectURL(blob);
@@ -138,7 +134,6 @@ class ActionView extends Component {
     }
 
     changeMnemonicModalShow(value = true) {
-        console.log(value)
         this.setState({
             modalShowMnemonicPhrase:value
         });
