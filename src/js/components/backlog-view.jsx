@@ -21,7 +21,7 @@ class BacklogView extends Component {
         };
     }
 
-    reloadDatatable() {
+    loadBacklogToState() {
         this.setState({
             datatable_loading: true
         });
@@ -47,7 +47,7 @@ class BacklogView extends Component {
         API.deleteBacklog()
            .then(() => {
                this.changeModalShow(false);
-               this.reloadDatatable();
+               this.loadBacklogToState();
            });
     }
 
@@ -58,8 +58,8 @@ class BacklogView extends Component {
     }
 
     componentDidMount() {
-        this.reloadDatatable();
-        this.updateHandler = setInterval(() => this.reloadDatatable(), 10000);
+        this.loadBacklogToState();
+        this.updateHandler = setInterval(() => this.loadBacklogToState(), 10000);
     }
 
     componentWillUnmount() {
@@ -88,7 +88,7 @@ class BacklogView extends Component {
                         <span>backlog size is calculated from items with key "transaction". this page display every backlog size item.</span>
                     </div>
                     <DatatableView
-                        reload_datatable={() => this.reloadDatatable()}
+                        reload_datatable={() => this.loadBacklogToState()}
                         datatable_reload_timestamp={this.state.datatable_reload_timestamp}
                         action_button={{
                             label   : 'reset backlog',
