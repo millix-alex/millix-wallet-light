@@ -5,42 +5,39 @@ import {Col, Row} from 'react-bootstrap';
 import DatatableView from './utils/datatable-view';
 import API from '../api';
 
+
 class EventsLogView extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            contentFilter   : '',
-            events          : [
+            contentFilter             : '',
+            events                    : [
                 {}
             ],
-            enableAutoUpdate: true,
-            modalShow       : false,
-            datatable_reload_timestamp: new Date(),
+            enableAutoUpdate          : true,
+            modalShow                 : false,
+            datatable_reload_timestamp: new Date()
         };
     }
 
     componentDidMount() {
-        this.updateEventLog();
+        this.loadEventLog();
     }
 
-    updateEventLog() {
-        try {
-            API.getEventLogList().then(response => {
-                console.log(response);
-                this.setState({
-                    events: response,
-                    datatable_reload_timestamp: new Date()
-                });
-
-            });
-        }
-        catch (e) {
+    loadEventLog() {
+        API.getEventLogList().then(response => {
             this.setState({
-                events: [],
+                events                    : response,
                 datatable_reload_timestamp: new Date()
             });
-        }
+
+        }).catch(() => {
+            this.setState({
+                events                    : [],
+                datatable_reload_timestamp: new Date()
+            });
+        });
     }
 
     render() {
@@ -55,7 +52,7 @@ class EventsLogView extends Component {
                             <div className={'panel-body'}>
                                 <Row>
                                     <DatatableView
-                                        reload_datatable={() => this.updateEventLog()}
+                                        reload_datatable={() => this.loadEventLog()}
                                         datatable_reload_timestamp={this.state.datatable_reload_timestamp}
                                         value={this.state.events}
                                         sortField={'date'}
@@ -88,6 +85,7 @@ class EventsLogView extends Component {
         );
     }
 }
+
 
 export default connect(
     state => ({
