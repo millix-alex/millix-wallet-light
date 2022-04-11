@@ -42,6 +42,15 @@ export function bool_label(value) {
     return value ? 'yes' : 'no';
 }
 
+export function int_from_bool_label(value) {
+    let result = 0;
+    if(value === 'yes') {
+        result = 1;
+    }
+
+    return result;
+}
+
 export function transaction_status_label(status) {
     const result_status = {
         1: 'pending hibernation',

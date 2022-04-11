@@ -8,7 +8,7 @@ import ModalView from '../utils/modal-view';
 import ErrorList from '../utils/error-list-view';
 import API from '../../api/index';
 import * as validate from '../../helper/validate';
-import {bool_label} from '../../helper/format';
+import {bool_label, int_from_bool_label} from '../../helper/format';
 import DatatableActionButtonView from '../utils/datatable-action-button-view';
 
 
@@ -17,13 +17,9 @@ class AddressVersion extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            modal_add_address_version    : {
-                status: false,
-                title : ''
+            modal_add_address_version : {
+                status: false
             },
-            address_version_name      : '',
-            address_version_regex     : '',
-            address_is_default        : false,
             address_version_list      : [],
             datatable_reload_timestamp: new Date(),
             error_list                : []
@@ -31,7 +27,7 @@ class AddressVersion extends Component {
     }
 
     componentDidMount() {
-        this.setConfigToState();
+        this.loadConfig();
     }
 
     showModalAddAddressVersion() {
@@ -46,10 +42,10 @@ class AddressVersion extends Component {
         this.setState({
             error_list: []
         });
+
         let error_list = [];
-        validate.required('version', this._address_version_name.value, error_list);
-        validate.string('version', this._address_version_name.value, error_list, 4);
-        validate.required('regex pattern', this._address_version_regex.value, error_list);
+        validate.required('version', this.address_version_name.value, error_list);
+        validate.required('regex pattern', this.address_version_regex.value, error_list);
 
         if (error_list.length > 0) {
             this.setState({
@@ -61,11 +57,12 @@ class AddressVersion extends Component {
         }
 
         const data = {
-            version        : this._address_version_name.value,
+            version        : this.address_version_name.value,
             is_main_network: this.props.config.MODE_TEST_NETWORK ? 0 : 1,
-            regex_pattern  : this._address_version_regex.value,
-            is_default     : this.state.address_is_default ? 1 : 0
+            regex_pattern  : this.address_version_regex.value,
+            is_default     : int_from_bool_label(this.address_is_default.value)
         };
+
         API.addWalletAddressVersion(data)
            .then(data => {
                if (!data || data.api_status === 'fail') {
@@ -79,13 +76,8 @@ class AddressVersion extends Component {
                    });
                    return;
                }
-               this.setState({
-                   address_version_name : '',
-                   address_version_regex: '',
-                   address_is_default   : false
-               });
 
-               this.setConfigToState(true);
+               this.loadConfig(true);
                this.hideModalAddAddressVersion();
            });
     }
@@ -94,11 +86,11 @@ class AddressVersion extends Component {
     removeFromConfigList(addressVersion) {
         let result = this.props.removeWalletAddressVersion(addressVersion);
         result.then(() => {
-            this.setConfigToState(true);
+            this.loadConfig(true);
         });
     }
 
-    setConfigToState(load_from_api = false) {
+    loadConfig(load_from_api = false) {
         if (load_from_api) {
             API.listWalletAddressVersion()
                .then(data => {
@@ -143,19 +135,16 @@ class AddressVersion extends Component {
                     <Form.Select
                         className={'paginator-dropdown-wrapper'}
                         as="select"
-                        value={bool_label(this.state.address_is_default)}
+                        ref={(c) => this.address_is_default = c}
                         onChange={(e) => {
-                            this.setState({address_is_default: e.target.value === 'yes'});
-                        }}
-                    >
-                        {Array.from([
-                            bool_label(1),
-                            bool_label(0)
-                        ]).map(type =>
-                            <option
-                                key={type}
-                            >{type}</option>
-                        )}
+                            return e.target.value;
+                        }}>
+                        <option key={'positive'}>
+                            {bool_label(1)}
+                        </option>
+                        <option key={'negative'}>
+                            {bool_label(0)}
+                        </option>
                     </Form.Select>
                 </Form.Group>
             </Col>
@@ -166,11 +155,11 @@ class AddressVersion extends Component {
                     <Form.Control
                         type="text"
                         placeholder=""
-                        ref={(c) => this._address_version_name = c}
-                        onChange={() => {
-                            this.setState({address_version_name: this._address_version_name.value});
+                        ref={(c) => this.address_version_name = c}
+                        onChange={(e) => {
+                            return validate.handleInputChangeAlphanumericString(e, 4);
                         }}
-                        value={this.state.address_version_name}/>
+                    />
                 </Form.Group>
             </Col>
 
@@ -184,11 +173,11 @@ class AddressVersion extends Component {
                             <Form.Control
                                 type="text"
                                 placeholder=""
-                                ref={(c) => this._address_version_regex = c}
-                                onChange={() => {
-                                    this.setState({address_version_regex: this._address_version_regex.value});
+                                ref={(c) => this.address_version_regex = c}
+                                onChange={(e) => {
+                                    return e.target.value;
                                 }}
-                                value={this.state.address_version_regex}/>
+                            />
                         </Col>
                     </Row>
                 </Form.Group>
@@ -214,7 +203,7 @@ class AddressVersion extends Component {
                     <div className={'panel-body'}>
                         <div>
                             <DatatableView
-                                reload_datatable={() => this.setConfigToState(true)}
+                                reload_datatable={() => this.loadConfig(true)}
                                 datatable_reload_timestamp={this.state.datatable_reload_timestamp}
                                 action_button_label={'add address version'}
                                 action_button={{
@@ -247,7 +236,6 @@ class AddressVersion extends Component {
 export default connect(
     state => ({
         config    : state.config,
-        configType: state.configType,
         wallet    : state.wallet
     }),
     {
