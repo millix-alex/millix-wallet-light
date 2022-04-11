@@ -15,19 +15,14 @@ class Network extends Component {
         this.state = {
             node_public_ip        : '',
             sending               : false,
-            network_config_data   : {},
             error_list            : {},
             modal_show_send_result: false,
-            reload                : false,
-            prepared_network_data : {}
         };
-
-        this.validateNetworkData = this.validateNetworkData.bind(this);
     }
 
     componentDidMount() {
         this.getNodePublicIP();
-        this.loadConfigToState();
+        this.loadFromConfig();
     }
 
     getNodePublicIP() {
@@ -38,107 +33,67 @@ class Network extends Component {
         });
     }
 
-    loadConfigToState() {
-        this.setState({
-            network_config_data: {
-                NODE_PORT                   : this.props.config.NODE_PORT,
-                NODE_HOST                   : this.props.config.NODE_HOST,
-                NODE_PORT_API               : this.props.config.NODE_PORT_API,
-                NODE_CONNECTION_INBOUND_MAX : this.props.config.NODE_CONNECTION_INBOUND_MAX,
-                NODE_CONNECTION_OUTBOUND_MAX: this.props.config.NODE_CONNECTION_OUTBOUND_MAX,
-                NODE_INITIAL_LIST           : JSON.stringify(this.props.config.NODE_INITIAL_LIST)
-            }
-        });
+    loadFromConfig() {
+        this.node_port.value                    = this.props.config.NODE_PORT;
+        this.node_host.value                    = this.props.config.NODE_HOST;
+        this.node_port_api.value                = this.props.config.NODE_PORT_API;
+        this.node_connection_inbound_max.value  = this.props.config.NODE_CONNECTION_INBOUND_MAX;
+        this.node_connection_outbound_max.value = this.props.config.NODE_CONNECTION_OUTBOUND_MAX;
+        this.node_initial_list.value            = JSON.stringify(this.props.config.NODE_INITIAL_LIST);
     }
 
-    changeModalShowSendResult(value = true) {
+    changeModalShowSaveResult(value = true) {
         this.setState({
             modal_show_send_result: value
         });
         if (value === false) {
-            this.refreshPage();
+            this.loadFromConfig();
         }
     }
 
-    refreshPage = () => {
-        this.loadConfigToState();
-    };
-
-    setNetworkConfig(data) {
-        this.setState({
-            network_config_data: {
-                ...this.state.network_config_data,
-                ...data
-            }
-        });
-    }
-
-    send() {
+    save() {
         this.setState({
             sending   : true,
             error_list: []
         });
 
-        let prepared_network_data = this.validateNetworkData();
-        if (!prepared_network_data) {
-            return;
-        }
+        const error_list = [];
+        validate.required('network port', this.node_port.value, error_list);
+        validate.required('server bind', this.node_host.value, error_list);
+        validate.required('rpc port', this.node_port_api.value, error_list);
+        validate.required('max connections in', this.node_connection_inbound_max.value, error_list);
+        validate.required('max connections out', this.node_connection_outbound_max.value, error_list);
+        validate.required('nodes', this.node_initial_list.value, error_list);
+        let network_config = {
+            NODE_PORT          : validate.integerPositive('network port', this.node_port.value, error_list, false, false),
+            NODE_HOST      : validate.ipAddress('server bind', this.node_host.value, error_list),
+            NODE_PORT_API    : validate.integerPositive('rpc port', this.node_port_api.value, error_list, false, false),
+            NODE_CONNECTION_INBOUND_MAX : validate.integerPositive('max connections in', this.node_connection_inbound_max.value, error_list, false, false),
+            NODE_CONNECTION_OUTBOUND_MAX  : validate.integerPositive('max connections out', this.node_connection_outbound_max.value, error_list, false, false),
+            NODE_INITIAL_LIST: validate.json('nodes', this.node_initial_list.value, error_list)
+        };
 
-        try {
-            this.props.walletUpdateConfig(prepared_network_data).then(() => {
+        if (error_list.length === 0) {
+            this.props.walletUpdateConfig(network_config).then(() => {
                 this.setState({
                     sending: false
                 });
-                this.changeModalShowSendResult();
+                this.changeModalShowSaveResult();
+            }).catch(() => {
+                error_list.push({
+                    name   : 'save_error',
+                    message: 'error while saving occurred, please try again later'
+                });
             });
-        }
-        catch (e) {
-            this.state.error_list.push({
-                name   : 'saveError',
-                message: 'error while saving occurred, please try again later'
-            });
-            this.setState({
-                error_list: this.state.error_list
-            });
-            return Promise.reject('server_error');
-        }
-    }
-
-    validateNetworkData() {
-        let prepared_data = {...this.state.network_config_data};
-        let error_list    = [];
-
-        prepared_data.NODE_INITIAL_LIST = validate.json('nodes', prepared_data.NODE_INITIAL_LIST.split(','), error_list);
-        prepared_data.NODE_PORT         = validate.required('network port', prepared_data.NODE_PORT, error_list);
-        if (prepared_data.NODE_PORT) {
-            validate.integerPositive('network port', prepared_data.NODE_PORT, error_list);
-        }
-        prepared_data.NODE_PORT_API = validate.required('rpc port', prepared_data.NODE_PORT_API, error_list);
-        if (prepared_data.NODE_PORT_API) {
-            validate.integerPositive('rpc port', prepared_data.NODE_PORT_API, error_list);
-        }
-        prepared_data.NODE_CONNECTION_INBOUND_MAX = validate.required('max connections in', prepared_data.NODE_CONNECTION_INBOUND_MAX, error_list);
-        if (prepared_data.NODE_CONNECTION_INBOUND_MAX) {
-            validate.integerPositive('max connections in', prepared_data.NODE_CONNECTION_INBOUND_MAX, error_list);
-        }
-        prepared_data.NODE_CONNECTION_OUTBOUND_MAX = validate.required('min connections in', prepared_data.NODE_CONNECTION_OUTBOUND_MAX, error_list);
-        if (prepared_data.NODE_CONNECTION_OUTBOUND_MAX) {
-            validate.integerPositive('min connections in', prepared_data.NODE_CONNECTION_OUTBOUND_MAX, error_list);
-        }
-        validate.required('bind address', prepared_data.NODE_HOST, error_list);
-        if (prepared_data.NODE_HOST) {
-            validate.ipAddress('bind address', prepared_data.NODE_HOST, error_list);
         }
 
         if (error_list.length > 0) {
             this.setState({
-                error_list: error_list,
-                sending   : false
+                sending   : false,
+                error_list: error_list
             });
-            return false;
         }
 
-        return prepared_data;
     }
 
     render() {
@@ -146,7 +101,7 @@ class Network extends Component {
             <ModalView
                 show={this.state.modal_show_send_result}
                 size={'lg'}
-                on_close={() => this.changeModalShowSendResult(false)}
+                on_close={() => this.changeModalShowSaveResult(false)}
                 heading={'success'}
                 body={
                     <div className={'text-center'}>
@@ -179,11 +134,10 @@ class Network extends Component {
                                         <Form.Control
                                             type="text"
                                             placeholder=""
-                                            ref={(c) => this._port = c}
-                                            onChange={() => {
-                                                this.setNetworkConfig({NODE_PORT: this._port.value});
-                                            }}
-                                            value={this.state.network_config_data.NODE_PORT}/>
+                                            ref={(c) => this.node_port = c}
+                                            onChange={(e) => {
+                                                return validate.handleInputChangeInteger(e, false, 'none');
+                                            }}/>
                                     </Form.Group>
                                 </Col>
                                 <Col>
@@ -192,11 +146,10 @@ class Network extends Component {
                                         <Form.Control
                                             type="text"
                                             placeholder=""
-                                            ref={(c) => this._host = c}
-                                            onChange={() => {
-                                                this.setNetworkConfig({NODE_HOST: this._host.value});
-                                            }}
-                                            value={this.state.network_config_data.NODE_HOST}/>
+                                            ref={(c) => this.node_host = c}
+                                            onChange={(e) => {
+                                                return validate.handleInputChangeIpAddress(e);
+                                            }}/>
 
                                     </Form.Group>
                                 </Col>
@@ -206,12 +159,10 @@ class Network extends Component {
                                         <Form.Control
                                             type="text"
                                             placeholder=""
-                                            ref={(c) => this._api_port = c}
-                                            onChange={() => {
-                                                this.setNetworkConfig({NODE_PORT_API: this._api_port.value});
-                                            }}
-                                            value={this.state.network_config_data.NODE_PORT_API}/>
-
+                                            ref={(c) => this.node_port_api = c}
+                                            onChange={(e) => {
+                                                return validate.handleInputChangeInteger(e, false, 'none');
+                                            }}/>
                                     </Form.Group>
                                 </Col>
                                 <Col>
@@ -220,11 +171,10 @@ class Network extends Component {
                                         <Form.Control
                                             type="text"
                                             placeholder=""
-                                            ref={(c) => this._max_in_connections = c}
-                                            onChange={() => {
-                                                this.setNetworkConfig({NODE_CONNECTION_INBOUND_MAX: this._max_in_connections.value});
-                                            }}
-                                            value={this.state.network_config_data.NODE_CONNECTION_INBOUND_MAX}/>
+                                            ref={(c) => this.node_connection_inbound_max = c}
+                                            onChange={(e) => {
+                                                return validate.handleInputChangeInteger(e, false, 'none');
+                                            }}/>
                                     </Form.Group>
                                 </Col>
                                 <Col>
@@ -233,11 +183,10 @@ class Network extends Component {
                                         <Form.Control
                                             type="text"
                                             placeholder=""
-                                            ref={(c) => this.max_out_connections = c}
-                                            onChange={() => {
-                                                this.setNetworkConfig({NODE_CONNECTION_OUTBOUND_MAX: this.max_out_connections.value});
-                                            }}
-                                            value={this.state.network_config_data.NODE_CONNECTION_OUTBOUND_MAX}/>
+                                            ref={(c) => this.node_connection_outbound_max = c}
+                                            onChange={(e) => {
+                                                return validate.handleInputChangeInteger(e, false, 'none');
+                                            }}/>
                                     </Form.Group>
                                 </Col>
                                 <Col>
@@ -245,12 +194,10 @@ class Network extends Component {
                                         <label>nodes</label>
                                         <Form.Control as="textarea" rows={4}
                                                       placeholder=""
-                                                      ref={(c) => this._nodes = c}
-                                                      onChange={() => {
-                                                          this.setNetworkConfig({NODE_INITIAL_LIST: this._nodes.value});
-                                                      }}
-                                                      value={this.state.network_config_data.NODE_INITIAL_LIST}
-                                        />
+                                                      ref={(c) => this.node_initial_list = c}
+                                                      onChange={(e) => {
+                                                          return e.target.value;
+                                                      }}/>
                                     </Form.Group>
                                 </Col>
                                 <Col>
@@ -258,7 +205,7 @@ class Network extends Component {
                                         className={'d-flex justify-content-center'}>
                                         <Button
                                             variant="outline-primary"
-                                            onClick={() => this.send()}
+                                            onClick={() => this.save()}
                                             disabled={this.state.sending}>
                                             {this.state.sending ?
                                              <>

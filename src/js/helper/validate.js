@@ -18,7 +18,7 @@ export function amount(field_name, value, error_list, allow_zero = false) {
     return integerPositive(field_name, value, error_list, allow_zero);
 }
 
-export function integerPositive(field_name, value, error_list, allow_zero = false) {
+export function integerPositive(field_name, value, error_list, allow_zero = false, millix_format_check = true) {
     let value_escaped = value.toString().trim();
     value_escaped     = parseInt(value_escaped.replace(/\D/g, ''));
 
@@ -34,7 +34,8 @@ export function integerPositive(field_name, value, error_list, allow_zero = fals
             message: `${field_name} must be bigger than or equal to 0`
         });
     }
-    else if (format.millix(value_escaped, false) !== value) {
+    else if (millix_format_check && format.millix(value_escaped, false) !== value) {
+
         error_list.push({
             name   : get_error_name('amount_format_is_wrong', field_name),
             message: `${field_name} must be a valid amount`
@@ -52,6 +53,7 @@ export function ipAddress(field_name, value, error_list) {
             name   : get_error_name('amount_format_is_wrong', field_name),
             message: `${field_name} must be a valid ip address`
         });
+        return false;
     }
     ipAddressArray.forEach(element => {
         if (isNaN(Number(element)) || element > 255 || element < 0 || element === '') {
@@ -62,6 +64,8 @@ export function ipAddress(field_name, value, error_list) {
             return false;
         }
     });
+
+    return value;
 }
 
 export function string(field_name, value, error_list, length) {
@@ -126,8 +130,10 @@ export function handleInputChangeInteger(e, allow_negative = true, formatter = '
         if (formatter === 'millix') {
             value = format.millix(amount, false);
         }
-        else {
+        else if (formatter === 'number') {
             value = format.number(amount);
+        } else if (formatter === 'none') {
+            value = amount;
         }
     }
 
@@ -135,6 +141,31 @@ export function handleInputChangeInteger(e, allow_negative = true, formatter = '
     e.target.setSelectionRange(cursorStart + offset, cursorEnd + offset);
 }
 
+export function handleInputChangeAlphanumericString(e, length) {
+    if (e.target.value.length === 0) {
+        return;
+    }
+
+    let value = e.target.value.replace(/[\W_]+/g, '');
+    if (value.length > length) {
+        value = value.slice(0, -1);
+    }
+
+    e.target.value = value;
+}
+
+export function handleInputChangeIpAddress(e) {
+    if (e.target.value.length === 0) {
+        return;
+    }
+
+    let value = e.target.value.replace(/[^0-9.]/g, '');
+    if (value.length > 15) {
+        value = value.slice(0, -1);
+    }
+
+    e.target.value = value;
+}
 
 export function handleAmountInputChange(e) {
     handleInputChangeInteger(e, false, 'millix');

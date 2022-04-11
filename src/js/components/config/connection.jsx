@@ -2,318 +2,215 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 import {Col, Form} from 'react-bootstrap';
-import {addWalletConfig, removeWalletAddressVersion, walletUpdateConfig} from '../../redux/actions';
-import _ from 'lodash';
 import DatatableView from '../utils/datatable-view';
 import ModalView from '../utils/modal-view';
 import ErrorList from '../utils/error-list-view';
 import * as validate from '../../helper/validate';
 import API from '../../api';
-import store from '../../redux/store';
 import DatatableActionButtonView from '../utils/datatable-action-button-view';
 
 
 class Connection extends Component {
     constructor(props) {
         super(props);
-        this.state                      = {
-            datatables                         : {
-                connection_inbound : [],
-                connection_outbound: [],
-                connection_static  : []
+        this.state = {
+            connection_data: {
+                NODE_CONNECTION_STATIC            : [],
+                NODE_CONNECTION_OUTBOUND_WHITELIST: [],
+                NODE_CONNECTION_INBOUND_WHITELIST : []
             },
-            sending                            : false,
-            node_connection_inbound_whitelist  : '',
-            node_connection_outbound_whitelist : '',
-            node_connection_static_whitelist   : '',
-            datatable_reload_timestamp_inbound : new Date(),
-            datatable_reload_timestamp_outbound: new Date(),
-            datatable_reload_timestamp_static  : new Date(),
-            current_connections                : {},
-            error_list                         : [],
-            modalAddConnection                 :
-                {
-                    status: false,
-                    body  : '',
-                    title : ''
-                }
+            error_list     : []
         };
-        this.getInboundConnectionModal  = this.getInboundConnectionModal.bind(this);
-        this.getOutboundConnectionModal = this.getOutboundConnectionModal.bind(this);
-        this.getStaticConnectionModal   = this.getStaticConnectionModal.bind(this);
-    }
 
-    showModalAddConnection(callback, title) {
-        this.setState({
-            modalAddConnection: {
-                status: true,
-                body  : callback(),
-                title : title
-            }
-        });
-    }
-
-    hideModalAddConnection() {
-        this.setState({
-            modalAddConnection: {
-                status: false,
-                body  : ''
-            },
-            error_list        : []
-        });
+        this.connection_config_names = [
+            'NODE_CONNECTION_STATIC',
+            'NODE_CONNECTION_OUTBOUND_WHITELIST',
+            'NODE_CONNECTION_INBOUND_WHITELIST'
+        ];
     }
 
     componentDidMount() {
-        this.setConfigToState();
+        this.loadConfigToSate();
     }
 
-    setConfig(data) {
-        _.each(_.keys(data), key => {
-            switch (this.props.configType[key]) {
-                case 'number':
-                    data[key] = JSON.parse(data[key]);
-            }
-        });
+    loadConfigToSate(config_name) {
+        const connection_data = this.state.connection_data;
 
-        this.setConfigToState();
-    }
-
-    saveCurrentState() {
-        let success = false;
-        Object.entries(this.state.current_connections).forEach(([key]) => {
-            success = this.addToConfigList(key);
-        });
-
-        if (!success) {
-            return;
-        }
-        this.setState({current_connections: {}});
-        this.hideModalAddConnection();
-    }
-
-    addToConfigList(configName) {
-        let value      = this.state.current_connections[configName];
-        let error_list = [];
-
-        validate.required('node id', value, error_list);
-        validate.string('node id', value, error_list, 34);
-        if (error_list.length > 0) {
-            this.setState({
-                error_list: error_list
-            }, () => {
-                switch (configName) {
-                    case 'NODE_CONNECTION_INBOUND_WHITELIST':
-                        this.showModalAddConnection(this.getInboundConnectionModal, 'add inbound connection');
-                        break;
-                    case 'NODE_CONNECTION_OUTBOUND_WHITELIST':
-                        this.showModalAddConnection(this.getOutboundConnectionModal, 'add outbound connection');
-                        break;
-                    case 'NODE_CONNECTION_STATIC':
-                        this.showModalAddConnection(this.getStaticConnectionModal, 'add static connection');
-                        break;
-                    default:
-                        break;
-                }
+        if (config_name) {
+            API.getNodeConfigValueByName(config_name).then((data) => {
+                connection_data[data.config_name] = [];
+                this.prepareDataForDatatable(connection_data, data);
             });
-
-            return false;
         }
-        const configList = this.props.config[configName];
-        value            = value.trim();
-        configList.push(value);
+        else {
+            API.getNodeConfig().then((data) => {
+                connection_data[data.config_name] = [];
+                data.forEach(element => {
+                    if (this.connection_config_names.includes(element.config_name)) {
+                        this.prepareDataForDatatable(connection_data, element);
+                    }
+                });
+            });
+        }
+
         this.setState({
-            [configName]: ''
-        });
-        this.setConfig({[configName]: configList});
-
-        return true;
-    }
-
-    removeFromConfigList(configName, value) {
-        _.pull(this.props.config[configName], value);
-        this.setConfig({[configName]: this.props.config[configName]});
-    }
-
-    reloadConfig(datatable_name) {
-        let datatable_reload_time             = {};
-        datatable_reload_time[datatable_name] = new Date();
-        this.setState({
-            ...datatable_reload_time
-        });
-        API.getNodeConfig()
-           .then(configList => {
-               const newConfig = {
-                   config    : {},
-                   configType: {}
-               };
-               configList.forEach(config => {
-                   newConfig.config[config.config_name]     = config.type !== 'string' ? JSON.parse(config.value) : config.value;
-                   newConfig.configType[config.config_name] = config.type;
-               });
-               store.dispatch(addWalletConfig(newConfig));
-               this.setConfigToState();
-           });
-    }
-
-    setConfigToState() {
-        this.setState({
-            datatables: {
-                connection_inbound : this.props.config.NODE_CONNECTION_INBOUND_WHITELIST.map((input) => ({
-                    node_id: input,
-                    action : this.getConnectionDeleteButton(input, 'NODE_CONNECTION_INBOUND_WHITELIST')
-                })),
-                connection_outbound: this.props.config.NODE_CONNECTION_OUTBOUND_WHITELIST.map((input) => ({
-                    node_id: input,
-                    action : this.getConnectionDeleteButton(input, 'NODE_CONNECTION_OUTBOUND_WHITELIST')
-                })),
-                connection_static  : this.props.config.NODE_CONNECTION_STATIC.map((input) => ({
-                    node_id: input,
-                    action : this.getConnectionDeleteButton(input, 'NODE_CONNECTION_STATIC')
-                }))
-            }
+            connection_data
         });
     }
 
-    getInboundConnectionModal() {
-        return <Form>
-            <ErrorList
-                error_list={this.state.error_list}/>
-            <Form.Control
-                type="text"
-                placeholder="node id"
-                onChange={(e) => {
-                    this.setState({current_connections: {NODE_CONNECTION_INBOUND_WHITELIST: e.target.value}});
-                }}/>
-        </Form>;
+    clearErrorList() {
+        this.setState({
+            error_list: []
+        });
     }
 
-    getOutboundConnectionModal() {
-        return <Form>
-            <ErrorList
-                error_list={this.state.error_list}/>
-            <Form.Control
-                type="text"
-                placeholder="node id"
-                onChange={(e) => {
-                    this.setState({current_connections: {NODE_CONNECTION_OUTBOUND_WHITELIST: e.target.value}});
-                }}/>
-        </Form>;
+    prepareDataForDatatable(connection_data, element) {
+        JSON.parse(element.value).forEach(el => {
+            connection_data[element.config_name].push({
+                node_id: el,
+                action : this.getButtonRemoveConnection(element.config_name, el)
+            });
+        });
+        connection_data['reload_timestamp_' + element.config_name] = new Date();
     }
 
-    getStaticConnectionModal() {
-        return <Form>
-            <ErrorList
-                error_list={this.state.error_list}/>
-            <Form.Control
-                type="text"
-                placeholder="node id"
-                onChange={(e) => {
-                    this.setState({current_connections: {NODE_CONNECTION_STATIC: e.target.value}});
-                }}/>
-        </Form>;
-    }
+    getButtonRemoveConnection(config_name, value) {
 
-    getConnectionDeleteButton(nodeID, configName) {
         return <DatatableActionButtonView
             icon={'trash'}
-            callback={() => this.removeFromConfigList(configName, nodeID)}
+            callback={() => this.removeConnection(config_name, value)}
             callback_args={[
-                configName,
-                nodeID
+                config_name,
+                value
             ]}
         />;
     }
 
+    removeConnection(config_name, value) {
+        let result_config = [];
+        this.state.connection_data[config_name].forEach(element => {
+            if (element.node_id !== value) {
+                result_config.push(element);
+            }
+        });
+        API.updateNodeConfigValue(config_name, this.prepareApiConfigData(result_config)).then(() => {
+            this.setState({
+                connection_data: {
+                    ...this.state.connection_data,
+                    [config_name]: result_config
+                }
+            });
+        });
+    }
+
+    showModal(config_name, show = true) {
+        let connection_data                    = this.state.connection_data;
+        connection_data['show_' + config_name] = show;
+        this.setState({
+            connection_data: {...connection_data}
+        });
+        this.clearErrorList();
+    }
+
+    saveConfig(config_name) {
+        let error_list = [];
+        validate.required('node id', this[config_name].value, error_list);
+
+        if (error_list.length > 0) {
+            this.setState({
+                error_list
+            });
+            return;
+        }
+
+        this.clearErrorList();
+
+        let configuration_data = this.prepareApiConfigData(this.state.connection_data[config_name]);
+        configuration_data.push(this[config_name].value);
+
+        API.updateNodeConfigValue(config_name, configuration_data).then(() => {
+            this.showModal(config_name, false);
+            this.loadConfigToSate(config_name);
+        }).catch((e) => {
+            this.setState({
+                error_list: [
+                    {
+                        name   : 'error',
+                        message: e.getMessage()
+                    }
+                ]
+            });
+        });
+    }
+
+    prepareApiConfigData(config_data) {
+        let configuration_data = [];
+
+        config_data.forEach(element => {
+            configuration_data.push(element.node_id);
+        });
+
+        return configuration_data;
+    }
+
+    getConnectionDatatable(connection_name, config_name) {
+        return (
+            <div className={'panel panel-filled'}>
+                <ModalView
+                    show={this.state.connection_data['show_' + config_name]}
+                    size={'lg'}
+                    prevent_close_after_accept={true}
+                    on_close={() => this.showModal(config_name, false)}
+                    on_accept={() => this.saveConfig(config_name)}
+                    heading={`add ${connection_name}`}
+                    body={
+                        <Form>
+                            <ErrorList
+                                error_list={this.state.error_list}/>
+                            <Form.Control
+                                type="text"
+                                placeholder="node id"
+                                ref={(c) => this[config_name] = c}
+                                onChange={(e) => {
+                                    return validate.handleInputChangeAlphanumericString(e, 34);
+                                }}
+                            />
+                        </Form>
+                    }/>
+                <div className={'panel-heading bordered'}>
+                    {connection_name} whitelist
+                </div>
+                <div className={'panel-body'}>
+                    <Col>
+                        <DatatableView
+                            reload_datatable={() => {
+                                this.loadConfigToSate(config_name);
+                            }}
+                            datatable_reload_timestamp={this.state.connection_data['reload_timestamp_' + config_name]}
+                            action_button={{
+                                label   : `add ${connection_name}`,
+                                on_click: () => this.showModal(config_name)
+                            }}
+                            value={this.state.connection_data[config_name]}
+                            sortOrder={1}
+                            showActionColumn={true}
+                            resultColumn={[
+                                {
+                                    field: 'node_id'
+                                }
+                            ]}
+                        />
+                    </Col>
+                </div>
+            </div>
+        );
+    }
+
     render() {
         return <div>
-            <ModalView
-                show={this.state.modalAddConnection.status}
-                size={'lg'}
-                prevent_close_after_accept={true}
-                on_close={() => this.hideModalAddConnection()}
-                on_accept={() => this.saveCurrentState()}
-                heading={this.state.modalAddConnection.title}
-                body={this.state.modalAddConnection.body}/>
-            <Form>
-                <div className={'panel panel-filled'}>
-                    <div className={'panel-heading bordered'}>
-                        inbound connection whitelist
-                    </div>
-                    <div className={'panel-body'}>
-                        <Col>
-                            <DatatableView
-                                reload_datatable={() => this.reloadConfig('datatable_reload_timestamp_inbound')}
-                                datatable_reload_timestamp={this.state.datatable_reload_timestamp_inbound}
-                                action_button_label={'add inbound connection'}
-                                action_button={{
-                                    label   : 'add inbound connection',
-                                    on_click: () => this.showModalAddConnection(this.getInboundConnectionModal, 'add inbound connection')
-                                }}
-                                value={this.state.datatables.connection_inbound}
-                                sortOrder={1}
-                                showActionColumn={true}
-                                resultColumn={[
-                                    {
-                                        field: 'node_id'
-                                    }
-                                ]}
-                            />
-                        </Col>
-                    </div>
-                </div>
-
-                <div className={'panel panel-filled'}>
-                    <div className={'panel-heading bordered'}>
-                        outbound connection whitelist
-                    </div>
-                    <div className={'panel-body'}>
-                        <Col>
-                            <DatatableView
-                                reload_datatable={() => this.reloadConfig('datatable_reload_timestamp_outbound')}
-                                datatable_reload_timestamp={this.state.datatable_reload_timestamp_outbound}
-                                action_button={{
-                                    label   : 'add outbound connection',
-                                    on_click: () => this.showModalAddConnection(this.getOutboundConnectionModal, 'add outbound connection')
-                                }}
-                                value={this.state.datatables.connection_outbound}
-                                sortOrder={1}
-                                showActionColumn={true}
-                                resultColumn={[
-                                    {
-                                        field: 'node_id'
-                                    }
-                                ]}
-                            />
-                        </Col>
-                    </div>
-                </div>
-
-                <div className={'panel panel-filled'}>
-                    <div className={'panel-heading bordered'}>
-                        static connection
-                    </div>
-                    <div className={'panel-body'}>
-                        <Col>
-                            <DatatableView
-                                reload_datatable={() => this.reloadConfig('datatable_reload_timestamp_static')}
-                                datatable_reload_timestamp={this.state.datatable_reload_timestamp_static}
-                                action_button={{
-                                    label   : 'add static connection',
-                                    on_click: () => this.showModalAddConnection(this.getStaticConnectionModal, 'add static connection')
-                                }}
-                                value={this.state.datatables.connection_static}
-                                sortOrder={1}
-                                showActionColumn={true}
-                                resultColumn={[
-                                    {
-                                        field: 'node_id'
-                                    }
-                                ]}
-                            />
-                        </Col>
-                    </div>
-                </div>
-            </Form>
+            {this.getConnectionDatatable('inbound connection', 'NODE_CONNECTION_INBOUND_WHITELIST')}
+            {this.getConnectionDatatable('outbound connection', 'NODE_CONNECTION_OUTBOUND_WHITELIST')}
+            {this.getConnectionDatatable('static connection', 'NODE_CONNECTION_STATIC')}
         </div>;
     }
 }
@@ -321,11 +218,6 @@ class Connection extends Component {
 
 export default connect(
     state => ({
-        config    : state.config,
-        configType: state.configType,
-        wallet    : state.wallet
+        config: state.config
     }),
-    {
-        walletUpdateConfig,
-        removeWalletAddressVersion
-    })(withRouter(Connection));
+    {})(withRouter(Connection));

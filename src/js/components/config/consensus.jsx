@@ -13,111 +13,76 @@ class Consensus extends Component {
         super(props);
         this.state = {
             sending               : false,
-            consensus_config_data : {},
             error_list            : {},
             modal_show_send_result: false,
-            reload                : false
         };
     }
 
     componentDidMount() {
-        this.loadConfigToState();
+        this.loadFromConfig();
     }
 
-    loadConfigToState() {
-        this.setState({
-            consensus_config_data: {
-                CONSENSUS_ROUND_NODE_COUNT          : this.props.config.CONSENSUS_ROUND_NODE_COUNT,
-                CONSENSUS_ROUND_VALIDATION_MAX      : this.props.config.CONSENSUS_ROUND_VALIDATION_MAX,
-                CONSENSUS_ROUND_DOUBLE_SPEND_MAX    : this.props.config.CONSENSUS_ROUND_DOUBLE_SPEND_MAX,
-                CONSENSUS_ROUND_VALIDATION_REQUIRED : this.props.config.CONSENSUS_ROUND_VALIDATION_REQUIRED,
-                CONSENSUS_VALIDATION_WAIT_TIME_MAX  : this.props.config.CONSENSUS_VALIDATION_WAIT_TIME_MAX,
-                CONSENSUS_VALIDATION_RETRY_WAIT_TIME: this.props.config.CONSENSUS_VALIDATION_RETRY_WAIT_TIME
-            }
-        });
+    loadFromConfig() {
+        this.consensus_round_node_count.value           = this.props.config.CONSENSUS_ROUND_NODE_COUNT;
+        this.consensus_round_validation_max.value       = this.props.config.CONSENSUS_ROUND_VALIDATION_MAX;
+        this.consensus_round_double_spend_max.value     = this.props.config.CONSENSUS_ROUND_DOUBLE_SPEND_MAX;
+        this.consensus_round_validation_required.value  = this.props.config.CONSENSUS_ROUND_VALIDATION_REQUIRED;
+        this.consensus_validation_wait_time_max.value   = this.props.config.CONSENSUS_VALIDATION_WAIT_TIME_MAX;
+        this.consensus_validation_retry_wait_time.value = this.props.config.CONSENSUS_VALIDATION_RETRY_WAIT_TIME;
     }
 
-    changeModalShowSendResult(value = true) {
+    changeModalShowSaveResult(value = true) {
         this.setState({
             modal_show_send_result: value
         });
         if (value === false) {
-            this.loadConfigToState();
+            this.loadFromConfig();
         }
     }
 
-    setConsensusConfig(data) {
-        for (let key in data) {
-            this.state.consensus_config_data[key] = data[key];
-        }
-
-        this.setState({
-            consensus_config_data: this.state.consensus_config_data
-        });
-    }
-
-    send() {
+    save() {
         this.setState({
             sending   : true,
             error_list: []
         });
 
-        if (!this.isValidConsensusData()) {
-            return;
-        }
+        const error_list = [];
 
-        try {
-            this.props.walletUpdateConfig(this.state.consensus_config_data).then(() => {
+        validate.required('number of nodes', this.consensus_round_node_count.value, error_list);
+        validate.required('number of validation rounds', this.consensus_round_validation_max.value, error_list);
+        validate.required('max double spend bound', this.consensus_round_double_spend_max.value, error_list);
+        validate.required('number of validation required', this.consensus_round_validation_required.value, error_list);
+        validate.required('max wait (sec)', this.consensus_validation_wait_time_max.value, error_list);
+        validate.required('retry wait (sec)', this.consensus_validation_retry_wait_time.value, error_list);
+
+        let consensus_config = {
+            CONSENSUS_ROUND_NODE_COUNT          : validate.integerPositive('number of nodes', this.consensus_round_node_count.value, error_list, false, false),
+            CONSENSUS_ROUND_VALIDATION_MAX      : validate.integerPositive('number of validation rounds', this.consensus_round_validation_max.value, error_list, false, false),
+            CONSENSUS_ROUND_DOUBLE_SPEND_MAX    : validate.integerPositive('max double spend bound', this.consensus_round_double_spend_max.value, error_list, false, false),
+            CONSENSUS_ROUND_VALIDATION_REQUIRED : validate.integerPositive('number of validation required', this.consensus_round_validation_required.value, error_list, false, false),
+            CONSENSUS_VALIDATION_WAIT_TIME_MAX  : validate.integerPositive('max wait (sec)', this.consensus_validation_wait_time_max.value, error_list, false, false),
+            CONSENSUS_VALIDATION_RETRY_WAIT_TIME: validate.integerPositive('retry wait (sec)', this.consensus_validation_retry_wait_time.value, error_list, false, false)
+        };
+        if (error_list.length === 0) {
+            this.props.walletUpdateConfig(consensus_config).then(() => {
                 this.setState({
                     sending: false
                 });
-                this.changeModalShowSendResult();
+                this.changeModalShowSaveResult();
+            }).catch(() => {
+                error_list.push({
+                    name   : 'save_error',
+                    message: 'error while saving occurred, please try again later'
+                });
             });
         }
-        catch (e) {
-            this.state.error_list.push({
-                name   : 'saveError',
-                message: 'error while saving occurred, please try again later'
-            });
-            this.setState({
-                error_list: this.state.error_list
-            });
-            return Promise.reject('server_error');
-        }
-    }
-
-    isValidConsensusData() {
-        let data       = this.state.consensus_config_data;
-        let error_list = [];
-
-        data.CONSENSUS_ROUND_NODE_COUNT = validate.required('number of nodes', data.CONSENSUS_ROUND_NODE_COUNT, error_list);
-        if (data.CONSENSUS_ROUND_NODE_COUNT) {
-            validate.integerPositive('min connections in', data.CONSENSUS_ROUND_NODE_COUNT, error_list);
-        }
-        data.CONSENSUS_ROUND_VALIDATION_MAX = validate.required('number of validation rounds', data.CONSENSUS_ROUND_VALIDATION_MAX, error_list);
-        if (data.CONSENSUS_ROUND_VALIDATION_MAX) {
-            validate.integerPositive('number of validation rounds', data.CONSENSUS_ROUND_VALIDATION_MAX, error_list);
-        }
-        data.CONSENSUS_ROUND_DOUBLE_SPEND_MAX = validate.required('max double spend bound', data.CONSENSUS_ROUND_DOUBLE_SPEND_MAX, error_list);
-        if (data.CONSENSUS_ROUND_DOUBLE_SPEND_MAX) {
-            validate.integerPositive('max double spend bound', data.CONSENSUS_ROUND_DOUBLE_SPEND_MAX, error_list);
-        }
-        data.CONSENSUS_ROUND_VALIDATION_REQUIRED = validate.required('number of validation required', data.CONSENSUS_ROUND_VALIDATION_REQUIRED, error_list);
-        if (data.CONSENSUS_ROUND_VALIDATION_REQUIRED) {
-            validate.integerPositive('number of validation required', data.CONSENSUS_ROUND_VALIDATION_REQUIRED, error_list);
-        }
-        validate.integerPositive('max wait (sec)', data.CONSENSUS_VALIDATION_WAIT_TIME_MAX, error_list, true);
-        validate.integerPositive('retry wait (sec)', data.CONSENSUS_VALIDATION_RETRY_WAIT_TIME, error_list, true);
 
         if (error_list.length > 0) {
             this.setState({
-                error_list: error_list,
-                sending   : false
+                sending   : false,
+                error_list: error_list
             });
-            return false;
         }
-
-        return true;
     }
 
     render() {
@@ -125,7 +90,7 @@ class Consensus extends Component {
             <ModalView
                 show={this.state.modal_show_send_result}
                 size={'lg'}
-                on_close={() => this.changeModalShowSendResult(false)}
+                on_close={() => this.changeModalShowSaveResult(false)}
                 heading={'success'}
                 body={
                     <div className={'text-center'}>
@@ -142,95 +107,78 @@ class Consensus extends Component {
                             error_list={this.state.error_list}/>
                         <Col>
                             <Form.Group className="form-group">
-                                <label>number
-                                    of nodes</label>
+                                <label>number of nodes</label>
                                 <Form.Control
                                     type="text"
                                     placeholder=""
-                                    ref={(c) => this._consensus_n_nodes = c}
-                                    onChange={() => {
-                                        this.setConsensusConfig({CONSENSUS_ROUND_NODE_COUNT: this._consensus_n_nodes.value});
-                                    }}
-                                    value={this.state.consensus_config_data.CONSENSUS_ROUND_NODE_COUNT}/>
+                                    ref={(c) => this.consensus_round_node_count = c}
+                                    onChange={(e) => {
+                                        return validate.handleInputChangeInteger(e, false, 'none');
+                                    }}/>
                             </Form.Group>
                         </Col>
                         <Col>
                             <Form.Group className="form-group">
-                                <label>number
-                                    of validation
-                                    rounds</label>
+                                <label>number of validation rounds</label>
                                 <Form.Control
                                     type="text"
                                     placeholder=""
-                                    ref={(c) => this._consensus_max_validation_rounds = c}
-                                    onChange={() => {
-                                        this.setConsensusConfig({CONSENSUS_ROUND_VALIDATION_MAX: this._consensus_max_validation_rounds.value});
-                                    }}
-                                    value={this.state.consensus_config_data.CONSENSUS_ROUND_VALIDATION_MAX}/>
+                                    ref={(c) => this.consensus_round_validation_max = c}
+                                    onChange={(e) => {
+                                        return validate.handleInputChangeInteger(e, false, 'none');
+                                    }}/>
                             </Form.Group>
                         </Col>
 
                         <Col>
                             <Form.Group className="form-group">
-                                <label>max
-                                    double spend
-                                    bound</label>
+                                <label>max double spend bound</label>
                                 <Form.Control
                                     type="text"
                                     placeholder=""
-                                    ref={(c) => this._consensus_max_double_spend_rounds = c}
-                                    onChange={() => {
-                                        this.setConsensusConfig({CONSENSUS_ROUND_DOUBLE_SPEND_MAX: this._consensus_max_double_spend_rounds.value});
-                                    }}
-                                    value={this.state.consensus_config_data.CONSENSUS_ROUND_DOUBLE_SPEND_MAX}/>
+                                    ref={(c) => this.consensus_round_double_spend_max = c}
+                                    onChange={(e) => {
+                                        return validate.handleInputChangeInteger(e, false, 'none');
+                                    }}/>
                             </Form.Group>
                         </Col>
 
                         <Col>
                             <Form.Group className="form-group">
-                                <label>number
-                                    of validation
-                                    required</label>
+                                <label>number of validation required</label>
                                 <Form.Control
                                     type="text"
                                     placeholder=""
-                                    ref={(c) => this._consensus_required_validation_rounds = c}
-                                    onChange={() => {
-                                        this.setConsensusConfig({CONSENSUS_ROUND_VALIDATION_REQUIRED: this._consensus_required_validation_rounds.value});
-                                    }}
-                                    value={this.state.consensus_config_data.CONSENSUS_ROUND_VALIDATION_REQUIRED}/>
+                                    ref={(c) => this.consensus_round_validation_required = c}
+                                    onChange={(e) => {
+                                        return validate.handleInputChangeInteger(e, false, 'none');
+                                    }}/>
                             </Form.Group>
                         </Col>
 
                         <Col>
                             <Form.Group className="form-group">
-                                <label>max
-                                    wait
-                                    (sec)</label>
+                                <label>max wait (sec)</label>
                                 <Form.Control
                                     type="text"
                                     placeholder=""
-                                    ref={(c) => this._consensus_max_wait_time = c}
-                                    onChange={() => {
-                                        this.setConsensusConfig({CONSENSUS_VALIDATION_WAIT_TIME_MAX: this._consensus_max_wait_time.value});
-                                    }}
-                                    value={this.state.consensus_config_data.CONSENSUS_VALIDATION_WAIT_TIME_MAX}/>
+                                    ref={(c) => this.consensus_validation_wait_time_max = c}
+                                    onChange={(e) => {
+                                        return validate.handleInputChangeInteger(e, false, 'none');
+                                    }}/>
                             </Form.Group>
                         </Col>
 
                         <Col>
                             <Form.Group className="form-group">
-                                <label>retry
-                                    wait
-                                    (sec)</label>
+                                <label>retry wait (sec)</label>
                                 <Form.Control
                                     type="text"
                                     placeholder=""
-                                    ref={(c) => this._consensus_retry_wait_time = c}
-                                    onChange={() => {
-                                        this.setConsensusConfig({CONSENSUS_VALIDATION_RETRY_WAIT_TIME: this._consensus_retry_wait_time.value});
-                                    }}
-                                    value={this.state.consensus_config_data.CONSENSUS_VALIDATION_RETRY_WAIT_TIME}/>
+                                    ref={(c) => this.consensus_validation_retry_wait_time = c}
+                                    onChange={(e) => {
+                                        return validate.handleInputChangeInteger(e, false, 'none');
+                                    }}/>
                             </Form.Group>
                         </Col>
                         <Col>
@@ -238,7 +186,7 @@ class Consensus extends Component {
                                 className={'d-flex justify-content-center'}>
                                 <Button
                                     variant="outline-primary"
-                                    onClick={() => this.send()}
+                                    onClick={() => this.save()}
                                     disabled={this.state.sending}>
                                     {this.state.sending ?
                                      <>

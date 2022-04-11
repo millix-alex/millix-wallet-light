@@ -23,7 +23,7 @@ import StatsView from './stats-view';
 import ReportIssueView from './report-issue-view';
 import FaqView from './faq-view';
 import AddressListView from './address-list-view';
-import ConfigFees from './config/fees';
+import ConfigFee from './config/fee';
 import ConfigNetwork from './config/network';
 import ConfigConnection from './config/connection';
 import ConfigConsensus from './config/consensus';
@@ -63,8 +63,8 @@ class AppContainer extends Component {
                                                  component={PeerListView}/>
                     <UnlockedWalletRequiredRoute path="/peer/:peer"
                                                  component={PeerInfoView}/>
-                    <UnlockedWalletRequiredRoute path="/fees"
-                                                 component={ConfigFees}/>
+                    <UnlockedWalletRequiredRoute path="/fee"
+                                                 component={ConfigFee}/>
                     <UnlockedWalletRequiredRoute path="/network"
                                                  component={ConfigNetwork}/>
                     <UnlockedWalletRequiredRoute path="/connection"

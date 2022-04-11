@@ -17,14 +17,13 @@ class AddressVersion extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            modalAddAddressVersion    : {
+            modal_add_address_version    : {
                 status: false,
                 title : ''
             },
             address_version_name      : '',
             address_version_regex     : '',
             address_is_default        : false,
-            node_public_ip            : '',
             address_version_list      : [],
             datatable_reload_timestamp: new Date(),
             error_list                : []
@@ -37,7 +36,7 @@ class AddressVersion extends Component {
 
     showModalAddAddressVersion() {
         this.setState({
-            modalAddAddressVersion: {
+            modal_add_address_version: {
                 status: true
             }
         });
@@ -129,7 +128,7 @@ class AddressVersion extends Component {
 
     hideModalAddAddressVersion() {
         this.setState({
-            modalAddAddressVersion: {
+            modal_add_address_version: {
                 status: false
             }
         });
@@ -200,7 +199,7 @@ class AddressVersion extends Component {
     render() {
         return <div>
             <ModalView
-                show={this.state.modalAddAddressVersion.status}
+                show={this.state.modal_add_address_version.status}
                 size={'lg'}
                 prevent_close_after_accept={true}
                 on_close={() => this.hideModalAddAddressVersion()}

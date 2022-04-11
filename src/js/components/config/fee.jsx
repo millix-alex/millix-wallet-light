@@ -9,7 +9,7 @@ import ErrorList from '../utils/error-list-view';
 import * as format from '../../helper/format';
 
 
-class Fees extends Component {
+class Fee extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -148,4 +148,4 @@ export default connect(
     }),
     {
         walletUpdateConfig
-    })(withRouter(Fees));
+    })(withRouter(Fee));

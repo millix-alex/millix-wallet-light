@@ -73,7 +73,7 @@ class Sidebar extends Component {
         }
         else if (section === 'settings' &&
                  (
-                     (defaultSelected === '/fees') ||
+                     (defaultSelected === '/fee') ||
                      (defaultSelected === '/network') ||
                      (defaultSelected === '/connection') ||
                      (defaultSelected === '/consensus') ||
@@ -223,8 +223,8 @@ class Sidebar extends Component {
                                              icon="chevron-up"
                                              size="1x"/>
                         </NavText>
-                        <NavItem key={'fees'}
-                                 eventKey="/fees">
+                        <NavItem key={'fee'}
+                                 eventKey="/fee">
                             <NavText>
                                 fees
                             </NavText>
