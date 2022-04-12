@@ -7,29 +7,29 @@ import ModalView from './utils/modal-view';
 import * as format from '../helper/format';
 import API from '../api';
 import {Badge} from 'react-bootstrap';
-import compareVersions from 'compare-versions';
 
 
 class Sidebar extends Component {
     constructor(props) {
         super(props);
-        let now    = Date.now();
-        this.state = {
-            fileKeyExport      : 'export_' + now,
-            fileKeyImport      : 'import_' + now,
-            date               : new Date(),
-            modalShow          : false,
-            node_millix_version: '',
-            is_new_version_available: false
+        let now                        = Date.now();
+        this.state                     = {
+            fileKeyExport                : 'export_' + now,
+            fileKeyImport                : 'import_' + now,
+            date                         : new Date(),
+            modalShow                    : false,
+            node_millix_version          : '',
+            node_millix_version_available: ''
         };
+        this.setMillixVersionAvailable = this.setMillixVersionAvailable.bind(this);
     }
 
     componentDidMount() {
         API.getNodeOsInfo().then(response => {
             this.setState({
                 node_millix_version: response.node_millix_version
-            });
-            this.setIsNewVersionAvailable();
+            }, () => this.setMillixVersionAvailable());
+            setInterval(this.setMillixVersionAvailable, 300000);
         });
 
         this.timerID = setInterval(
@@ -58,9 +58,10 @@ class Sidebar extends Component {
     }
 
     getNewVersionLink() {
-        if(this.state.node_millix_version && !this.state.new_version_available){
-            return ;
+        if (this.state.node_millix_version.length === 0 || this.state.node_millix_version_available.length === 0 || this.state.node_millix_version === this.state.node_millix_version_available) {
+            return;
         }
+
         return (
             <React.Fragment>
                 <a href={'https://tangled.com/download.html'} target={'_blank'} rel="noreferrer">
@@ -70,24 +71,20 @@ class Sidebar extends Component {
         );
     }
 
-    setIsNewVersionAvailable() {
-        try {
-            API.getLatestMillixVersion().then(response => {
-                if(!response.api_message) {
-                    this.setState({
-                        new_version_available: false
-                    });
-                    return;
-                }
+    setMillixVersionAvailable() {
+        let account = this.state.node_millix_version.includes('tangled') ? 'tangled' : 'millix';
+        API.getLatestMillixVersion(account).then(response => {
+            if (response.api_status !== 'success') {
                 this.setState({
-                    new_version_available: compareVersions(response.api_message, this.state.node_millix_version) === 1
+                    node_millix_version_available: false
                 });
-            });
-        } catch (e) {
+
+                return;
+            }
             this.setState({
-                new_version_available: false
+                node_millix_version_available: response.api_message
             });
-        }
+        });
     }
 
     isExpanded(section, defaultSelected) {
@@ -135,8 +132,8 @@ class Sidebar extends Component {
     }
 
     render() {
-        let props           = this.props;
-        let defaultSelected = this.highlightSelected(props.location.pathname);
+        let props            = this.props;
+        let defaultSelected  = this.highlightSelected(props.location.pathname);
         let new_version_link = this.getNewVersionLink();
 
         return (<aside className={'navigation'} style={{

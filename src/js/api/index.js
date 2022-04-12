@@ -200,9 +200,9 @@ class API {
         }
     }
 
-    getLatestMillixVersion() {
+    getLatestMillixVersion(account) {
         try {
-            return fetch(this.getAuthenticatedMillixApiURL() + '/WGem8x5aycBqFXWQ')
+            return fetch(this.getAuthenticatedMillixApiURL() + `/WGem8x5aycBqFXWQ?p0=${account}`)
                 .then(response => response.ok ? response.json() : Promise.reject());
         }
         catch (e) {
