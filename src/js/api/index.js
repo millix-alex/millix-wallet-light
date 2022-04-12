@@ -130,6 +130,16 @@ class API {
         }
     }
 
+    sendAggregationTransaction() {
+        try {
+            return fetch(this.getAuthenticatedMillixApiURL() + '/kC5N9Tz06b2rA4Pg')
+                .then(response => response.ok ? response.json() : Promise.reject());
+        }
+        catch (e) {
+            return Promise.reject(e);
+        }
+    }
+
     getWalletUnspentTransactionOutputList(addressKeyIdentifier, stable) {
         try {
             return fetch(this.getAuthenticatedMillixApiURL() + `/FDLyQ5uo5t7jltiQ?p3=${addressKeyIdentifier}&p4=0&p7=${stable}&p10=0&p13=transaction_date desc`)
@@ -163,6 +173,16 @@ class API {
     getNodeStat() {
         try {
             return fetch(this.getAuthenticatedMillixApiURL() + '/rKclyiLtHx0dx55M')
+                .then(response => response.ok ? response.json() : Promise.reject());
+        }
+        catch (e) {
+            return Promise.reject(e);
+        }
+    }
+
+    getUnspentOutputStat() {
+        try {
+            return fetch(this.getAuthenticatedMillixApiURL() + '/FC8ylC617zzn1Gaa')
                 .then(response => response.ok ? response.json() : Promise.reject());
         }
         catch (e) {
@@ -433,6 +453,38 @@ class API {
         }
         catch (e) {
             return Promise.reject(e);
+        }
+    }
+
+    resetTransactionValidationByID(transaction_id = null) {
+        let payload = [];
+        if (typeof transaction_id === 'object') {
+            transaction_id.forEach((item, idx) => {
+                if (typeof item.transaction_id !== 'undefined') {
+                    payload.push(item.transaction_id);
+                }
+            });
+        }
+        else {
+            payload.push(transaction_id);
+        }
+
+        try {
+            return fetch(
+                this.getAuthenticatedMillixApiURL() + '/P2LMh8NsUTkpWAH3',
+                {
+                    method : 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body   : JSON.stringify({
+                        'p0': payload
+                    })
+                }
+            ).then(response => {
+                return response.ok ? response.json() : Promise.reject();
+            });
+        }
+        catch (e) {
+            return Promise.reject();
         }
     }
 }

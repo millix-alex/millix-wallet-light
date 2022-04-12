@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import AppContainer from './js/components/app-container';
 import store from './js/redux/store';
-import {unlockWallet, updateClock, addWalletConfig, updateNodeAttribute, updateWalletAddressVersion} from './js/redux/actions';
+import {unlockWallet, updateClock, addWalletConfig, updateNodeAttribute, updateWalletAddressVersion, updateNotificationVolume} from './js/redux/actions';
 import reportWebVitals from './reportWebVitals';
 import {config as faConfig, library} from '@fortawesome/fontawesome-svg-core';
 import {
@@ -45,7 +45,9 @@ import {
     faPause,
     faQuestionCircle,
     faThList,
-    faEllipsisV
+    faEllipsisV,
+    faRotateLeft,
+    faCodeMerge
 } from '@fortawesome/free-solid-svg-icons';
 import './css/bootstrap/bootstrap.scss';
 
@@ -69,7 +71,8 @@ library.add(faArrowCircleLeft, faWallet, faKey, faHome, faFingerprint,
     faBook, faMicrochip, faPowerOff, faUserClock, faClock, faCompressArrowsAlt,
     faLock, faLockOpen, faTimes, faEye, faList, faBars, faSignInAlt, faFileImport,
     faChevronDown, faChevronUp, faPencilAlt, faSync, faPlusCircle, faPlay,
-    faPause, faQuestionCircle, faThList, faRedo, faEllipsisV);
+    faPause, faQuestionCircle, faThList, faRedo, faEllipsisV,
+    faRotateLeft, faCodeMerge);
 
 
 let apiInfo = {
@@ -89,6 +92,13 @@ localforage.getItem('api_info', (err, data) => {
                store.dispatch(unlockWallet(data.wallet));
            }
        });
+});
+
+localforage.getItem('notification_volume', (err, data) => {
+    if (err || data === null) {
+        data = 100;
+    }
+    store.dispatch(updateNotificationVolume(data));
 });
 
 window.addEventListener('message', (e) => {
