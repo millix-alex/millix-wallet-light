@@ -25,24 +25,14 @@ import ReportIssueView from './report-issue-view';
 import FaqView from './faq-view';
 import AddressListView from './address-list-view';
 
+
 class AppContainer extends Component {
     constructor(props) {
         super(props);
     }
 
     componentDidMount() {
-        /*let scroll = $('body').getNiceScroll();
-         if (scroll.length === 0) {
-         scroll = $('body').niceScroll();
-         }
-         else {
-         scroll.resize();
-         }
-         setInterval(() => scroll.resize(), 500);*/
-
-         // Simulation function to show and hide the loading screen 
     }
-
 
     render() {
         return <Provider store={this.props.store}>
