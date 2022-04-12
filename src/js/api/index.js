@@ -18,19 +18,31 @@ class API {
         catch (ex) {
         }
     }
-    
-    fetchApi(url) {
-        try {
-            return fetch(url)
-                .then(response => response ? response : Promise.reject())                
-                .then(response => response.ok ? response.json() : Promise.reject())
-                .catch(error => {         
-                    Promise.reject()
-                });
+
+    fetchApiTangled(url, param = {}) {
+        return this.fetchApi(this.getTangledApiURL() + url, param);
+    }
+
+    fetchApiMillix(url, param = {}) {
+        return this.fetchApi(this.getAuthenticatedMillixApiURL() + url, param);
+    }
+
+    fetchApi(url, param = {}) {
+        let param_string  = '';
+        const param_array = [];
+        Object.keys(param).forEach(function(param_key, index) {
+            param_array.push(param_key + '=' + param[param_key]);
+        });
+        if (param_array.length > 0) {
+            param_string = '?' + param_array.join('&');
         }
-        catch (e) {     
-            return Promise.reject(e);
-        }
+
+        return fetch(url + param_string)
+            .then(response => response ? response : Promise.reject())
+            .then(response => response.ok ? response.json() : Promise.reject())
+            .catch(error => {
+                Promise.reject();
+            });
     }
 
     setNodeID(nodeID) {
@@ -53,69 +65,71 @@ class API {
     }
 
     listCategories() {
-        return this.fetchApi(this.getTangledApiURL() + '/dAjjWCtPW1JbYwf6')               
+        return this.fetchApiTangled('/dAjjWCtPW1JbYwf6');
     }
 
     listLanguages() {
-        return this.fetchApi(this.getTangledApiURL() + '/wDqnBLvXY6FGUSfc')
-                
+        return this.fetchApiTangled('/wDqnBLvXY6FGUSfc');
+
     }
 
     listAds() {
-        return this.fetchApi(this.getTangledApiURL() + '/aerijOtODMtkHo6i')               
+        return this.fetchApiTangled('/aerijOtODMtkHo6i');
     }
 
     listAdTypes() {
-        return this.fetchApi(this.getTangledApiURL() + '/jbUwv8IG6XeYMqCq')
-                
+        return this.fetchApiTangled('/jbUwv8IG6XeYMqCq');
+
     }
 
     toggleAdStatus(advertisement_guid) {
-        return this.fetchApi(this.getTangledApiURL() + `/C7neErVANMWXWuse?p0=${encodeURIComponent(JSON.stringify({advertisement_guid: advertisement_guid}))}`)             
+        return this.fetchApiTangled(`/C7neErVANMWXWuse`, {
+            'p0': encodeURIComponent(JSON.stringify({advertisement_guid: advertisement_guid}))
+        });
     }
 
     resetAd(advertisementGUID) {
-        return this.fetchApi(this.getTangledApiURL() + `/pKZdzEZrrdPA1jtl?p0=${advertisementGUID}`)
+        return this.fetchApiTangled(`/pKZdzEZrrdPA1jtl?p0=${advertisementGUID}`);
     }
 
     submitAdForm(formData) {
-        return this.fetchApi(this.getTangledApiURL() + `/scWZ0yhuk5hHLd8s?p0=${encodeURIComponent(JSON.stringify(formData))}`)
+        return this.fetchApiTangled(`/scWZ0yhuk5hHLd8s?p0=${encodeURIComponent(JSON.stringify(formData))}`);
     }
 
     requestAdvertisementPayment(advertisementGUID) {
-        return this.fetchApi(this.getTangledApiURL() + `/QYEgbWuFZs5s7Kud?p0=${advertisementGUID}`)
-   }
+        return this.fetchApiTangled(`/QYEgbWuFZs5s7Kud?p0=${advertisementGUID}`);
+    }
 
     sendTransaction(transactionOutputPayload) {
-        return this.fetchApi(this.getAuthenticatedMillixApiURL() + `/XPzc85T3reYmGro1?p0=${JSON.stringify(transactionOutputPayload)}`)
+        return this.fetchApiMillix(`/XPzc85T3reYmGro1?p0=${JSON.stringify(transactionOutputPayload)}`);
     }
 
     getWalletUnspentTransactionOutputList(addressKeyIdentifier, stable) {
-        return this.fetchApi(this.getAuthenticatedMillixApiURL() + `/FDLyQ5uo5t7jltiQ?p3=${addressKeyIdentifier}&p4=0&p7=${stable}&p10=0&p13=transaction_date desc`)
+        return this.fetchApiMillix(`/FDLyQ5uo5t7jltiQ?p3=${addressKeyIdentifier}&p4=0&p7=${stable}&p10=0&p13=transaction_date desc`);
     }
 
     getTransactionHistory(addressKeyIdentifier) {
-        return this.fetchApi(this.getAuthenticatedMillixApiURL() + `/w9UTTA7NXnEDUXhe?p0=${addressKeyIdentifier}`)
+        return this.fetchApiMillix(`/w9UTTA7NXnEDUXhe?p0=${addressKeyIdentifier}`);
     }
 
     getTransaction(transactionID, shardID) {
-        return this.fetchApi(this.getAuthenticatedMillixApiURL() + `/IBHgAmydZbmTUAe8?p0=${transactionID}&p1=${shardID}`)
+        return this.fetchApiMillix(`/IBHgAmydZbmTUAe8?p0=${transactionID}&p1=${shardID}`);
     }
 
     getNodeStat() {
-        return this.fetchApi(this.getAuthenticatedMillixApiURL() + '/rKclyiLtHx0dx55M')
+        return this.fetchApiMillix('/rKclyiLtHx0dx55M');
     }
 
     getNodeOsInfo() {
-        return this.fetchApi(this.getAuthenticatedMillixApiURL() + '/RLOk0Wji0lQVjynT')
+        return this.fetchApiMillix('/RLOk0Wji0lQVjynT');
     }
 
     getRandomMnemonic() {
-        return this.fetchApi(this.getAuthenticatedMillixApiURL() + '/Gox4NzTLDnpEr10v')        
+        return this.fetchApiMillix('/Gox4NzTLDnpEr10v');
     }
 
     getFreeOutputs(addressKeyIdentifier) {
-        return this.fetchApi(this.getAuthenticatedMillixApiURL() + `/FDLyQ5uo5t7jltiQ?p3=${addressKeyIdentifier}&p4=0&p7=1&p10=0`)
+        return this.fetchApiMillix(`/FDLyQ5uo5t7jltiQ?p3=${addressKeyIdentifier}&p4=0&p7=1&p10=0`);
     }
 
     verifyAddress(address) {
@@ -128,51 +142,51 @@ class API {
         }
     }
 
-    newSessionWithPhrase(password, mnemonicPhrase) {        
+    newSessionWithPhrase(password, mnemonicPhrase) {
         password       = escape_url_param(password);
         mnemonicPhrase = escape_url_param(mnemonicPhrase);
-        return this.fetchApi(this.getAuthenticatedMillixApiURL() + `/GktuwZlVP39gty6v?p0=${password}&p1=${mnemonicPhrase}`)        
+        return this.fetchApiMillix(`/GktuwZlVP39gty6v?p0=${password}&p1=${mnemonicPhrase}`);
     }
 
     newSession(password) {
         password = escape_url_param(password);
-        return this.fetchApi(this.getAuthenticatedMillixApiURL() + `/PMW9LXqUv7vXLpbA?p0=${password}`)
+        return this.fetchApiMillix(`/PMW9LXqUv7vXLpbA?p0=${password}`);
     }
 
     endSession() {
-        return this.fetchApi(this.getAuthenticatedMillixApiURL() + '/pIQZEKY4T9vttBUk')
+        return this.fetchApiMillix('/pIQZEKY4T9vttBUk');
     }
 
     getSession() {
-        return this.fetchApi(this.getAuthenticatedMillixApiURL() + '/OBexeX0f0MsnL1S3')
+        return this.fetchApiMillix('/OBexeX0f0MsnL1S3');
     }
 
     getNodeConfig() {
-        return this.fetchApi(this.getAuthenticatedMillixApiURL() + '/CZOTAF5LfusB1Ht5')
+        return this.fetchApiMillix('/CZOTAF5LfusB1Ht5');
     }
 
     getIsPrivateKeyExist() {
-        return this.fetchApi(this.getAuthenticatedMillixApiURL() + '/LOLb7q23p8rYSLwv')
+        return this.fetchApiMillix('/LOLb7q23p8rYSLwv');
     }
 
     getNodeConfigValueByName(name) {
-        return this.fetchApi(this.getAuthenticatedMillixApiURL() + `/2wYLWQfWBa6GLPYs?p0=${name}`)
+        return this.fetchApiMillix(`/2wYLWQfWBa6GLPYs?p0=${name}`);
     }
 
     updateNodeConfigValue(key = null, value = null) {
         try {
             return this.getNodeConfigValueByName(key)
                        .then((config) => {
-                            return this.fetchApi(this.getAuthenticatedMillixApiURL() + `/LLpSTquu4tZL8Nu5`,
-                                   {
-                                       method : 'POST',
-                                       headers: {'Content-Type': 'application/json'},
-                                       body   : JSON.stringify({
-                                           'p0': config.config_id,
-                                           'p1': value
-                                       })
-                                   }
-                               )                                
+                           return this.fetchApiMillix(`/LLpSTquu4tZL8Nu5`,
+                               {
+                                   method : 'POST',
+                                   headers: {'Content-Type': 'application/json'},
+                                   body   : JSON.stringify({
+                                       'p0': config.config_id,
+                                       'p1': value
+                                   })
+                               }
+                           );
                        });
         }
         catch (e) {
@@ -181,17 +195,17 @@ class API {
     }
 
     getNodePublicIP() {
-        return this.fetchApi(this.getAuthenticatedMillixApiURL() + `/qRHogKQ1Bb7OT4N9`)
+        return this.fetchApiMillix(`/qRHogKQ1Bb7OT4N9`);
     }
 
     listWalletAddressVersion() {
-        return this.fetchApi(this.getAuthenticatedMillixApiURL() + `/3XqkzNFzaTk1JPRf`)
+        return this.fetchApiMillix(`/3XqkzNFzaTk1JPRf`);
     }
 
     addWalletAddressVersion(data) {
         try {
             return fetch(this.getAuthenticatedMillixApiURL() + `/hMrav9QMiMyLQosB?p0=${data.version}&p1=${data.is_main_network}&p2=${data.regex_pattern}&p3=${data.is_default}`)
-                .then(response => response? response : Promise.reject())            
+                .then(response => response ? response : Promise.reject())
                 .then((response) => {
                     if (response.ok) {
                         try {
@@ -210,35 +224,35 @@ class API {
     }
 
     removeWalletAddressVersion(data) {
-        return this.fetchApi(this.getAuthenticatedMillixApiURL() + `/XgxHmjINTEqANwtS?p0=${data.version}`)
+        return this.fetchApiMillix(`/XgxHmjINTEqANwtS?p0=${data.version}`);
     }
 
     getNodeAboutAttribute() {
-        return this.fetchApi(this.getAuthenticatedMillixApiURL() + `/AgsSNTSA0RHmWUkp?p0=${this.nodeID}&p1=ijDj2VlTyJBl5R4iTCmG`)
+        return this.fetchApiMillix(`/AgsSNTSA0RHmWUkp?p0=${this.nodeID}&p1=ijDj2VlTyJBl5R4iTCmG`);
     }
 
     listAddresses(addressKeyIdentifier) {
-        return this.fetchApi(this.getAuthenticatedMillixApiURL() + `/quIoaHsl8h6IwyEI?&p0=${addressKeyIdentifier}`)
+        return this.fetchApiMillix(`/quIoaHsl8h6IwyEI?&p0=${addressKeyIdentifier}`);
     }
 
     getNextAddress() {
-        return this.fetchApi(this.getAuthenticatedMillixApiURL() + '/Lb2fuhVMDQm1DrLL')
+        return this.fetchApiMillix('/Lb2fuhVMDQm1DrLL');
     }
 
     interruptTransaction() {
-        return this.fetchApi(this.getAuthenticatedMillixApiURL() + '/RIlwZyfnizp2i8wh')
+        return this.fetchApiMillix('/RIlwZyfnizp2i8wh');
     }
 
     listActivePeers() {
-        return this.fetchApi(this.getAuthenticatedMillixApiURL() + '/0eoUqXNE715mBVqV?p0=2&p1=update_date%20desc')
+        return this.fetchApiMillix('/0eoUqXNE715mBVqV?p0=2&p1=update_date%20desc');
     }
 
     getNodeAttributes(nodeID) {
-        return this.fetchApi(this.getAuthenticatedMillixApiURL() + `/AgsSNTSA0RHmWUkp?p0=${nodeID}`)
+        return this.fetchApiMillix(`/AgsSNTSA0RHmWUkp?p0=${nodeID}`);
     }
 
     resetTransactionValidation() {
-        return this.fetchApi(this.getAuthenticatedMillixApiURL() + '/QISzUVake29059bi')
+        return this.fetchApiMillix('/QISzUVake29059bi');
     }
 
     resetTransactionValidationByID(transaction_id = null) {
@@ -254,16 +268,16 @@ class API {
             payload.push(transaction_id);
         }
 
-        return this.fetchApi(this.getAuthenticatedMillixApiURL() + '/P2LMh8NsUTkpWAH3',
-                {
-                    method : 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body   : JSON.stringify({
-                        'p0': payload
-                    })
-                }
-            )
-            
+        return this.fetchApiMillix('/P2LMh8NsUTkpWAH3',
+            {
+                method : 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body   : JSON.stringify({
+                    'p0': payload
+                })
+            }
+        );
+
     }
 }
 
