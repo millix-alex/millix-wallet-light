@@ -73,7 +73,6 @@ class Sidebar extends Component {
 
     setMillixVersionAvailable() {
         let account = this.state.node_millix_version.includes('tangled') ? 'tangled' : 'millix';
-        console.log(account);
         API.getLatestMillixVersion(account).then(response => {
             if (response.api_status !== 'success') {
                 this.setState({
