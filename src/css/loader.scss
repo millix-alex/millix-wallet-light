@@ -3,8 +3,8 @@
 @mixin loader {
   -webkit-animation: spin 1s linear infinite;
   animation: spin 1s linear infinite;
-  border: 3px solid #1E2033;
-  border-top: 3px solid $color-primary;
+  border: 0.25rem solid $border-color;
+  border-top: 0.25rem solid $color-primary;
   border-radius: 50%;
   height: 1.8rem;
   width: 1.8rem;
