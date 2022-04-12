@@ -6,26 +6,24 @@ import {Col, Container} from 'react-bootstrap';
 import '../../../../node_modules/mohithg-switchery/switchery.css';
 import $ from 'jquery';
 import API from '../../api';
-import {setBackLogSize, setLogSize, updateNetworkState, walletUpdateBalance, currencyPriceUpdate} from '../../redux/actions';
+import {setBackLogSize, setLogSize, updateNetworkState, walletUpdateBalance, updateCurrencyPairSummary} from '../../redux/actions';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import HelpIconView from './help-icon-view';
-import config from '../../../config.js';
-import { MILLIX_VALUE_REFRESH_INTERVAL_MS } from '../../../config.js';
+import {CURRENCY_PAIR_SUMMARY_REFRESH_INTERVAL_MS} from '../../../config.js';
 import APIExternal from '../../api/external';
 
 const UnlockedWalletRequiredRoute = ({
                                          component: Component,
                                          ...rest
                                      }) => {
-    
+
     useEffect(() => {
         if (!rest.wallet.unlocked) {
             return;
         }
         let timeoutID;
-        const getNodeStat = () => {    
-            timeoutID = setTimeout(() => {    
-                API.getNodeStat().then(data => {                    
+        const getNodeStat = () => {
+            timeoutID = setTimeout(() => {
+                API.getNodeStat().then(data => {
                     rest.walletUpdateBalance({
                         balance_stable                   : data.balance.stable,
                         balance_pending                  : data.balance.unstable,
@@ -37,28 +35,35 @@ const UnlockedWalletRequiredRoute = ({
                     rest.updateNetworkState({
                         ...data.network,
                         connections: data.network.peer_count
-                    });                    
+                    });
                 })
-                .catch(() => {
-                    getNodeStat();
-                })
+                   .catch(() => {
+                       getNodeStat();
+                   });
             }, 1000);
         };
         getNodeStat();
 
-        let fetch_fiatleak_api_timeout_id
-        const getFiatValuesInterval = () => { 
-            APIExternal.getFiatleakPriceUSD().then(resp => {
-                rest.currencyPriceUpdate({usd_value:resp.data.price});
-            })	
-            if(rest.wallet.unlocked)
-               fetch_fiatleak_api_timeout_id = setTimeout( ()=>{ getFiatValuesInterval()}, MILLIX_VALUE_REFRESH_INTERVAL_MS);           
+        let fetch_currency_pair_summary_timeout_id;
+        const setCurrencyPairSummary = () => {
+            APIExternal.getCurrencyPairSummaryFiatleak().then(response => {
+                rest.updateCurrencyPairSummary({
+                    price : response.data.price,
+                    ticker: response.ticker,
+                    symbol: response.symbol
+                });
+            });
+            if (rest.wallet.unlocked) {
+                fetch_currency_pair_summary_timeout_id = setTimeout(() => {
+                    setCurrencyPairSummary();
+                }, CURRENCY_PAIR_SUMMARY_REFRESH_INTERVAL_MS);
+            }
         };
-        getFiatValuesInterval();       
+        setCurrencyPairSummary();
 
         return () => {
-            clearTimeout(timeoutID)
-            clearInterval(fetch_fiatleak_api_timeout_id);   
+            clearTimeout(timeoutID);
+            clearTimeout(fetch_currency_pair_summary_timeout_id);
         };
     }, [rest.wallet.unlocked]);
     return (<Route {...rest} render={props => (
@@ -104,16 +109,14 @@ const UnlockedWalletRequiredRoute = ({
 
 export default connect(
     state => ({
-        clock : state.clock,
-        wallet: state.wallet,
-        node  : state.node,
-        currency_price : state.currency_price
+        clock                : state.clock,
+        wallet               : state.wallet,
+        node                 : state.node,
+        currency_pair_summary: state.currency_pair_summary
     }), {
         walletUpdateBalance,
         updateNetworkState,
         setBackLogSize,
         setLogSize,
-        currencyPriceUpdate
+        updateCurrencyPairSummary
     })(UnlockedWalletRequiredRoute);
-
-    

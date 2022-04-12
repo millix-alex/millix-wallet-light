@@ -1,43 +1,19 @@
 import moment from 'moment';
-import store from '../redux/store';
-import {MILLIX_VALUE_REFRESH_INTERVAL_MS} from '../../config';
 
 export function millix(amount, append_name = true) {
     let result = amount.toLocaleString('en-US');
     if (append_name) {
         result += ' millix';
     }
+
     return result;
 }
 
-export function is_currency_price_available(){
-   	
-    let actualDate = new Date()
-    let dateUpdated = store.getState().currency_price.date_updated
-   
-   if(!dateUpdated){
-       return false
-    }   
-
-    let update = new Date(dateUpdated.getTime() + MILLIX_VALUE_REFRESH_INTERVAL_MS + 1000);
-
-    if(update > actualDate){
-        return true;
-    }
-    return false;
-}
-
-export function usd(amount, append_name = true) {
-    let currency_prices = store.getState().currency_price;
-    let millix_usd_value = amount * currency_prices.usd_value;
-    if (append_name) {
-        millix_usd_value += ' usd';
-    }
-    return millix_usd_value;
-}
-
 export function fiat(amount) {
-    return amount.toLocaleString('en-US');
+    return get_fixed_value({
+        value      : amount,
+        format_zero: true
+    });
 }
 
 export function number(number) {
@@ -78,4 +54,42 @@ export function transaction_status_label(status) {
     }
 
     return label;
+}
+
+function get_fixed_value({
+                             value = 0,
+                             float_part_length = 8,
+                             format = true,
+                             get_float = false,
+                             format_zero = false,
+                             trailing_zero = true
+                         }) {
+    if (!value && value !== 0) {
+        value = 0;
+    }
+
+    if (value === 0 && format_zero === false) {
+        if (get_float) {
+            return value;
+        }
+
+        return value.toString();
+    }
+
+    value = parseFloat(parseFloat(value).toFixed(float_part_length));
+
+    if (get_float) {
+        return value;
+    }
+    else {
+        let options = {
+            maximumFractionDigits: float_part_length,
+            useGrouping          : format
+        };
+        if (trailing_zero) {
+            options['minimumFractionDigits'] = float_part_length;
+        }
+
+        return value.toLocaleString('en-EN', options);
+    }
 }

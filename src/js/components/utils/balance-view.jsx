@@ -2,11 +2,13 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import HelpIconView from './help-icon-view';
 import * as format from '../../helper/format';
+import * as convert from '../../helper/convert';
 import {withRouter} from 'react-router-dom';
 import * as svg from '../../helper/svg';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import Accordion from 'react-bootstrap/Accordion'
-import APIExternal from '../../api/external';
+import Accordion from 'react-bootstrap/Accordion';
+import {fiat} from '../../helper/convert';
+import store from '../../redux/store';
+
 
 class BalanceView extends Component {
     constructor(props) {
@@ -21,41 +23,41 @@ class BalanceView extends Component {
     }
 
     render() {
-
         let stable_millix;
-        if (format.is_currency_price_available()) {
-            stable_millix = <Accordion>                    
-                    <Accordion.Header>
-                        <div className={'balance_container'}>
-                            {svg.millix_logo()}
-                            <div className={'stable-millix'}>
-                                <span>{format.millix(this.props.stable, false)}</span>
-                            </div>
-                        </div>
-                    </Accordion.Header>
-                    <Accordion.Body>
-                        <div className={'stable-millix-price'}>
-                            <span className="text-primary">$ </span>
-                            <span> {format.usd(this.props.stable, false)}</span>
-                        </div>
-                    </Accordion.Body>                    
-                </Accordion>
-        } else {
-            stable_millix = <div className={'balance_container'}>
+        if (convert.is_currency_pair_summary_available()) {
+            stable_millix = <Accordion>
+                <Accordion.Header>
+                    <div className={'balance_container'}>
                         {svg.millix_logo()}
                         <div className={'stable-millix'}>
                             <span>{format.millix(this.props.stable, false)}</span>
                         </div>
                     </div>
+                </Accordion.Header>
+                <Accordion.Body>
+                    <div className={'stable-millix-price'}>
+                        <span className="text-primary">{store.getState().currency_pair_summary.symbol}</span>
+                        <span>{convert.fiat(this.props.stable, false)}</span>
+                    </div>
+                </Accordion.Body>
+            </Accordion>;
+        }
+        else {
+            stable_millix = <div className={'balance_container'}>
+                {svg.millix_logo()}
+                <div className={'stable-millix'}>
+                    <span>{format.millix(this.props.stable, false)}</span>
+                </div>
+            </div>;
         }
 
         return (
             <div className={'panel panel-filled'}>
-                <div className={'panel-body balance_panel'}>                    
-                    {stable_millix}      
+                <div className={'panel-body balance_panel'}>
+                    {stable_millix}
 
-                    <div className={'balance_container'}>                       
-                        <div>                            
+                    <div className={'balance_container'}>
+                        <div>
                             <div className={'pending'}>
                                 <span>{format.millix(this.props.pending, false)}</span>
                                 <HelpIconView help_item_name={'pending_balance'}/>

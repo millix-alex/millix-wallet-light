@@ -4,14 +4,14 @@ import {
     UPDATE_NETWORK_NODE_LIST, UPDATE_NETWORK_STATE, UPDATE_TRANSACTION_DETAILS,
     UPDATE_WALLET_ADDRESS, UPDATE_WALLET_CONFIG, UPDATE_WALLET_MAINTENANCE,
     UPDATE_WALLET_TRANSACTIONS, WALLET_READY, UPDATE_WALLET_ADDRESS_VERSION,
-    ADD_WALLET_ADDRESS_VERSION, GET_NODE_ATTRIBUTES, UPDATE_WALLET_BALANCE,UPDATE_CURRENCY_PRICE,
+    ADD_WALLET_ADDRESS_VERSION, GET_NODE_ATTRIBUTES, UPDATE_WALLET_BALANCE, UPDATE_CURRENCY_PAIR_SUMMARY,
     WALLET_VERSION_AVAILABLE, UPDATE_WALLET_NOTIFICATION, UPDATE_NODE_ATTRIBUTE
 } from '../constants/action-types';
 import config from '../../../config.js';
 import _ from 'lodash';
 
 const initialState = {
-    network           : {
+    network              : {
         node_list             : [],
         node_online_list      : [],
         node_offline_list     : [],
@@ -26,7 +26,7 @@ const initialState = {
         node_bind_ip          : 'unknown',
         node_network_addresses: []
     },
-    wallet            : {
+    wallet               : {
         id                               : undefined,
         unlocked                         : false,
         isReady                          : false,
@@ -42,21 +42,23 @@ const initialState = {
         notification_message             : undefined,
         version_available                : undefined
     },
-    currency_price    : {
-        date_updated         : undefined,
-        usd_value           : 0
+    currency_pair_summary: {
+        date_updated: undefined,
+        price       : 0,
+        ticker      : '',
+        symbol      : ''
     },
-    config            : {},
-    clock             : 'not available...',
-    log               : {
+    config               : {},
+    clock                : 'not available...',
+    log                  : {
         events: [],
         size  : 0
     },
-    backlog           : {
+    backlog              : {
         size: 0
     },
-    transactionDetails: null,
-    node              : {}
+    transactionDetails   : null,
+    node                 : {}
 };
 
 function rootReducer(state = initialState, action) {
@@ -247,11 +249,11 @@ function rootReducer(state = initialState, action) {
             }
         });
     }
-    else if (action.type === UPDATE_CURRENCY_PRICE) {
+    else if (action.type === UPDATE_CURRENCY_PAIR_SUMMARY) {
         let date_updated = new Date();
         return Object.assign({}, state, {
-            currency_price: {
-                date_updated : date_updated,
+            currency_pair_summary: {
+                date_updated: date_updated,
                 ...action.payload
             }
         });
