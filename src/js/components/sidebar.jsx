@@ -28,8 +28,7 @@ class Sidebar extends Component {
         API.getNodeOsInfo().then(response => {
             this.setState({
                 node_millix_version: response.node_millix_version
-            });
-            this.setMillixVersionAvailable();
+            }, () => this.setMillixVersionAvailable());
             setInterval(this.setMillixVersionAvailable, 300000);
         });
 
@@ -73,7 +72,9 @@ class Sidebar extends Component {
     }
 
     setMillixVersionAvailable() {
-        API.getLatestMillixVersion().then(response => {
+        let account = this.state.node_millix_version.includes('tangled') ? 'tangled' : 'millix';
+        console.log(account);
+        API.getLatestMillixVersion(account).then(response => {
             if (response.api_status !== 'success') {
                 this.setState({
                     node_millix_version_available: false
