@@ -21,10 +21,10 @@ class Fee extends Component {
     }
 
     componentDidMount() {
-        this.loadConfigToState();
+        this.populateFormFromConfig();
     }
 
-    loadConfigToState() {
+    populateFormFromConfig() {
         this.transaction_fee_proxy_input.value   = format.millix(this.props.config.TRANSACTION_FEE_PROXY, false);
         this.transaction_fee_default_input.value = format.millix(this.props.config.TRANSACTION_FEE_DEFAULT, false);
     }
@@ -34,7 +34,7 @@ class Fee extends Component {
             modalShowSendResult: value
         });
         if (value === false) {
-            this.loadConfigToState();
+            this.populateFormFromConfig();
         }
     }
 
@@ -50,23 +50,19 @@ class Fee extends Component {
             TRANSACTION_FEE_DEFAULT: validate.integerPositive('transaction fee default', this.transaction_fee_default_input.value, error_list)
         };
         if (error_list.length === 0) {
-            try {
-                this.props.walletUpdateConfig(fee_config).then(() => {
-                    this.setState({
-                        sending: false
-                    });
-                    this.changeModalShowSendResult();
+            this.props.walletUpdateConfig(fee_config).then(() => {
+                this.setState({
+                    sending: false
                 });
-            }
-            catch (e) {
+                this.changeModalShowSendResult();
+            }).catch(() => {
                 error_list.push({
                     name   : 'save_error',
                     message: 'error while saving occurred, please try again later'
                 });
-            }
+            });
         }
-
-        if (error_list.length > 0) {
+        else {
             this.setState({
                 sending   : false,
                 error_list: error_list
@@ -127,10 +123,7 @@ class Fee extends Component {
                                     variant="outline-primary"
                                     onClick={() => this.save()}
                                     disabled={this.state.sending}>
-                                    {this.state.sending ?
-                                     <>
-                                         {'saving'}
-                                     </> : <>continue</>}
+                                    {this.state.sending ? <>{'saving'}</> : <>continue</>}
                                 </Button>
                             </Form.Group>
                         </Col>

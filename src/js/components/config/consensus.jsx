@@ -14,7 +14,7 @@ class Consensus extends Component {
         this.state = {
             sending               : false,
             error_list            : {},
-            modal_show_send_result: false,
+            modal_show_send_result: false
         };
     }
 
@@ -76,8 +76,7 @@ class Consensus extends Component {
                 });
             });
         }
-
-        if (error_list.length > 0) {
+        else {
             this.setState({
                 sending   : false,
                 error_list: error_list
@@ -188,15 +187,7 @@ class Consensus extends Component {
                                     variant="outline-primary"
                                     onClick={() => this.save()}
                                     disabled={this.state.sending}>
-                                    {this.state.sending ?
-                                     <>
-                                         <div style={{
-                                             fontSize: '6px',
-                                             float   : 'left'
-                                         }}
-                                              className="loader-spin"/>
-                                         {'continue'}
-                                     </> : <>continue</>}
+                                    {this.state.sending ? <>{'continue'}</> : <>continue</>}
                                 </Button>
                             </Form.Group>
                         </Col>

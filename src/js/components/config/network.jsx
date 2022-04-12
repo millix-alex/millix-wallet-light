@@ -16,7 +16,7 @@ class Network extends Component {
             node_public_ip        : '',
             sending               : false,
             error_list            : {},
-            modal_show_send_result: false,
+            modal_show_send_result: false
         };
     }
 
@@ -65,12 +65,12 @@ class Network extends Component {
         validate.required('max connections out', this.node_connection_outbound_max.value, error_list);
         validate.required('nodes', this.node_initial_list.value, error_list);
         let network_config = {
-            NODE_PORT          : validate.integerPositive('network port', this.node_port.value, error_list, false, false),
-            NODE_HOST      : validate.ipAddress('server bind', this.node_host.value, error_list),
-            NODE_PORT_API    : validate.integerPositive('rpc port', this.node_port_api.value, error_list, false, false),
+            NODE_PORT                   : validate.integerPositive('network port', this.node_port.value, error_list, false, false),
+            NODE_HOST                   : validate.ipAddress('server bind', this.node_host.value, error_list),
+            NODE_PORT_API               : validate.integerPositive('rpc port', this.node_port_api.value, error_list, false, false),
             NODE_CONNECTION_INBOUND_MAX : validate.integerPositive('max connections in', this.node_connection_inbound_max.value, error_list, false, false),
-            NODE_CONNECTION_OUTBOUND_MAX  : validate.integerPositive('max connections out', this.node_connection_outbound_max.value, error_list, false, false),
-            NODE_INITIAL_LIST: validate.json('nodes', this.node_initial_list.value, error_list)
+            NODE_CONNECTION_OUTBOUND_MAX: validate.integerPositive('max connections out', this.node_connection_outbound_max.value, error_list, false, false),
+            NODE_INITIAL_LIST           : validate.json('nodes', this.node_initial_list.value, error_list)
         };
 
         if (error_list.length === 0) {
@@ -86,14 +86,12 @@ class Network extends Component {
                 });
             });
         }
-
-        if (error_list.length > 0) {
+        else {
             this.setState({
                 sending   : false,
                 error_list: error_list
             });
         }
-
     }
 
     render() {
@@ -207,15 +205,7 @@ class Network extends Component {
                                             variant="outline-primary"
                                             onClick={() => this.save()}
                                             disabled={this.state.sending}>
-                                            {this.state.sending ?
-                                             <>
-                                                 <div style={{
-                                                     fontSize: '6px',
-                                                     float   : 'left'
-                                                 }}
-                                                      className="loader-spin"/>
-                                                 {'continue'}
-                                             </> : <>continue</>}
+                                            {this.state.sending ? <>{'saving'}</> : <>continue</>}
                                         </Button>
                                     </Form.Group>
                                 </Col>

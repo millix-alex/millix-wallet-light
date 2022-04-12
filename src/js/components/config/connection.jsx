@@ -33,13 +33,28 @@ class Connection extends Component {
         this.loadConfigToSate();
     }
 
+    showDatatableLoading(connection_data, config_name= false, show_loader = true) {
+        if(config_name) {
+            connection_data['loading_' + config_name] = show_loader;
+        } else {
+            this.connection_config_names.forEach((element) => {
+                connection_data['loading_' + element] = show_loader;
+            })
+        }
+        connection_data['loading_' + config_name] = show_loader;
+        this.setState({
+            connection_data
+        })
+    }
+
     loadConfigToSate(config_name) {
         const connection_data = this.state.connection_data;
+        this.showDatatableLoading(connection_data, config_name);
 
         if (config_name) {
             API.getNodeConfigValueByName(config_name).then((data) => {
                 connection_data[data.config_name] = [];
-                this.prepareDataForDatatable(connection_data, data);
+                this.updateData(connection_data, data);
             });
         }
         else {
@@ -47,15 +62,11 @@ class Connection extends Component {
                 connection_data[data.config_name] = [];
                 data.forEach(element => {
                     if (this.connection_config_names.includes(element.config_name)) {
-                        this.prepareDataForDatatable(connection_data, element);
+                        this.updateData(connection_data, element);
                     }
                 });
             });
         }
-
-        this.setState({
-            connection_data
-        });
     }
 
     clearErrorList() {
@@ -64,26 +75,26 @@ class Connection extends Component {
         });
     }
 
-    prepareDataForDatatable(connection_data, element) {
+    updateData(connection_data, element) {
         JSON.parse(element.value).forEach(el => {
             connection_data[element.config_name].push({
                 node_id: el,
-                action : this.getButtonRemoveConnection(element.config_name, el)
+                action : (<DatatableActionButtonView
+                    icon={'trash'}
+                    callback={() => this.removeConnection(element.config_name, el)}
+                    callback_args={[
+                        element.config_name,
+                        el
+                    ]}
+                />)
             });
         });
         connection_data['reload_timestamp_' + element.config_name] = new Date();
-    }
+        this.showDatatableLoading(connection_data, element.config_name, false);
 
-    getButtonRemoveConnection(config_name, value) {
-
-        return <DatatableActionButtonView
-            icon={'trash'}
-            callback={() => this.removeConnection(config_name, value)}
-            callback_args={[
-                config_name,
-                value
-            ]}
-        />;
+        this.setState({
+            connection_data
+        });
     }
 
     removeConnection(config_name, value) {
@@ -120,27 +131,27 @@ class Connection extends Component {
             this.setState({
                 error_list
             });
-            return;
         }
+        else {
+            this.clearErrorList();
 
-        this.clearErrorList();
+            let configuration_data = this.prepareApiConfigData(this.state.connection_data[config_name]);
+            configuration_data.push(this[config_name].value);
 
-        let configuration_data = this.prepareApiConfigData(this.state.connection_data[config_name]);
-        configuration_data.push(this[config_name].value);
-
-        API.updateNodeConfigValue(config_name, configuration_data).then(() => {
-            this.showModal(config_name, false);
-            this.loadConfigToSate(config_name);
-        }).catch((e) => {
-            this.setState({
-                error_list: [
-                    {
-                        name   : 'error',
-                        message: e.getMessage()
-                    }
-                ]
+            API.updateNodeConfigValue(config_name, configuration_data).then(() => {
+                this.showModal(config_name, false);
+                this.loadConfigToSate(config_name);
+            }).catch((e) => {
+                this.setState({
+                    error_list: [
+                        {
+                            name   : 'error',
+                            message: e.getMessage()
+                        }
+                    ]
+                });
             });
-        });
+        }
     }
 
     prepareApiConfigData(config_data) {
@@ -186,6 +197,7 @@ class Connection extends Component {
                             reload_datatable={() => {
                                 this.loadConfigToSate(config_name);
                             }}
+                            loading={this.state.connection_data['loading_' + config_name]}
                             datatable_reload_timestamp={this.state.connection_data['reload_timestamp_' + config_name]}
                             action_button={{
                                 label   : `add ${connection_name}`,

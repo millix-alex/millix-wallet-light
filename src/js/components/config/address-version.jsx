@@ -22,6 +22,7 @@ class AddressVersion extends Component {
             },
             address_version_list      : [],
             datatable_reload_timestamp: new Date(),
+            datatable_loading         : false,
             error_list                : []
         };
     }
@@ -30,10 +31,10 @@ class AddressVersion extends Component {
         this.loadConfig();
     }
 
-    showModalAddAddressVersion() {
+    showModalAddAddressVersion(value = true) {
         this.setState({
             modal_add_address_version: {
-                status: true
+                status: value
             }
         });
     }
@@ -53,58 +54,57 @@ class AddressVersion extends Component {
                     ...error_list
                 ]
             });
-            return;
         }
+        else {
+            const data = {
+                version        : this.address_version_name.value,
+                is_main_network: this.props.config.MODE_TEST_NETWORK ? 0 : 1,
+                regex_pattern  : this.address_version_regex.value,
+                is_default     : int_from_bool_label(this.address_is_default.value)
+            };
 
-        const data = {
-            version        : this.address_version_name.value,
-            is_main_network: this.props.config.MODE_TEST_NETWORK ? 0 : 1,
-            regex_pattern  : this.address_version_regex.value,
-            is_default     : int_from_bool_label(this.address_is_default.value)
-        };
-
-        API.addWalletAddressVersion(data)
-           .then(data => {
-               if (!data || data.api_status === 'fail') {
-                   this.setState({
-                       error_list: [
-                           {
-                               name   : 'api error',
-                               message: data.api_message ? data.api_message : 'bad request'
-                           }
-                       ]
-                   });
-                   return;
-               }
-
-               this.loadConfig(true);
-               this.hideModalAddAddressVersion();
-           });
+            API.addWalletAddressVersion(data)
+               .then(data => {
+                   if (!data || data.api_status === 'fail') {
+                       this.setState({
+                           error_list: [
+                               {
+                                   name   : 'api error',
+                                   message: data.api_message ? data.api_message : 'bad request'
+                               }
+                           ]
+                       });
+                   }
+                   else {
+                       this.loadConfig();
+                       this.showModalAddAddressVersion(false);
+                   }
+               });
+        }
     }
 
 
     removeFromConfigList(addressVersion) {
         let result = this.props.removeWalletAddressVersion(addressVersion);
         result.then(() => {
-            this.loadConfig(true);
+            this.loadConfig();
         });
     }
 
-    loadConfig(load_from_api = false) {
-        if (load_from_api) {
-            API.listWalletAddressVersion()
-               .then(data => {
-                   this.setAddressVersionList(data);
-               });
-        }
-        else {
-            this.setAddressVersionList(this.props.wallet.address_version_list);
-        }
+    loadConfig() {
+        this.setState({
+            datatable_loading: true
+        });
+        API.listWalletAddressVersion()
+           .then(data => {
+               this.setAddressVersionList(data);
+           });
     }
 
     setAddressVersionList(data) {
         this.setState({
             datatable_reload_timestamp: new Date(),
+            datatable_loading         : false,
             address_version_list      : data.map((input) => ({
                 version        : input.version,
                 regex_pattern  : input.regex_pattern,
@@ -118,14 +118,6 @@ class AddressVersion extends Component {
         });
     }
 
-    hideModalAddAddressVersion() {
-        this.setState({
-            modal_add_address_version: {
-                status: false
-            }
-        });
-    }
-
     getAddressVersionBody() {
         return <div>
             <Col>
@@ -133,16 +125,13 @@ class AddressVersion extends Component {
                 <Form.Group className="form-group">
                     <label>default address</label>
                     <Form.Select
-                        className={'paginator-dropdown-wrapper'}
                         as="select"
                         ref={(c) => this.address_is_default = c}
-                        onChange={(e) => {
-                            return e.target.value;
-                        }}>
-                        <option key={'positive'}>
+                    >
+                        <option key={1}>
                             {bool_label(1)}
                         </option>
-                        <option key={'negative'}>
+                        <option key={0}>
                             {bool_label(0)}
                         </option>
                     </Form.Select>
@@ -191,7 +180,7 @@ class AddressVersion extends Component {
                 show={this.state.modal_add_address_version.status}
                 size={'lg'}
                 prevent_close_after_accept={true}
-                on_close={() => this.hideModalAddAddressVersion()}
+                on_close={() => this.showModalAddAddressVersion(false)}
                 on_accept={() => this.addAddressVersion()}
                 heading={'address version'}
                 body={this.getAddressVersionBody()}/>
@@ -203,8 +192,9 @@ class AddressVersion extends Component {
                     <div className={'panel-body'}>
                         <div>
                             <DatatableView
-                                reload_datatable={() => this.loadConfig(true)}
+                                reload_datatable={() => this.loadConfig()}
                                 datatable_reload_timestamp={this.state.datatable_reload_timestamp}
+                                loading={this.state.datatable_loading}
                                 action_button_label={'add address version'}
                                 action_button={{
                                     label   : 'add address version',
@@ -235,8 +225,8 @@ class AddressVersion extends Component {
 
 export default connect(
     state => ({
-        config    : state.config,
-        wallet    : state.wallet
+        config: state.config,
+        wallet: state.wallet
     }),
     {
         walletUpdateConfig,
