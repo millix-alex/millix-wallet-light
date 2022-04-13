@@ -271,6 +271,56 @@ class Sidebar extends Component {
                                 deposits
                             </NavText>
                         </NavItem>
+                    <NavItem key={'advertisement-list'}
+                             eventKey="/advertisement-list">
+                        <NavText>
+                            advertisements
+                        </NavText>
+                    </NavItem>
+
+                    <NavItem
+                        eventKey="messages"
+                        expanded={this.isExpanded('messages', defaultSelected)}
+                    >
+                        <NavText>
+                            messages <FontAwesomeIcon className={'icon'}
+                                                          icon="chevron-down"
+                                                          size="1x"/>
+                            <FontAwesomeIcon className={'icon hidden'}
+                                             icon="chevron-up"
+                                             size="1x"/>
+                        </NavText>
+                        <NavItem key={'message-new'}
+                                 eventKey="/message-new">
+                            <NavText>
+                                new
+                            </NavText>
+                        </NavItem>
+                        <NavItem key={'message-received'}
+                                 eventKey={'/message-received'}>
+                            <NavText>
+                                received
+                            </NavText>
+                        </NavItem>
+                        <NavItem key={'message-sent'}
+                                 eventKey="/message-sent">
+                            <NavText>
+                                sent
+                            </NavText>
+                        </NavItem>
+                    </NavItem>
+
+                    {/*
+                     <NavItem key={'log'} eventKey="/log">
+                     <NavText>
+                     logs
+                     </NavText>
+                     </NavItem>
+                     */}
+                    <NavItem key={'config'} eventKey="/config">
+                        <NavText>
+                            settings
+                        </NavText>
                     </NavItem>
 
                     <NavItem key={'actions'} eventKey="/actions">

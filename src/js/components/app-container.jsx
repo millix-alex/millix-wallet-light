@@ -32,6 +32,9 @@ import ConfigAddressVersion from './config/config-address-version-view';
 import ErrorModalRequestApi from './utils/error-handler-request-api';
 import AdvertisementConsumerSettlementLedgerView from './advertisement/advertisement-consumer-settlement-ledger-view';
 import EventsLogView from './event-log-view';
+import MessageNewView from './msg-send-view';
+import MessageReceivedView from './msg-received-list-view';
+import MessageSentView from './msg-sent-list-view';
 
 
 class AppContainer extends Component {
