@@ -13,13 +13,10 @@ import DatatableActionButtonView from '../utils/datatable-action-button-view';
 
 
 class AddressVersion extends Component {
-
     constructor(props) {
         super(props);
         this.state = {
-            modal_add_address_version : {
-                status: false
-            },
+            modal_show                : false,
             address_version_list      : [],
             datatable_reload_timestamp: new Date(),
             datatable_loading         : false,
@@ -33,9 +30,7 @@ class AddressVersion extends Component {
 
     changeModalAddAddressVersion(value = true) {
         this.setState({
-            modal_add_address_version: {
-                status: value
-            }
+            modal_show: value
         });
     }
 
@@ -50,9 +45,7 @@ class AddressVersion extends Component {
 
         if (error_list.length > 0) {
             this.setState({
-                error_list: [
-                    ...error_list
-                ]
+                error_list: error_list
             });
         }
         else {
@@ -85,8 +78,7 @@ class AddressVersion extends Component {
 
 
     removeFromConfigList(addressVersion) {
-        let result = this.props.removeWalletAddressVersion(addressVersion);
-        result.then(() => {
+        this.props.removeWalletAddressVersion(addressVersion).then(() => {
             this.loadConfig();
         });
     }
@@ -172,7 +164,7 @@ class AddressVersion extends Component {
     render() {
         return <div>
             <ModalView
-                show={this.state.modal_add_address_version.status}
+                show={this.state.modal_show}
                 size={'lg'}
                 prevent_close_after_accept={true}
                 on_close={() => this.changeModalAddAddressVersion(false)}
