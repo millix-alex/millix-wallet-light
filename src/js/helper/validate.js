@@ -4,6 +4,7 @@ export function required(field_name, value, error_list) {
     if (typeof value === 'string') {
         value = value.trim();
     }
+
     if (!value) {
         error_list.push({
             name   : get_error_name('required', field_name),
@@ -15,27 +16,8 @@ export function required(field_name, value, error_list) {
 }
 
 export function amount(field_name, value, error_list, allow_zero = false) {
-    return integerPositive(field_name, value, error_list, allow_zero);
-}
-
-export function integerPositive(field_name, value, error_list, allow_zero = false, millix_format_check = true) {
-    let value_escaped = value.toString().trim();
-    value_escaped     = parseInt(value_escaped.replace(/\D/g, ''));
-
-    if (!allow_zero && value_escaped <= 0) {
-        error_list.push({
-            name   : get_error_name('amount_is_lt_zero', field_name),
-            message: `${field_name} must be bigger than 0`
-        });
-    }
-    else if (allow_zero && value_escaped < 0) {
-        error_list.push({
-            name   : get_error_name('amount_is_lte_zero', field_name),
-            message: `${field_name} must be bigger than or equal to 0`
-        });
-    }
-    else if (millix_format_check && format.millix(value_escaped, false) !== value) {
-
+    const value_escaped = integerPositive(field_name, value, error_list, allow_zero);
+    if (format.millix(value_escaped, false) !== value) {
         error_list.push({
             name   : get_error_name('amount_format_is_wrong', field_name),
             message: `${field_name} must be a valid amount`
@@ -46,61 +28,96 @@ export function integerPositive(field_name, value, error_list, allow_zero = fals
     return value_escaped;
 }
 
-export function ipAddress(field_name, value, error_list) {
-    let ipAddressArray = value.split('.');
-    if (ipAddressArray.length !== 4) {
-        error_list.push({
-            name   : get_error_name('amount_format_is_wrong', field_name),
-            message: `${field_name} must be a valid ip address`
-        });
-        return false;
-    }
-    ipAddressArray.forEach(element => {
-        if (isNaN(Number(element)) || element > 255 || element < 0 || element === '') {
-            error_list.push({
-                name   : get_error_name('amount_format_is_wrong', field_name),
-                message: `${field_name} must be a valid ip address`
-            });
-            return false;
-        }
-    });
+export function integerPositive(field_name, value, error_list, allow_zero = false) {
+    let value_escaped = value.toString().trim();
+    value_escaped     = parseInt(value_escaped.replace(/\D/g, ''));
 
-    return value;
+    if (!Number.isInteger(value_escaped)) {
+        error_list.push({
+            name   : get_error_name('value_is_not_integer', field_name),
+            message: `${field_name} must be a number`
+        });
+    }
+    else if (!allow_zero && value_escaped <= 0) {
+        error_list.push({
+            name   : get_error_name('value_is_lt_zero', field_name),
+            message: `${field_name} must be bigger than 0`
+        });
+    }
+    else if (allow_zero && value_escaped < 0) {
+        error_list.push({
+            name   : get_error_name('value_is_lte_zero', field_name),
+            message: `${field_name} must be bigger than or equal to 0`
+        });
+    }
+
+    return value_escaped;
 }
 
-export function string(field_name, value, error_list, length) {
-    let is_alphabetical_string = /^[a-zA-Z0-9]+$/.test(value);
-    if (typeof value !== 'string' || !is_alphabetical_string) {
+export function ip(field_name, value, error_list) {
+    let value_escaped   = [];
+    let result_ip_octet = value.split('.');
+
+    if (result_ip_octet.length !== 4) {
         error_list.push({
-            name   : get_error_name('amount_format_is_wrong', field_name),
+            name   : get_error_name('ip_octet_number', field_name),
+            message: `${field_name} must be a valid ip address`
+        });
+    }
+    else {
+        result_ip_octet.forEach(element => {
+            const element_number = Number(element);
+            if (isNaN(element_number) || element_number > 255 || element_number < 0 || element === '') {
+                error_list.push({
+                    name   : get_error_name('ip_octet_wrong', field_name),
+                    message: `${field_name} must be a valid ip address`
+                });
+
+                return false;
+            }
+            value_escaped.push(element_number);
+        });
+    }
+
+    return value_escaped.join('.');
+}
+
+export function string_alphanumeric(field_name, value, error_list, length) {
+    let result = value.toString();
+    let is_string = /^[a-zA-Z0-9]+$/.test(result);
+
+    if (!is_string) {
+        error_list.push({
+            name   : get_error_name('value_is_not_alphanumeric_string', field_name),
             message: `${field_name} must be alphanumeric string`
         });
     }
-    if (value.length > length) {
+
+    if (result.length > length) {
         error_list.push({
-            name   : get_error_name('amount_format_is_wrong', field_name),
+            name   : get_error_name('max_length_exceeded', field_name),
             message: `${field_name} max length is ${length} `
         });
     }
+
+    return result;
 }
 
 export function json(field_name, value, error_list) {
-    let validJson = false;
+    let result = value;
+
     try {
-        validJson = JSON.parse(value);
+        result = JSON.parse(value);
     }
     catch (e) {
         error_list.push({
-            name   : 'validationError',
-            message: `${field_name} nodes should contain valid json`
+            name   : get_error_name('json_error', field_name),
+            message: `${field_name} should contain valid json`
         });
-
-        return value;
     }
 
-    return validJson;
+    return result;
 }
-
 
 function get_error_name(prefix, field_name) {
     return `${prefix}_${field_name.replaceAll(' ', '_')}`;
@@ -132,7 +149,8 @@ export function handleInputChangeInteger(e, allow_negative = true, formatter = '
         }
         else if (formatter === 'number') {
             value = format.number(amount);
-        } else if (formatter === 'none') {
+        }
+        else {
             value = amount;
         }
     }
@@ -141,14 +159,14 @@ export function handleInputChangeInteger(e, allow_negative = true, formatter = '
     e.target.setSelectionRange(cursorStart + offset, cursorEnd + offset);
 }
 
-export function handleInputChangeAlphanumericString(e, length) {
+export function handleInputChangeAlphanumericString(e, length = false) {
     if (e.target.value.length === 0) {
         return;
     }
 
     let value = e.target.value.replace(/[\W_]+/g, '');
-    if (value.length > length) {
-        value = value.slice(0, -1);
+    if (length !== false) {
+        value = value.slice(0, length);
     }
 
     e.target.value = value;
@@ -159,10 +177,9 @@ export function handleInputChangeIpAddress(e) {
         return;
     }
 
-    let value = e.target.value.replace(/[^0-9.]/g, '');
-    if (value.length > 15) {
-        value = value.slice(0, -1);
-    }
+    const ip_max_length = 15;
+    let value           = e.target.value.replace(/[^0-9.]/g, '');
+    value               = value.slice(0, ip_max_length);
 
     e.target.value = value;
 }

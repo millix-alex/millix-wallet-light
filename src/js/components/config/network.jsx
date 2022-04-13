@@ -7,6 +7,7 @@ import API from '../../api';
 import ErrorList from '../utils/error-list-view';
 import ModalView from '../utils/modal-view';
 import * as validate from '../../helper/validate';
+import * as format from '../../helper/format';
 
 
 class Network extends Component {
@@ -16,13 +17,13 @@ class Network extends Component {
             node_public_ip        : '',
             sending               : false,
             error_list            : {},
-            modal_show_send_result: false
+            modal_show_save_result: false
         };
     }
 
     componentDidMount() {
         this.getNodePublicIP();
-        this.loadFromConfig();
+        this.populateForm();
     }
 
     getNodePublicIP() {
@@ -33,21 +34,21 @@ class Network extends Component {
         });
     }
 
-    loadFromConfig() {
+    populateForm() {
         this.node_port.value                    = this.props.config.NODE_PORT;
         this.node_host.value                    = this.props.config.NODE_HOST;
         this.node_port_api.value                = this.props.config.NODE_PORT_API;
-        this.node_connection_inbound_max.value  = this.props.config.NODE_CONNECTION_INBOUND_MAX;
-        this.node_connection_outbound_max.value = this.props.config.NODE_CONNECTION_OUTBOUND_MAX;
+        this.node_connection_inbound_max.value  = format.number(this.props.config.NODE_CONNECTION_INBOUND_MAX);
+        this.node_connection_outbound_max.value = format.number(this.props.config.NODE_CONNECTION_OUTBOUND_MAX);
         this.node_initial_list.value            = JSON.stringify(this.props.config.NODE_INITIAL_LIST);
     }
 
     changeModalShowSaveResult(value = true) {
         this.setState({
-            modal_show_send_result: value
+            modal_show_save_result: value
         });
         if (value === false) {
-            this.loadFromConfig();
+            this.populateForm();
         }
     }
 
@@ -65,11 +66,11 @@ class Network extends Component {
         validate.required('max connections out', this.node_connection_outbound_max.value, error_list);
         validate.required('nodes', this.node_initial_list.value, error_list);
         let network_config = {
-            NODE_PORT                   : validate.integerPositive('network port', this.node_port.value, error_list, false, false),
-            NODE_HOST                   : validate.ipAddress('server bind', this.node_host.value, error_list),
-            NODE_PORT_API               : validate.integerPositive('rpc port', this.node_port_api.value, error_list, false, false),
-            NODE_CONNECTION_INBOUND_MAX : validate.integerPositive('max connections in', this.node_connection_inbound_max.value, error_list, false, false),
-            NODE_CONNECTION_OUTBOUND_MAX: validate.integerPositive('max connections out', this.node_connection_outbound_max.value, error_list, false, false),
+            NODE_PORT                   : validate.integerPositive('network port', this.node_port.value, error_list, false),
+            NODE_HOST                   : validate.ip('server bind', this.node_host.value, error_list),
+            NODE_PORT_API               : validate.integerPositive('rpc port', this.node_port_api.value, error_list, false),
+            NODE_CONNECTION_INBOUND_MAX : validate.integerPositive('max connections in', this.node_connection_inbound_max.value, error_list, false),
+            NODE_CONNECTION_OUTBOUND_MAX: validate.integerPositive('max connections out', this.node_connection_outbound_max.value, error_list, false),
             NODE_INITIAL_LIST           : validate.json('nodes', this.node_initial_list.value, error_list)
         };
 
@@ -97,7 +98,7 @@ class Network extends Component {
     render() {
         return <div>
             <ModalView
-                show={this.state.modal_show_send_result}
+                show={this.state.modal_show_save_result}
                 size={'lg'}
                 on_close={() => this.changeModalShowSaveResult(false)}
                 heading={'success'}
@@ -121,7 +122,6 @@ class Network extends Component {
                                         <label>node public ip</label>
                                         <Form.Control
                                             type="text"
-                                            placeholder=""
                                             value={this.state.node_public_ip}
                                             readOnly/>
                                     </Form.Group>
@@ -131,10 +131,9 @@ class Network extends Component {
                                         <label>network port</label>
                                         <Form.Control
                                             type="text"
-                                            placeholder=""
                                             ref={(c) => this.node_port = c}
                                             onChange={(e) => {
-                                                return validate.handleInputChangeInteger(e, false, 'none');
+                                                return validate.handleInputChangeInteger(e, false, false);
                                             }}/>
                                     </Form.Group>
                                 </Col>
@@ -143,7 +142,6 @@ class Network extends Component {
                                         <label>server bind</label>
                                         <Form.Control
                                             type="text"
-                                            placeholder=""
                                             ref={(c) => this.node_host = c}
                                             onChange={(e) => {
                                                 return validate.handleInputChangeIpAddress(e);
@@ -156,10 +154,9 @@ class Network extends Component {
                                         <label>rpc port</label>
                                         <Form.Control
                                             type="text"
-                                            placeholder=""
                                             ref={(c) => this.node_port_api = c}
                                             onChange={(e) => {
-                                                return validate.handleInputChangeInteger(e, false, 'none');
+                                                return validate.handleInputChangeInteger(e, false, false);
                                             }}/>
                                     </Form.Group>
                                 </Col>
@@ -168,10 +165,9 @@ class Network extends Component {
                                         <label>max connections in</label>
                                         <Form.Control
                                             type="text"
-                                            placeholder=""
                                             ref={(c) => this.node_connection_inbound_max = c}
                                             onChange={(e) => {
-                                                return validate.handleInputChangeInteger(e, false, 'none');
+                                                return validate.handleInputChangeInteger(e, false);
                                             }}/>
                                     </Form.Group>
                                 </Col>
@@ -180,22 +176,17 @@ class Network extends Component {
                                         <label>max connections out</label>
                                         <Form.Control
                                             type="text"
-                                            placeholder=""
                                             ref={(c) => this.node_connection_outbound_max = c}
                                             onChange={(e) => {
-                                                return validate.handleInputChangeInteger(e, false, 'none');
+                                                return validate.handleInputChangeInteger(e, false);
                                             }}/>
                                     </Form.Group>
                                 </Col>
                                 <Col>
                                     <Form.Group className="form-group">
                                         <label>nodes</label>
-                                        <Form.Control as="textarea" rows={4}
-                                                      placeholder=""
-                                                      ref={(c) => this.node_initial_list = c}
-                                                      onChange={(e) => {
-                                                          return e.target.value;
-                                                      }}/>
+                                        <Form.Control as="textarea" rows={5}
+                                                      ref={(c) => this.node_initial_list = c}/>
                                     </Form.Group>
                                 </Col>
                                 <Col>

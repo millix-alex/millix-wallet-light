@@ -13,28 +13,28 @@ class Fee extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            sending            : false,
-            error_list         : {},
-            modalShowSendResult: false,
-            reload             : false
+            sending               : false,
+            error_list            : {},
+            modal_show_save_result: false,
+            reload                : false
         };
     }
 
     componentDidMount() {
-        this.populateFormFromConfig();
+        this.populateForm();
     }
 
-    populateFormFromConfig() {
+    populateForm() {
         this.transaction_fee_proxy_input.value   = format.millix(this.props.config.TRANSACTION_FEE_PROXY, false);
         this.transaction_fee_default_input.value = format.millix(this.props.config.TRANSACTION_FEE_DEFAULT, false);
     }
 
-    changeModalShowSendResult(value = true) {
+    changeModalShowSaveResult(value = true) {
         this.setState({
-            modalShowSendResult: value
+            modal_show_save_result: value
         });
         if (value === false) {
-            this.populateFormFromConfig();
+            this.populateForm();
         }
     }
 
@@ -46,15 +46,15 @@ class Fee extends Component {
 
         const error_list = [];
         let fee_config   = {
-            TRANSACTION_FEE_PROXY  : validate.integerPositive('transaction fee proxy', this.transaction_fee_proxy_input.value, error_list),
-            TRANSACTION_FEE_DEFAULT: validate.integerPositive('transaction fee default', this.transaction_fee_default_input.value, error_list)
+            TRANSACTION_FEE_PROXY  : validate.amount('transaction fee proxy', this.transaction_fee_proxy_input.value, error_list),
+            TRANSACTION_FEE_DEFAULT: validate.amount('transaction fee default', this.transaction_fee_default_input.value, error_list)
         };
         if (error_list.length === 0) {
             this.props.walletUpdateConfig(fee_config).then(() => {
                 this.setState({
                     sending: false
                 });
-                this.changeModalShowSendResult();
+                this.changeModalShowSaveResult();
             }).catch(() => {
                 error_list.push({
                     name   : 'save_error',
@@ -73,9 +73,9 @@ class Fee extends Component {
     render() {
         return <div>
             <ModalView
-                show={this.state.modalShowSendResult}
+                show={this.state.modal_show_save_result}
                 size={'lg'}
-                on_close={() => this.changeModalShowSendResult(false)}
+                on_close={() => this.changeModalShowSaveResult(false)}
                 heading={'success'}
                 body={
                     <div className={'text-center'}>
@@ -95,10 +95,9 @@ class Fee extends Component {
                                 <label>transaction proxy fee</label>
                                 <Form.Control
                                     type="text"
-                                    placeholder=""
                                     ref={(c) => this.transaction_fee_proxy_input = c}
                                     onChange={(e) => {
-                                        return validate.handleInputChangeInteger(e, false);
+                                        return validate.handleInputChangeInteger(e, false, 'millix');
                                     }}
                                 />
                             </Form.Group>
@@ -108,10 +107,9 @@ class Fee extends Component {
                                 <label>transaction fee</label>
                                 <Form.Control
                                     type="text"
-                                    placeholder=""
                                     ref={(c) => this.transaction_fee_default_input = c}
                                     onChange={(e) => {
-                                        return validate.handleInputChangeInteger(e, false);
+                                        return validate.handleInputChangeInteger(e, false, 'millix');
                                     }}
                                 />
                             </Form.Group>

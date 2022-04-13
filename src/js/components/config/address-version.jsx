@@ -8,7 +8,7 @@ import ModalView from '../utils/modal-view';
 import ErrorList from '../utils/error-list-view';
 import API from '../../api/index';
 import * as validate from '../../helper/validate';
-import {bool_label, int_from_bool_label} from '../../helper/format';
+import {bool_label} from '../../helper/format';
 import DatatableActionButtonView from '../utils/datatable-action-button-view';
 
 
@@ -31,7 +31,7 @@ class AddressVersion extends Component {
         this.loadConfig();
     }
 
-    showModalAddAddressVersion(value = true) {
+    changeModalAddAddressVersion(value = true) {
         this.setState({
             modal_add_address_version: {
                 status: value
@@ -60,7 +60,7 @@ class AddressVersion extends Component {
                 version        : this.address_version_name.value,
                 is_main_network: this.props.config.MODE_TEST_NETWORK ? 0 : 1,
                 regex_pattern  : this.address_version_regex.value,
-                is_default     : int_from_bool_label(this.address_is_default.value)
+                is_default     : this.address_is_default.value
             };
 
             API.addWalletAddressVersion(data)
@@ -77,7 +77,7 @@ class AddressVersion extends Component {
                    }
                    else {
                        this.loadConfig();
-                       this.showModalAddAddressVersion(false);
+                       this.changeModalAddAddressVersion(false);
                    }
                });
         }
@@ -128,10 +128,10 @@ class AddressVersion extends Component {
                         as="select"
                         ref={(c) => this.address_is_default = c}
                     >
-                        <option key={1}>
+                        <option value={1} key={1}>
                             {bool_label(1)}
                         </option>
-                        <option key={0}>
+                        <option value={0} key={0}>
                             {bool_label(0)}
                         </option>
                     </Form.Select>
@@ -143,7 +143,6 @@ class AddressVersion extends Component {
                     <label>version</label>
                     <Form.Control
                         type="text"
-                        placeholder=""
                         ref={(c) => this.address_version_name = c}
                         onChange={(e) => {
                             return validate.handleInputChangeAlphanumericString(e, 4);
@@ -161,11 +160,7 @@ class AddressVersion extends Component {
                         <Col>
                             <Form.Control
                                 type="text"
-                                placeholder=""
                                 ref={(c) => this.address_version_regex = c}
-                                onChange={(e) => {
-                                    return e.target.value;
-                                }}
                             />
                         </Col>
                     </Row>
@@ -180,7 +175,7 @@ class AddressVersion extends Component {
                 show={this.state.modal_add_address_version.status}
                 size={'lg'}
                 prevent_close_after_accept={true}
-                on_close={() => this.showModalAddAddressVersion(false)}
+                on_close={() => this.changeModalAddAddressVersion(false)}
                 on_accept={() => this.addAddressVersion()}
                 heading={'address version'}
                 body={this.getAddressVersionBody()}/>
@@ -198,7 +193,7 @@ class AddressVersion extends Component {
                                 action_button_label={'add address version'}
                                 action_button={{
                                     label   : 'add address version',
-                                    on_click: () => this.showModalAddAddressVersion()
+                                    on_click: () => this.changeModalAddAddressVersion()
                                 }}
                                 value={this.state.address_version_list}
                                 sortOrder={1}

@@ -8,6 +8,7 @@ import ErrorList from '../utils/error-list-view';
 import * as validate from '../../helper/validate';
 import API from '../../api';
 import DatatableActionButtonView from '../utils/datatable-action-button-view';
+import {string_alphanumeric} from '../../helper/validate';
 
 
 class Connection extends Component {
@@ -30,7 +31,7 @@ class Connection extends Component {
     }
 
     componentDidMount() {
-        this.loadConfigToSate();
+        this.loadConfig();
     }
 
     showDatatableLoading(connection_data, config_name= false, show_loader = true) {
@@ -47,7 +48,7 @@ class Connection extends Component {
         })
     }
 
-    loadConfigToSate(config_name) {
+    loadConfig(config_name) {
         const connection_data = this.state.connection_data;
         this.showDatatableLoading(connection_data, config_name);
 
@@ -126,6 +127,7 @@ class Connection extends Component {
     saveConfig(config_name) {
         let error_list = [];
         validate.required('node id', this[config_name].value, error_list);
+        validate.string_alphanumeric('node id', this[config_name].value, error_list, 34);
 
         if (error_list.length > 0) {
             this.setState({
@@ -136,11 +138,10 @@ class Connection extends Component {
             this.clearErrorList();
 
             let configuration_data = this.prepareApiConfigData(this.state.connection_data[config_name]);
-            configuration_data.push(this[config_name].value);
 
             API.updateNodeConfigValue(config_name, configuration_data).then(() => {
                 this.showModal(config_name, false);
-                this.loadConfigToSate(config_name);
+                this.loadConfig(config_name);
             }).catch((e) => {
                 this.setState({
                     error_list: [
@@ -195,7 +196,7 @@ class Connection extends Component {
                     <Col>
                         <DatatableView
                             reload_datatable={() => {
-                                this.loadConfigToSate(config_name);
+                                this.loadConfig(config_name);
                             }}
                             loading={this.state.connection_data['loading_' + config_name]}
                             datatable_reload_timestamp={this.state.connection_data['reload_timestamp_' + config_name]}
