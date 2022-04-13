@@ -34,18 +34,19 @@ class Connection extends Component {
         this.loadConfig();
     }
 
-    showDatatableLoading(connection_data, config_name= false, show_loader = true) {
-        if(config_name) {
+    showDatatableLoading(connection_data, config_name = false, show_loader = true) {
+        if (config_name) {
             connection_data['loading_' + config_name] = show_loader;
-        } else {
+        }
+        else {
             this.connection_config_names.forEach((element) => {
                 connection_data['loading_' + element] = show_loader;
-            })
+            });
         }
         connection_data['loading_' + config_name] = show_loader;
         this.setState({
             connection_data
-        })
+        });
     }
 
     loadConfig(config_name) {
@@ -125,9 +126,10 @@ class Connection extends Component {
     }
 
     saveConfig(config_name) {
+        this.clearErrorList();
         let error_list = [];
         validate.required('node id', this[config_name].value, error_list);
-        validate.string_alphanumeric('node id', this[config_name].value, error_list, 34);
+        const node_id = validate.string_alphanumeric('node id', this[config_name].value, error_list, 34);
 
         if (error_list.length > 0) {
             this.setState({
@@ -135,10 +137,9 @@ class Connection extends Component {
             });
         }
         else {
-            this.clearErrorList();
-
             let configuration_data = this.prepareApiConfigData(this.state.connection_data[config_name]);
-
+            configuration_data.push(node_id);
+            
             API.updateNodeConfigValue(config_name, configuration_data).then(() => {
                 this.showModal(config_name, false);
                 this.loadConfig(config_name);

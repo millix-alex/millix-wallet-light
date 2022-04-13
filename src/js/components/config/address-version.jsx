@@ -30,7 +30,8 @@ class AddressVersion extends Component {
 
     changeModalAddAddressVersion(value = true) {
         this.setState({
-            modal_show: value
+            modal_show: value,
+            error_list: []
         });
     }
 

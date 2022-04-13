@@ -83,8 +83,8 @@ export function ip(field_name, value, error_list) {
 }
 
 export function string_alphanumeric(field_name, value, error_list, length) {
-    let result = value.toString();
-    let is_string = /^[a-zA-Z0-9]+$/.test(result);
+    let value_escaped = value.toString().trim();
+    let is_string = /^[a-zA-Z0-9]+$/.test(value_escaped);
 
     if (!is_string) {
         error_list.push({
@@ -93,14 +93,14 @@ export function string_alphanumeric(field_name, value, error_list, length) {
         });
     }
 
-    if (result.length > length) {
+    if (value_escaped.length > length) {
         error_list.push({
             name   : get_error_name('max_length_exceeded', field_name),
             message: `${field_name} max length is ${length} `
         });
     }
 
-    return result;
+    return value_escaped;
 }
 
 export function json(field_name, value, error_list) {

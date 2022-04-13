@@ -103,10 +103,8 @@ class Network extends Component {
                 on_close={() => this.changeModalShowSaveResult(false)}
                 heading={'success'}
                 body={
-                    <div className={'text-center'}>
-                        <div>
-                            successfully saved
-                        </div>
+                    <div>
+                        successfully saved
                     </div>
                 }/>
             <div>

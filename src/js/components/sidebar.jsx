@@ -203,22 +203,14 @@ class Sidebar extends Component {
                      </NavItem>
                      */}
 
-
-
-
-
-
-
-
-
                     <NavItem
                         eventKey="settings"
                         expanded={this.isExpanded('settings', defaultSelected)}
                     >
                         <NavText>
                             settings <FontAwesomeIcon className={'icon'}
-                                                    icon="chevron-down"
-                                                    size="1x"/>
+                                                      icon="chevron-down"
+                                                      size="1x"/>
                             <FontAwesomeIcon className={'icon hidden'}
                                              icon="chevron-up"
                                              size="1x"/>
@@ -251,19 +243,11 @@ class Sidebar extends Component {
                         </NavItem>
                     </NavItem>
 
-
-
-
-
-
-
-
                     <NavItem key={'actions'} eventKey="/actions">
                         <NavText>
                             actions
                         </NavText>
                     </NavItem>
-
 
                     <NavItem
                         eventKey="status"
