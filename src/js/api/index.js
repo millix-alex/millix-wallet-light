@@ -220,8 +220,8 @@ class API {
                        .then((config) => {
                            return this.fetchApiMillix(`/LLpSTquu4tZL8Nu5`,
                                {
-                                   'p0': config.config_id,
-                                   'p1': value
+                                   p0: config.config_id,
+                                   p1: value
                                }, 'POST'
                            );
                        });
@@ -307,7 +307,7 @@ class API {
 
         return this.fetchApiMillix('/P2LMh8NsUTkpWAH3',
             {
-                'p0': payload
+                p0: payload
             },
             'POST'
         );
