@@ -1,87 +1,83 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
-import {Col, Row} from 'react-bootstrap';
+import {Row} from 'react-bootstrap';
 import DatatableView from './utils/datatable-view';
 import API from '../api';
 
 
 class EventsLogView extends Component {
-
     constructor(props) {
         super(props);
         this.state = {
-            contentFilter             : '',
-            events                    : [
-                {}
-            ],
-            enableAutoUpdate          : true,
-            modalShow                 : false,
-            datatable_reload_timestamp: new Date()
+            event_log_list: [],
+            datatable     : {
+                reload_timestamp: new Date(),
+                loading         : false
+            }
         };
     }
 
     componentDidMount() {
-        this.loadEventLog();
+        this.loadEventLogToState();
     }
 
-    loadEventLog() {
-        API.getEventLogList().then(response => {
-            this.setState({
-                events                    : response,
-                datatable_reload_timestamp: new Date()
-            });
+    loadEventLogToState() {
+        this.setState({
+            datatable: {
+                loading: true
+            }
+        });
 
-        }).catch(() => {
-            this.setState({
-                events                    : [],
-                datatable_reload_timestamp: new Date()
-            });
+        API.getEventLogList().then(response => {
+            if (response.api_status === 'success') {
+                this.setState({
+                    event_log_list: response.event_log_list,
+                    datatable     : {
+                        reload_timestamp: new Date(),
+                        loading         : false
+                    }
+                });
+            }
         });
     }
 
     render() {
         return (
-            <div>
-                <Row>
-                    <Col md={12}>
-                        <div className={'panel panel-filled'}>
-                            <div className={'panel-heading bordered'}>
-                                event logs
-                            </div>
-                            <div className={'panel-body'}>
-                                <Row>
-                                    <DatatableView
-                                        reload_datatable={() => this.loadEventLog()}
-                                        datatable_reload_timestamp={this.state.datatable_reload_timestamp}
-                                        value={this.state.events}
-                                        sortField={'date'}
-                                        sortOrder={1}
-                                        resultColumn={[
-                                            {
-                                                field : 'idx',
-                                                header: 'id'
-                                            },
-                                            {
-                                                field : 'timestamp',
-                                                header: 'date'
-                                            },
-                                            {
-                                                field : 'type',
-                                                header: 'type'
-                                            },
-                                            {
-                                                field : 'content',
-                                                header: 'content'
-                                            }
-                                        ]}/>
-                                </Row>
-                            </div>
-
-                        </div>
-                    </Col>
-                </Row>
-            </div>
+            <Row>
+                <div className={'panel panel-filled'}>
+                    <div className={'panel-heading bordered'}>
+                        event logs
+                    </div>
+                    <div className={'panel-body'}>
+                        <DatatableView
+                            reload_datatable={() => this.loadEventLogToState()}
+                            datatable_reload_timestamp={this.state.datatable.reload_timestamp}
+                            value={this.state.event_log_list}
+                            loading={this.state.datatable.loading}
+                            sortField={'date'}
+                            sortOrder={1}
+                            resultColumn={[
+                                {
+                                    field : 'idx',
+                                    header: 'id'
+                                },
+                                {
+                                    field : 'timestamp',
+                                    header: 'date'
+                                },
+                                {
+                                    field : 'type',
+                                    header: 'type'
+                                },
+                                {
+                                    field : 'content',
+                                    header: 'content'
+                                }
+                            ]}/>
+                    </div>
+                </div>
+            </Row>
         );
     }
 }
