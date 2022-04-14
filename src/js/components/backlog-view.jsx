@@ -12,7 +12,7 @@ import ModalView from './utils/modal-view';
 class BacklogView extends Component {
     constructor(props) {
         super(props);
-        this.updateHandler = null;
+        this.update_handler = null;
         this.state         = {
             backlog_list              : [],
             datatable_loading         : false,
@@ -29,8 +29,8 @@ class BacklogView extends Component {
         API.listBacklog()
            .then(data => {
                let backlog = [];
-               if (data.api_message) {
-                   backlog = Object.values(data.api_message);
+               if (data.backlog_list) {
+                   backlog = Object.values(data.backlog_list);
                }
                backlog.forEach((element, index) => {
                    backlog[index]['id'] = index;
@@ -46,12 +46,12 @@ class BacklogView extends Component {
     resetBacklog() {
         API.deleteBacklog()
            .then(() => {
-               this.changeModalShow(false);
+               this.showModal(false);
                this.loadBacklogToState();
            });
     }
 
-    changeModalShow(value = true) {
+    showModal(value = true) {
         this.setState({
             modal_show: value
         });
@@ -59,11 +59,11 @@ class BacklogView extends Component {
 
     componentDidMount() {
         this.loadBacklogToState();
-        this.updateHandler = setInterval(() => this.loadBacklogToState(), 10000);
+        this.update_handler = setInterval(() => this.loadBacklogToState(), 10000);
     }
 
     componentWillUnmount() {
-        clearTimeout(this.updateHandler);
+        clearTimeout(this.update_handler);
     }
 
     render() {
@@ -72,7 +72,7 @@ class BacklogView extends Component {
                 <ModalView show={this.state.modal_show}
                            size={'lg'}
                            heading={'reset backlog'}
-                           on_close={() => this.changeModalShow(false)}
+                           on_close={() => this.showModal(false)}
                            on_accept={() => this.resetBacklog()}
                            body={<div>
                                <div>
@@ -92,7 +92,7 @@ class BacklogView extends Component {
                         datatable_reload_timestamp={this.state.datatable_reload_timestamp}
                         action_button={{
                             label   : 'reset backlog',
-                            on_click: () => this.changeModalShow()
+                            on_click: () => this.showModal()
                         }}
                         value={this.state.backlog_list}
                         sortField={'node_idx'}
