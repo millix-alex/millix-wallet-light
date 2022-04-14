@@ -55,11 +55,8 @@ class API {
         }
 
         return fetch(url, data)
-            .then(response => response ? response : Promise.reject())
             .then(response => response.ok ? response.json() : Promise.reject())
-            .catch(error => {
-                Promise.reject();
-            });
+            .catch(error => Promise.reject());
     }
 
     setNodeID(nodeID) {
