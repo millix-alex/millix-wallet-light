@@ -12,25 +12,23 @@ import {Badge} from 'react-bootstrap';
 class Sidebar extends Component {
     constructor(props) {
         super(props);
-        let now                        = Date.now();
-        this.state                     = {
+        let now    = Date.now();
+        this.state = {
             fileKeyExport                : 'export_' + now,
             fileKeyImport                : 'import_' + now,
             date                         : new Date(),
             modalShow                    : false,
             node_millix_version          : '',
-            node_millix_version_available: ''
+            node_millix_version_available: '',
+            application                  : ''
         };
-        this.setMillixVersionAvailable = this.setMillixVersionAvailable.bind(this);
+
+        this.setVersion = this.setVersion.bind(this);
     }
 
     componentDidMount() {
-        API.getNodeOsInfo().then(response => {
-            this.setState({
-                node_millix_version: response.node_millix_version
-            }, () => this.setMillixVersionAvailable());
-            setInterval(this.setMillixVersionAvailable, 300000);
-        });
+        this.setVersion();
+        setInterval(this.setVersion, 5 * 60 * 1000);
 
         this.timerID = setInterval(
             () => this.tick(),
@@ -57,32 +55,35 @@ class Sidebar extends Component {
         return defaultSelected;
     }
 
-    getNewVersionLink() {
-        if (this.state.node_millix_version.length === 0 || this.state.node_millix_version_available.length === 0 || this.state.node_millix_version === this.state.node_millix_version_available) {
-            return;
+    getAvailableVersionLink() {
+        let link = null;
+        if (this.state.node_millix_version && this.state.node_millix_version !== this.state.node_millix_version_available) {
+            let download_url = 'https://tangled.com/download.html';
+            if (this.state.application === 'client') {
+                download_url = 'https://millix.org/client.html';
+            }
+
+            link = (
+                <React.Fragment>
+                    <a href={download_url} target={'_blank'} rel="noreferrer">
+                        <Badge className={'new_version_badge'}>new version available</Badge>
+                    </a>
+                </React.Fragment>
+            );
         }
 
-        return (
-            <React.Fragment>
-                <a href={'https://tangled.com/download.html'} target={'_blank'} rel="noreferrer">
-                    <Badge className={'new_version_badge'}>new version available</Badge>
-                </a>
-            </React.Fragment>
-        );
+        return link;
     }
 
-    setMillixVersionAvailable() {
+    setVersion() {
         API.getLatestMillixVersion().then(response => {
-            if (response.api_status !== 'success') {
+            if (response.api_status === 'success') {
                 this.setState({
-                    node_millix_version_available: false
+                    node_millix_version_available: response.version_available,
+                    application                  : response.application,
+                    node_millix_version          : response.node_millix_version
                 });
-
-                return;
             }
-            this.setState({
-                node_millix_version_available: response.api_message
-            });
         });
     }
 
@@ -131,9 +132,8 @@ class Sidebar extends Component {
     }
 
     render() {
-        let props            = this.props;
-        let defaultSelected  = this.highlightSelected(props.location.pathname);
-        let new_version_link = this.getNewVersionLink();
+        let props           = this.props;
+        let defaultSelected = this.highlightSelected(props.location.pathname);
 
         return (<aside className={'navigation'} style={{
             height   : '100%',
@@ -290,7 +290,7 @@ class Sidebar extends Component {
                 </SideNav.Nav>
                 <div className="nav-info">
                     <span>version {this.state.node_millix_version}</span>
-                    {new_version_link}
+                    {this.getAvailableVersionLink()}
                 </div>
             </SideNav>
         </aside>);
