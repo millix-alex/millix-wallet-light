@@ -44,7 +44,7 @@ class BacklogView extends Component {
     }
 
     resetBacklog() {
-        API.deleteBacklog()
+        API.resetBacklog()
            .then(() => {
                this.showModal(false);
                this.loadBacklogToState();
