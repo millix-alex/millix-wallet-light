@@ -422,7 +422,7 @@ class API {
         }
     }
 
-    deleteBacklog() {
+    resetBacklog() {
         try {
             return fetch(this.getAuthenticatedMillixApiURL() + '/epOW5kdvb12QdgsV')
                 .then(response => response.ok ? response.json() : Promise.reject());
