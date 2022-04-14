@@ -274,9 +274,9 @@ class API {
         }
     }
 
-    getEventLogList() {
+    getEventLogList(limit = 1000) {
         try {
-            return fetch(this.getAuthenticatedMillixApiURL() + '/PZ7x3HVHVstLNYf0')
+            return fetch(this.getAuthenticatedMillixApiURL() + `/PZ7x3HVHVstLNYf0?p0=${limit}`)
                 .then(response => response.ok ? response.json() : Promise.reject());
         }
         catch (e) {
