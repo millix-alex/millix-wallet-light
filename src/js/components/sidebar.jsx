@@ -7,6 +7,7 @@ import ModalView from './utils/modal-view';
 import * as format from '../helper/format';
 import API from '../api';
 import {Badge} from 'react-bootstrap';
+import {changeLoaderState} from './loader';
 
 
 class Sidebar extends Component {
@@ -105,6 +106,17 @@ class Sidebar extends Component {
         ) {
             result = true;
         }
+        else if (section === 'settings' &&
+                 (
+                     (defaultSelected === '/fee') ||
+                     (defaultSelected === '/network') ||
+                     (defaultSelected === '/connection') ||
+                     (defaultSelected === '/consensus') ||
+                     (defaultSelected === '/address-version')
+                 )
+        ) {
+            result = true;
+        }
         else if (section === 'ads' &&
                  (
                      (defaultSelected === '/ad-create') ||
@@ -128,6 +140,13 @@ class Sidebar extends Component {
     changeModalShow(value = true) {
         this.setState({
             modalShow: value
+        });
+    }
+
+    lockWallet() {
+        changeLoaderState(true);
+        this.props.lockWallet().then(data => {
+            changeLoaderState(false);
         });
     }
 
@@ -159,7 +178,9 @@ class Sidebar extends Component {
                            size={'lg'}
                            on_close={() => this.changeModalShow(false)}
                            heading={'logout'}
-                           on_accept={() => props.lockWallet()}
+                           on_accept={() => {
+                               this.lockWallet();
+                           }}
                            body={<div>are you sure you want to logout?</div>}/>
                 <div className="nav-utc_clock">
                     <span>{format.date(this.state.date)} utc</span>
@@ -225,17 +246,52 @@ class Sidebar extends Component {
                      </NavText>
                      </NavItem>
                      */}
-                    <NavItem key={'config'} eventKey="/config">
+
+                    <NavItem
+                        eventKey="settings"
+                        expanded={this.isExpanded('settings', defaultSelected)}
+                    >
                         <NavText>
-                            settings
+                            settings <FontAwesomeIcon className={'icon'}
+                                                      icon="chevron-down"
+                                                      size="1x"/>
+                            <FontAwesomeIcon className={'icon hidden'}
+                                             icon="chevron-up"
+                                             size="1x"/>
                         </NavText>
+                        <NavItem key={'fee'}
+                                 eventKey="/fee">
+                            <NavText>
+                                fees
+                            </NavText>
+                        </NavItem>
+                        <NavItem key={'network'} eventKey="/network">
+                            <NavText>
+                                network
+                            </NavText>
+                        </NavItem>
+                        <NavItem key={'connection'} eventKey="/connection">
+                            <NavText>
+                                connection
+                            </NavText>
+                        </NavItem>
+                        <NavItem key={'consensus'} eventKey="/consensus">
+                            <NavText>
+                                consensus
+                            </NavText>
+                        </NavItem>
+                        <NavItem key={'address-version'} eventKey="/address-version">
+                            <NavText>
+                                address version
+                            </NavText>
+                        </NavItem>
                     </NavItem>
+
                     <NavItem key={'actions'} eventKey="/actions">
                         <NavText>
                             actions
                         </NavText>
                     </NavItem>
-
 
                     <NavItem
                         eventKey="status"

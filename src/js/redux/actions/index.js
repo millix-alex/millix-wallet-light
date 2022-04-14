@@ -27,6 +27,7 @@ import async from 'async';
 import _ from 'lodash';
 import localforage from 'localforage';
 
+
 export function updateNodeAttribute(payload) {
     return {
         type: UPDATE_NODE_ATTRIBUTE,
@@ -71,14 +72,6 @@ export function removeWalletAddressVersion(payload) {
                                     });
                                 }
                             );
-}
-
-export function addWalletAddressVersion(payload) {
-    return (dispatch) => API.addWalletAddressVersion(payload)
-                            .then(payload => dispatch({
-                                type: ADD_WALLET_ADDRESS_VERSION,
-                                payload
-                            }));
 }
 
 export function unlockWallet(payload) {
