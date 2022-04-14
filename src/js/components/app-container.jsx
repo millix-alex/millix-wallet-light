@@ -24,7 +24,7 @@ import StatsView from './stats-view';
 import ReportIssueView from './report-issue-view';
 import FaqView from './faq-view';
 import AddressListView from './address-list-view';
-
+import RequestErrorHandler from './utils/http-interceptor';
 
 class AppContainer extends Component {
     constructor(props) {
@@ -45,6 +45,7 @@ class AppContainer extends Component {
     render() {
         return <Provider store={this.props.store}>
             <Router>
+                <RequestErrorHandler />
                 <Switch>
                     <Route path="/unlock/" component={UnlockWalletView}/>
                     <Route path="/manage-wallet/" component={ManageWalletView}/>

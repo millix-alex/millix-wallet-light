@@ -27,17 +27,21 @@ class API {
         return this.fetchApi(this.getAuthenticatedMillixApiURL() + url, param);
     }
 
-    fetchApi(url, param = {}) {
-        let param_string  = '';
-        const param_array = [];
-        Object.keys(param).forEach(function(param_key, index) {
-            param_array.push(param_key + '=' + param[param_key]);
-        });
-        if (param_array.length > 0) {
-            param_string = '?' + param_array.join('&');
-        }
+    fetchApi(url, data = { method: 'GET',params:{}, body: {},headers: {} }) {
 
-        return fetch(url + param_string)
+        if(data.params){
+            let param_string  = '';
+            const param_array = [];
+            Object.keys(data.params).forEach(function(param_key, index) {
+                param_array.push(param_key + '=' + data.params[param_key]);
+            });
+            if (param_array.length > 0) {
+                param_string = '?' + param_array.join('&');
+            }
+            url += param_string;
+        }        
+
+        return fetch(url,data)
             .then(response => response ? response : Promise.reject())
             .then(response => response.ok ? response.json() : Promise.reject())
             .catch(error => {
@@ -84,36 +88,71 @@ class API {
 
     toggleAdStatus(advertisement_guid) {
         return this.fetchApiTangled(`/C7neErVANMWXWuse`, {
-            'p0': encodeURIComponent(JSON.stringify({advertisement_guid: advertisement_guid}))
+            params:{
+                p0: encodeURIComponent(JSON.stringify({advertisement_guid: advertisement_guid}))
+            }
         });
     }
 
     resetAd(advertisementGUID) {
-        return this.fetchApiTangled(`/pKZdzEZrrdPA1jtl?p0=${advertisementGUID}`);
+        return this.fetchApiTangled(`/pKZdzEZrrdPA1jtl`,{
+            params:{
+                p0:advertisementGUID
+            }
+        });
     }
 
     submitAdForm(formData) {
-        return this.fetchApiTangled(`/scWZ0yhuk5hHLd8s?p0=${encodeURIComponent(JSON.stringify(formData))}`);
+        return this.fetchApiTangled(`/scWZ0yhuk5hHLd8s`,{
+            params:{
+                p0:encodeURIComponent(JSON.stringify(formData))
+            }
+        });        
     }
 
     requestAdvertisementPayment(advertisementGUID) {
-        return this.fetchApiTangled(`/QYEgbWuFZs5s7Kud?p0=${advertisementGUID}`);
+        return this.fetchApiTangled(`/QYEgbWuFZs5s7Kud`,{
+            params:{
+                p0:advertisementGUID
+            }
+        });       
     }
 
     sendTransaction(transactionOutputPayload) {
-        return this.fetchApiMillix(`/XPzc85T3reYmGro1?p0=${JSON.stringify(transactionOutputPayload)}`);
+        return this.fetchApiMillix(`/XPzc85T3reYmGro1`,{
+            params:{
+                p0:JSON.stringify(transactionOutputPayload)
+            }
+        });
     }
 
     getWalletUnspentTransactionOutputList(addressKeyIdentifier, stable) {
-        return this.fetchApiMillix(`/FDLyQ5uo5t7jltiQ?p3=${addressKeyIdentifier}&p4=0&p7=${stable}&p10=0&p13=transaction_date desc`);
+        return this.fetchApiMillix(`/FDLyQ5uo5t7jltiQ`,{
+            params:{
+                p3:addressKeyIdentifier,
+                p4:0,
+                p7:stable,
+                p10:0,
+                p13:'transaction_date desc'
+            }
+        });
     }
 
     getTransactionHistory(addressKeyIdentifier) {
-        return this.fetchApiMillix(`/w9UTTA7NXnEDUXhe?p0=${addressKeyIdentifier}`);
+        return this.fetchApiMillix(`/w9UTTA7NXnEDUXhe`,{
+            params:{
+                p0:addressKeyIdentifier
+            }
+        });        
     }
 
     getTransaction(transactionID, shardID) {
-        return this.fetchApiMillix(`/IBHgAmydZbmTUAe8?p0=${transactionID}&p1=${shardID}`);
+        return this.fetchApiMillix(`/IBHgAmydZbmTUAe8`,{
+            params:{
+                p0:transactionID,
+                p1:shardID
+            }
+        });         
     }
 
     getNodeStat() {
@@ -129,28 +168,42 @@ class API {
     }
 
     getFreeOutputs(addressKeyIdentifier) {
-        return this.fetchApiMillix(`/FDLyQ5uo5t7jltiQ?p3=${addressKeyIdentifier}&p4=0&p7=1&p10=0`);
+        return this.fetchApiMillix(`/FDLyQ5uo5t7jltiQ`,{
+            params:{
+                p3:addressKeyIdentifier,
+                p4:0,
+                p7:1,
+                p10:0
+            }
+        });
     }
 
     verifyAddress(address) {
-        try {
-            return fetch(this.getAuthenticatedMillixApiURL() + `/Xim7SaikcsHICvfQ?p0=${address}`)
-                .then(response => response.json());
-        }
-        catch (e) {
-            return Promise.reject(e);
-        }
+        return this.fetchApiMillix(`/Xim7SaikcsHICvfQ`,{
+            params:{
+                p0:address
+            }
+        });        
     }
 
     newSessionWithPhrase(password, mnemonicPhrase) {
         password       = escape_url_param(password);
         mnemonicPhrase = escape_url_param(mnemonicPhrase);
-        return this.fetchApiMillix(`/GktuwZlVP39gty6v?p0=${password}&p1=${mnemonicPhrase}`);
+        return this.fetchApiMillix(`/GktuwZlVP39gty6v`,{
+            params:{
+                p0:password,
+                p1:mnemonicPhrase
+            }
+        });         
     }
 
     newSession(password) {
         password = escape_url_param(password);
-        return this.fetchApiMillix(`/PMW9LXqUv7vXLpbA?p0=${password}`);
+        return this.fetchApiMillix(`/PMW9LXqUv7vXLpbA`,{
+            params:{
+                p0:password
+            }
+        });
     }
 
     endSession() {
@@ -170,7 +223,11 @@ class API {
     }
 
     getNodeConfigValueByName(name) {
-        return this.fetchApiMillix(`/2wYLWQfWBa6GLPYs?p0=${name}`);
+        return this.fetchApiMillix(`/2wYLWQfWBa6GLPYs`,{
+            params:{
+                p0:name
+            }
+        });
     }
 
     updateNodeConfigValue(key = null, value = null) {
@@ -203,36 +260,39 @@ class API {
     }
 
     addWalletAddressVersion(data) {
-        try {
-            return fetch(this.getAuthenticatedMillixApiURL() + `/hMrav9QMiMyLQosB?p0=${data.version}&p1=${data.is_main_network}&p2=${data.regex_pattern}&p3=${data.is_default}`)
-                .then(response => response ? response : Promise.reject())
-                .then((response) => {
-                    if (response.ok) {
-                        try {
-                            let response = this.listWalletAddressVersion();
-                            return response;
-                        }
-                        catch (e) {
-                            return Promise.reject(e);
-                        }
-                    }
-                });
-        }
-        catch (e) {
-            return Promise.reject(e);
-        }
+        return this.fetchApiMillix(`/hMrav9QMiMyLQosB`,{
+            params:{
+                p0:data.version,
+                p1:data.is_main_network,
+                p2:data.regex_pattern,
+                p3:data.is_default
+            }
+        });       
     }
 
     removeWalletAddressVersion(data) {
-        return this.fetchApiMillix(`/XgxHmjINTEqANwtS?p0=${data.version}`);
+        return this.fetchApiMillix(`/XgxHmjINTEqANwtS`,{
+            params:{
+                p0:data.version
+            }
+        });  
     }
 
     getNodeAboutAttribute() {
-        return this.fetchApiMillix(`/AgsSNTSA0RHmWUkp?p0=${this.nodeID}&p1=ijDj2VlTyJBl5R4iTCmG`);
+        return this.fetchApiMillix(`/AgsSNTSA0RHmWUkp`,{
+            params:{
+                p0:this.nodeID,
+                p1:'ijDj2VlTyJBl5R4iTCmG'
+            }
+        });        
     }
 
     listAddresses(addressKeyIdentifier) {
-        return this.fetchApiMillix(`/quIoaHsl8h6IwyEI?&p0=${addressKeyIdentifier}`);
+        return this.fetchApiMillix(`/quIoaHsl8h6IwyEI`,{
+            params:{
+                p0:addressKeyIdentifier,
+            }
+        });        
     }
 
     getNextAddress() {
@@ -244,11 +304,20 @@ class API {
     }
 
     listActivePeers() {
-        return this.fetchApiMillix('/0eoUqXNE715mBVqV?p0=2&p1=update_date%20desc');
+        return this.fetchApiMillix(`/0eoUqXNE715mBVqV`,{
+            params:{
+                p0:2,
+                p1:'update_date desc'
+            }
+        });
     }
 
     getNodeAttributes(nodeID) {
-        return this.fetchApiMillix(`/AgsSNTSA0RHmWUkp?p0=${nodeID}`);
+        return this.fetchApiMillix(`/AgsSNTSA0RHmWUkp`,{
+            params:{
+                p0:nodeID,
+            }
+        });
     }
 
     resetTransactionValidation() {
@@ -277,7 +346,6 @@ class API {
                 })
             }
         );
-
     }
 }
 

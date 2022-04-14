@@ -61,7 +61,7 @@ import API from './js/api';
 import ntp from './js/core/ntp';
 import moment from 'moment';
 import localforage from 'localforage';
-import RequestErrorHandler from './js/components/utils/http-interceptor';
+
 
 faConfig.autoAddCss = false;
 library.add(faArrowCircleLeft, faWallet, faKey, faHome, faFingerprint,
@@ -174,8 +174,7 @@ getNodeAboutAttribute();
 getNodeConfig();
 getWalletAddressVersion();
 ReactDOM.render(
-    <div>
-        <RequestErrorHandler />
+    <div>        
         <React.StrictMode>
             <AppContainer store={store}/>
         </React.StrictMode>
