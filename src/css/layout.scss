@@ -230,37 +230,49 @@ ul {
   .balance_container {
     display: flex;
 
-    > svg {
-      fill: $color-primary;
-      height: 2.1rem;
-      margin-top: 0.25rem;
-      margin-right: 0.3rem;
+    .stable_balance_millix,
+    .stable_balance_fiat {
+      > svg {
+        fill: $color-primary;
+        height: 2.1rem;
+        margin-top: 0.25rem;
+        margin-right: 0.3rem;
+      }
+
+      > span {
+        line-height: 1;
+      }
     }
 
-    .stable-millix {
+    .stable_balance_millix {
       display: flex;
       color: $color-white;
       font-size: 2.8rem;
-
-      > span {
-        line-height: 1;
-      }
     }
 
-    .stable-millix-price {
-      display: flex;
-      color: $color-white;
-      font-size: 2.5rem; 
-      margin-top: 0.45rem;
-      > span {
-        line-height: 1;
-      }
+    .stable_balance_fiat {
+      display: inline-flex;
+      font-size: 2.4rem;
     }
 
     .pending {
       > span {
         margin-left: 0.5rem;
       }
+    }
+
+    .accordion-header {
+      margin: 0;
+
+      button {
+        background-color: transparent;
+        padding: 0;
+      }
+    }
+
+    .accordion-body {
+      padding: 0;
+      text-align: center;
     }
   }
 
@@ -270,41 +282,10 @@ ul {
     word-break: break-all;
   }
 
-  .accordion{
-    background: none;
+
+  .text-primary {
+    color: #171827;
   }
-
-  .accordion-item{
-    background-color: #171827 !important;
-    border:none;
-  }
-
-  .accordion-button::after {
-    margin-top: -20px;
-    font-weight: 800;
-  }
-
-  .accordion-header{
-    background-color: #171827 !important;
-
-    button{
-      background-color: #171827 !important;
-      width: auto !important;
-      margin: auto !important;
-      padding: 0px;
-    }
-  }
-
-  .text-primary{
-    color:#171827;
-  }
-
-  .accordion-body{
-    text-align: center;
-    font-size: 2.4rem;
-    padding: 0px;
-  }
-
 }
 
 h1, .h1,

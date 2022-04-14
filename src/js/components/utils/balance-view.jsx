@@ -6,7 +6,6 @@ import * as convert from '../../helper/convert';
 import {withRouter} from 'react-router-dom';
 import * as svg from '../../helper/svg';
 import Accordion from 'react-bootstrap/Accordion';
-import {fiat} from '../../helper/convert';
 import store from '../../redux/store';
 
 
@@ -27,15 +26,15 @@ class BalanceView extends Component {
         if (convert.is_currency_pair_summary_available()) {
             stable_millix = <Accordion>
                 <Accordion.Header>
-                    <div className={'balance_container'}>
+                    <div className={'stable_balance_millix'}>
                         {svg.millix_logo()}
-                        <div className={'stable-millix'}>
+                        <div>
                             <span>{format.millix(this.props.stable, false)}</span>
                         </div>
                     </div>
                 </Accordion.Header>
                 <Accordion.Body>
-                    <div className={'stable-millix-price'}>
+                    <div className={'stable_balance_fiat'}>
                         <span className="text-primary">{store.getState().currency_pair_summary.symbol}</span>
                         <span>{convert.fiat(this.props.stable, false)}</span>
                     </div>
@@ -43,18 +42,20 @@ class BalanceView extends Component {
             </Accordion>;
         }
         else {
-            stable_millix = <div className={'balance_container'}>
+            stable_millix = <>
                 {svg.millix_logo()}
-                <div className={'stable-millix'}>
+                <div className={'stable_balance_millix'}>
                     <span>{format.millix(this.props.stable, false)}</span>
                 </div>
-            </div>;
+            </>;
         }
 
         return (
             <div className={'panel panel-filled'}>
                 <div className={'panel-body balance_panel'}>
-                    {stable_millix}
+                    <div className={'balance_container'}>
+                        {stable_millix}
+                    </div>
 
                     <div className={'balance_container'}>
                         <div>
