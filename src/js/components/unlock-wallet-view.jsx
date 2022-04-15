@@ -19,8 +19,8 @@ class UnlockWalletView extends Component {
     constructor(props) {
         super(props);
         this.private_key_exists_interval_id = undefined;
-        this.state                         = {
-            error_list       : [],
+        this.state                          = {
+            error_list        : [],
             private_key_exists: undefined, //ternary status: false -- doesn't
             // exists, true -- exist, undefined --
             // unknown. ajax didn't return a response yet
@@ -47,27 +47,27 @@ class UnlockWalletView extends Component {
     }
 
     isPrivateKeyExist() {
-        API.getIsPrivateKeyExist().then(response => {            
-                if (typeof (response.private_key_exists) === 'boolean') {
-                    if (response.private_key_exists) {
-                        this.setState({
-                            private_key_exists: true
-                        });
-                    }
-                }
-                else {
-                    let error_list = [];
-                    error_list.push({
-                        name   : 'auth_error',
-                        message: 'millix_private_key.json not found'
-                    });
+        API.getIsPrivateKeyExist().then(response => {
+            if (typeof (response.private_key_exists) === 'boolean') {
+                if (response.private_key_exists) {
                     this.setState({
-                        private_key_exists  : false,
-                        defaultTabActiveKey: 2,
-                        error_list         : error_list
+                        private_key_exists: true
                     });
                 }
-                clearInterval(this.private_key_exists_interval_id);                       
+            }
+            else {
+                let error_list = [];
+                error_list.push({
+                    name   : 'auth_error',
+                    message: 'millix_private_key.json not found'
+                });
+                this.setState({
+                    private_key_exists : false,
+                    defaultTabActiveKey: 2,
+                    error_list         : error_list
+                });
+            }
+            clearInterval(this.private_key_exists_interval_id);
         });
     }
 
@@ -197,7 +197,10 @@ class UnlockWalletView extends Component {
                                                                                 className="control-label"
                                                                                 htmlFor="password">password</label>
                                                                             <FormControl
-                                                                                ref={c => passphraseRef = c}
+                                                                                ref={c => {
+                                                                                    passphraseRef = c;
+                                                                                    passphraseRef && passphraseRef.focus();
+                                                                                }}
                                                                                 type="password"
                                                                                 placeholder="******"
                                                                                 aria-label="wallet password"

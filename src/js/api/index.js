@@ -131,6 +131,16 @@ class API {
         });
     }
 
+    sendAggregationTransaction() {
+        try {
+            return fetch(this.getAuthenticatedMillixApiURL() + '/kC5N9Tz06b2rA4Pg')
+                .then(response => response.ok ? response.json() : Promise.reject());
+        }
+        catch (e) {
+            return Promise.reject(e);
+        }
+    }
+
     getWalletUnspentTransactionOutputList(addressKeyIdentifier, stable) {
         return this.fetchApiMillix(`/FDLyQ5uo5t7jltiQ`, {
             p3 : addressKeyIdentifier,
@@ -158,8 +168,28 @@ class API {
         return this.fetchApiMillix('/rKclyiLtHx0dx55M');
     }
 
+    getUnspentOutputStat() {
+        try {
+            return fetch(this.getAuthenticatedMillixApiURL() + '/FC8ylC617zzn1Gaa')
+                .then(response => response.ok ? response.json() : Promise.reject());
+        }
+        catch (e) {
+            return Promise.reject(e);
+        }
+    }
+
     getNodeOsInfo() {
         return this.fetchApiMillix('/RLOk0Wji0lQVjynT');
+    }
+
+    getLatestMillixVersion() {
+        try {
+            return fetch(this.getAuthenticatedMillixApiURL() + `/WGem8x5aycBqFXWQ`)
+                .then(response => response.ok ? response.json() : Promise.reject());
+        }
+        catch (e) {
+            return Promise.reject(e);
+        }
     }
 
     getRandomMnemonic() {
