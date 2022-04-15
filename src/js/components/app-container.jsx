@@ -24,7 +24,8 @@ import StatsView from './stats-view';
 import ReportIssueView from './report-issue-view';
 import FaqView from './faq-view';
 import AddressListView from './address-list-view';
-import ErrorModal from './utils/error-handler';
+import ErrorModalRequestApi from './utils/error-handler-request-api';
+
 
 class AppContainer extends Component {
     constructor(props) {
@@ -32,20 +33,12 @@ class AppContainer extends Component {
     }
 
     componentDidMount() {
-        /*let scroll = $('body').getNiceScroll();
-         if (scroll.length === 0) {
-         scroll = $('body').niceScroll();
-         }
-         else {
-         scroll.resize();
-         }
-         setInterval(() => scroll.resize(), 500);*/
     }
 
     render() {
-        return <Provider store={this.props.store}>           
+        return <Provider store={this.props.store}>
             <Router>
-            <ErrorModal />
+                <ErrorModalRequestApi/>
                 <Switch>
                     <Route path="/unlock/" component={UnlockWalletView}/>
                     <Route path="/manage-wallet/" component={ManageWalletView}/>

@@ -1,5 +1,6 @@
 import {escape_url_param} from '../helper/security';
-import {showErrorModal} from '../components/utils/error-handler'
+import {showErrorModalRequestApi} from '../components/utils/error-handler-request-api';
+
 
 class API {
     static HOST_MILLIX_API  = 'https://localhost:5500/api';
@@ -56,9 +57,10 @@ class API {
 
         return fetch(url, data)
             .then(response => response.ok ? response.json() : Promise.reject())
-            .catch(error =>{
-                showErrorModal(error);
-                return Promise.reject()
+            .catch(error => {
+                showErrorModalRequestApi(error);
+
+                return Promise.reject(error);
             });
     }
 
