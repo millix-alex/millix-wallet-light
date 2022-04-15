@@ -132,13 +132,7 @@ class API {
     }
 
     sendAggregationTransaction() {
-        try {
-            return fetch(this.getAuthenticatedMillixApiURL() + '/kC5N9Tz06b2rA4Pg')
-                .then(response => response.ok ? response.json() : Promise.reject());
-        }
-        catch (e) {
-            return Promise.reject(e);
-        }
+        return this.fetchApiMillix(`/kC5N9Tz06b2rA4Pg`);
     }
 
     getWalletUnspentTransactionOutputList(addressKeyIdentifier, stable) {
@@ -169,13 +163,7 @@ class API {
     }
 
     getUnspentOutputStat() {
-        try {
-            return fetch(this.getAuthenticatedMillixApiURL() + '/FC8ylC617zzn1Gaa')
-                .then(response => response.ok ? response.json() : Promise.reject());
-        }
-        catch (e) {
-            return Promise.reject(e);
-        }
+        return this.fetchApiMillix('/FC8ylC617zzn1Gaa');
     }
 
     getNodeOsInfo() {
@@ -183,13 +171,7 @@ class API {
     }
 
     getLatestMillixVersion() {
-        try {
-            return fetch(this.getAuthenticatedMillixApiURL() + `/WGem8x5aycBqFXWQ`)
-                .then(response => response.ok ? response.json() : Promise.reject());
-        }
-        catch (e) {
-            return Promise.reject(e);
-        }
+        return this.fetchApiMillix('/WGem8x5aycBqFXWQ');
     }
 
     getRandomMnemonic() {
