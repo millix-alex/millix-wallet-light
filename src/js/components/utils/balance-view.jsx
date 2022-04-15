@@ -5,10 +5,8 @@ import * as format from '../../helper/format';
 import * as convert from '../../helper/convert';
 import {withRouter} from 'react-router-dom';
 import * as svg from '../../helper/svg';
-import Accordion from 'react-bootstrap/Accordion';
-import {fiat} from '../../helper/convert';
 import store from '../../redux/store';
-
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 
 class BalanceView extends Component {
     constructor(props) {
@@ -16,31 +14,39 @@ class BalanceView extends Component {
         this.state = {
             showMillixPrice: false
         };
+        this.wrapperMillixPrice = React.createRef();
+        this.wrapperButtonToggle = React.createRef();
     }
 
-    toggleMillixPrice() {
-        this.state.showMillixPrice = !this.state.showMillixPrice;
+    handleClick() {
+        this.wrapperMillixPrice.current.classList.toggle('show-price'); 
+        if(this.wrapperButtonToggle.current)
+            this.wrapperButtonToggle.current.classList.toggle('rotate');  
     }
+    
 
     render() {
         let stable_millix;
         if (convert.is_currency_pair_summary_available()) {
-            stable_millix = <Accordion>
-                <Accordion.Header>
+            stable_millix = <div className='balance_panel'>
                     <div className={'balance_container'}>
                         {svg.millix_logo()}
                         <div className={'stable-millix'}>
                             <span>{format.millix(this.props.stable, false)}</span>
                         </div>
-                    </div>
-                </Accordion.Header>
-                <Accordion.Body>
-                    <div className={'stable-millix-price'}>
+                        <div className='button-container' ref={this.wrapperButtonToggle}>
+                            <FontAwesomeIcon                                
+                                className='toggle-button'
+                                onClick={() => this.handleClick()}
+                                icon="chevron-down"
+                                size="1x"/>
+                        </div>
+                    </div>               
+                    <div ref={this.wrapperMillixPrice} className={'stable-millix-price'}>
                         <span className="text-primary">{store.getState().currency_pair_summary.symbol}</span>
                         <span>{convert.fiat(this.props.stable, false)}</span>
                     </div>
-                </Accordion.Body>
-            </Accordion>;
+                </div>                 
         }
         else {
             stable_millix = <div className={'balance_container'}>
@@ -86,3 +92,4 @@ BalanceView.propTypes = {
 
 
 export default withRouter(BalanceView);
+
