@@ -18,10 +18,11 @@ const UnlockedWalletRequiredRoute = ({
         if (!rest.wallet.unlocked) {
             return;
         }
+
         let timeoutID;
-        const getNodeStat = () => {    
-            timeoutID = setTimeout(() => {    
-                API.getNodeStat().then(data => {                    
+        const getNodeStat = () => {
+            timeoutID = setTimeout(() => {
+                API.getNodeStat().then(data => {
                     rest.walletUpdateBalance({
                         balance_stable                   : data.balance.stable,
                         balance_pending                  : data.balance.unstable,
@@ -33,19 +34,22 @@ const UnlockedWalletRequiredRoute = ({
                     rest.updateNetworkState({
                         ...data.network,
                         connections: data.network.peer_count
-                    });                    
+                    });
                 })
-                .catch(() => {
+                   .catch(() => {
 
-                }).finally(() => {
-                    if(rest.wallet.unlocked)
+                   }).finally(() => {
+                    if (rest.wallet.unlocked) {
                         getNodeStat();
-                })
+                    }
+                });
             }, 1000);
         };
+
         getNodeStat();
-        return () => { 
-            clearTimeout(timeoutID); 
+
+        return () => {
+            clearTimeout(timeoutID);
         };
     }, [rest.wallet.unlocked]);
     return (<Route {...rest} render={props => (
