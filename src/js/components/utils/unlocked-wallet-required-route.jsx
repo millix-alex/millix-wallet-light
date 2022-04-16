@@ -36,12 +36,11 @@ const UnlockedWalletRequiredRoute = ({
                         connections: data.network.peer_count
                     });
                 })
-                   .catch(() => {
+                .catch(() => {
 
-                   }).finally(() => {
-                    if (rest.wallet.unlocked) {
+                }).finally(() => {
+                    if (rest.wallet.unlocked)
                         getNodeStat();
-                    }
                 });
             }, 1000);
         };
