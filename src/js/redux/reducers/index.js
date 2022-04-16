@@ -63,6 +63,7 @@ function rootReducer(state = initialState, action) {
         }, '*');
     }
     if (action.type === UNLOCK_WALLET) {
+        state = initialState;
         return Object.assign({}, state, {
             wallet: {
                 ...state.wallet,
