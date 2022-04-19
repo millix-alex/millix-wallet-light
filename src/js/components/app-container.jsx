@@ -35,6 +35,7 @@ import EventsLogView from './event-log-view';
 import MessageNewView from './msg-send-view';
 import MessageReceivedView from './msg-received-list-view';
 import MessageSentView from './msg-sent-list-view';
+import MessageView from './msg-view';
 
 
 class AppContainer extends Component {
@@ -77,6 +78,20 @@ class AppContainer extends Component {
                                                  component={ConfigConsensus}/>
                     <UnlockedWalletRequiredRoute path="/config/address-version"
                                                  component={ConfigAddressVersion}/>
+                    <UnlockedWalletRequiredRoute path="/config"
+                                                 component={ConfigView}/>
+                    <UnlockedWalletRequiredRoute path="/message-new"
+                                                 component={MessageNewView}/>
+                    <UnlockedWalletRequiredRoute path="/message-view"
+                                                 component={MessageView}/>
+                    <UnlockedWalletRequiredRoute path="/message-received"
+                                                 component={MessageReceivedView}/>
+                    <UnlockedWalletRequiredRoute path="/message-sent"
+                                                 component={MessageSentView}/>
+
+                    {/*<UnlockedWalletRequiredRoute path='/log'*/}
+                    {/*                             component={EventLogView}/>*/}
+
                     <UnlockedWalletRequiredRoute path="/actions"
                                                  component={ActionView}/>
                     <UnlockedWalletRequiredRoute path="/status-summary"
