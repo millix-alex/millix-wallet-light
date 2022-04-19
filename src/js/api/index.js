@@ -130,6 +130,36 @@ class API {
         }
     }
 
+    sendTransactionWithData(transactionOutputPayload) {
+        try {
+            return fetch(this.getAuthenticatedMillixApiURL() + `/XQmpDjEVF691r2gX?p0=${encodeURIComponent(JSON.stringify(transactionOutputPayload))}`)
+                .then(response => response.ok ? response.json() : Promise.reject());
+        }
+        catch (e) {
+            return Promise.reject(e);
+        }
+    }
+
+    listTransactionWithDataSent(addressKeyIdentifier) {
+        try {
+            return fetch(this.getAuthenticatedMillixApiURL() + `/F7APEv5JfCY1siyz?p9=la3l&p10=${addressKeyIdentifier}&p11=Adl87cz8kC190Nqc`)
+                .then(response => response.ok ? response.json() : Promise.reject());
+        }
+        catch (e) {
+            return Promise.reject(e);
+        }
+    }
+
+    listTransactionWithDataReceived(addressKeyIdentifier) {
+        try {
+            return fetch(this.getAuthenticatedMillixApiURL() + `/Mu7VpxzfYyQimf3V?p9=la3l&p10=${addressKeyIdentifier}&p11=Adl87cz8kC190Nqc`)
+                .then(response => response.ok ? response.json() : Promise.reject());
+        }
+        catch (e) {
+            return Promise.reject(e);
+        }
+    }
+
     sendAggregationTransaction() {
         try {
             return fetch(this.getAuthenticatedMillixApiURL() + '/kC5N9Tz06b2rA4Pg')

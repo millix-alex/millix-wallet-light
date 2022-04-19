@@ -27,6 +27,7 @@ import AddressListView from './address-list-view';
 import MessageNewView from './msg-send-view';
 import MessageReceivedView from './msg-received-list-view';
 import MessageSentView from './msg-sent-list-view';
+import MessageView from './msg-view';
 
 
 class AppContainer extends Component {
@@ -66,6 +67,8 @@ class AppContainer extends Component {
                                                  component={ConfigView}/>
                     <UnlockedWalletRequiredRoute path="/message-new"
                                                  component={MessageNewView}/>
+                    <UnlockedWalletRequiredRoute path="/message-view"
+                                                 component={MessageView}/>
                     <UnlockedWalletRequiredRoute path="/message-received"
                                                  component={MessageReceivedView}/>
                     <UnlockedWalletRequiredRoute path="/message-sent"

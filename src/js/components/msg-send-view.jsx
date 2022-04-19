@@ -13,7 +13,6 @@ import BalanceView from './utils/balance-view';
 import ErrorList from './utils/error-list-view';
 
 
-
 const styles = {
     centered: {
         display       : 'flex',
@@ -57,7 +56,9 @@ class MessageNewView extends Component {
             address_version       : '',
             address_key_identifier: '',
             amount                : '',
-            fee                   : ''
+            fee                   : '',
+            subject               : '',
+            message               : ''
         };
 
         this.send = this.send.bind(this);
@@ -85,8 +86,8 @@ class MessageNewView extends Component {
         });
 
         const address = validate.required('address', this.destinationAddress.value, error_list);
-        const subject = validate.required('address', this.subject.value, error_list);
-        const message = validate.required('address', this.message.value, error_list);
+        const subject = validate.required('subject', this.subject.value, error_list);
+        const message = validate.required('message', this.message.value, error_list);
         const amount  = validate.amount('amount', this.amount.value, error_list);
         const fee     = validate.amount('fee', this.fee.value, error_list);
 
@@ -116,6 +117,8 @@ class MessageNewView extends Component {
                            address_base          : destinationAddress,
                            address_version       : destinationAddressVersion,
                            address_key_identifier: destinationAddressIdentifier,
+                           subject               : subject,
+                           message               : message,
                            amount                : amount,
                            fee                   : fee
                        });
@@ -132,9 +135,11 @@ class MessageNewView extends Component {
         });
 
         const amount = this.state.amount;
-        //here...
-        /*
-        API.sendTransaction({
+        API.sendTransactionWithData({
+            transaction_data       : {
+                subject: this.state.subject,
+                message: this.state.message
+            },
             transaction_output_list: [
                 {
                     address_base          : this.state.address_base,
@@ -206,7 +211,6 @@ class MessageNewView extends Component {
             });
             this.changeModalShow(false);
         });
-        */
     }
 
     cancelSendTransaction() {
@@ -235,8 +239,11 @@ class MessageNewView extends Component {
                 <Row>
                     <Col md={12}>
                         <div className={'panel panel-filled'}>
-                            <div className={'panel-heading bordered'}>new message</div>
+                            <div className={'panel-heading bordered'}>send message</div>
                             <div className={'panel-body'}>
+                                <p>
+                                    send an encrypted message to any tangled browser user.  the message will be stored on your device and the recipients device.  to allow the message to reach the recipient, the message is stored on the millix network for up to 90 days.  only you and the recipient can read your messages.
+                                </p>
                                 <ErrorList
                                     error_list={this.state.error_list}/>
                                 <Row>
@@ -319,7 +326,7 @@ class MessageNewView extends Component {
                                                 on_accept={() => this.sendTransaction()}
                                                 on_close={() => this.cancelSendTransaction()}
                                                 body={<div>
-                                                    <div>you are about to send {format.millix(this.state.amount)} to</div>
+                                                    <div>you are about to send a message and {format.millix(this.state.amount)} to</div>
                                                     <div>{this.state.address_base}{this.state.address_version}{this.state.address_key_identifier}</div>
                                                     {text.get_confirmation_modal_question()}
                                                 </div>}/>
@@ -338,7 +345,7 @@ class MessageNewView extends Component {
                                                     {this.state.sending ?
                                                      <>
                                                          <div style={{
-                                                             float   : 'left',
+                                                             float      : 'left',
                                                              marginRight: 10
                                                          }}
                                                               className="loader-spin"/>
@@ -357,7 +364,6 @@ class MessageNewView extends Component {
         );
     }
 }
-
 
 
 export default connect(
