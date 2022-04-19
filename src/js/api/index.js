@@ -56,7 +56,9 @@ class API {
         }
 
         return fetch(url, data)
-            .then(response => response.ok ? response.json() : Promise.reject())
+            .then(response => {
+                return response.ok ? response.json() : Promise.reject(response);
+            })
             .catch(error => {
                 showErrorModalRequestApi(error);
 
@@ -226,13 +228,7 @@ class API {
     }
 
     getMnemonicPhrase() {
-        try {
-            return fetch(this.getAuthenticatedMillixApiURL() + '/BPZZ0l2nTfMSmmpl')
-                .then(response => response.ok ? response.json() : Promise.reject());
-        }
-        catch (e) {
-            return Promise.reject(e);
-        }
+        return this.fetchApiMillix('/BPZZ0l2nTfMSmmpl');
     }
 
     getNodeConfigValueByName(name) {
@@ -242,20 +238,15 @@ class API {
     }
 
     updateNodeConfigValue(key = null, value = null) {
-        try {
-            return this.getNodeConfigValueByName(key)
-                       .then((config) => {
-                           return this.fetchApiMillix(`/LLpSTquu4tZL8Nu5`,
-                               {
-                                   p0: config.config_id,
-                                   p1: value
-                               }, 'POST'
-                           );
-                       });
-        }
-        catch (e) {
-            return Promise.reject();
-        }
+        return this.getNodeConfigValueByName(key)
+                   .then((config) => {
+                       return this.fetchApiMillix(`/LLpSTquu4tZL8Nu5`,
+                           {
+                               p0: config.config_id,
+                               p1: value
+                           }, 'POST'
+                       );
+                   });
     }
 
     getNodePublicIP() {

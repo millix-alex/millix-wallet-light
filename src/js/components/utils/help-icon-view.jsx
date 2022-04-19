@@ -58,7 +58,7 @@ class HelpIconView extends Component {
                         if you node is private you can use port forwarding on
                         your router to make your node public. you can edit your
                         node's network configuration <a className={''}
-                                                        onClick={() => this.props.history.push('/config')}>here</a>
+                                                        onClick={() => this.props.history.push('/config/network')}>here</a>
                     </li>
                 </ul>
             },
@@ -166,7 +166,7 @@ class HelpIconView extends Component {
                     </li>
                 </ul>
             },
-            'key_identifier'      : {
+            'key_identifier'              : {
                 'title': 'key identifier',
                 'body' : <ul>
                     <li>
@@ -177,6 +177,36 @@ class HelpIconView extends Component {
                     </li>
                     <li>
                         wallet and all the addresses are associated with the key identifier
+                    </li>
+                </ul>
+            },
+            'full_node'                   : {
+                'title': 'full node',
+                'body' : <ul>
+                    <li>
+                        it is not required to send and receive transactions or receive payments from advertisers
+                    </li>
+                    <li>
+                        it is recommended for devices with good bandwidth availability as it strengthens the millix network
+                    </li>
+                    <li>
+                        it increases your ability and efficiency to earn fees from the millix network
+                    </li>
+                </ul>
+            },
+            'transaction_fee_default'     : {
+                'title': 'default fee',
+                'body' : <ul>
+                    <li>
+                        default fee you are willing to pay to send transaction
+                    </li>
+                </ul>
+            },
+            'transaction_fee_proxy'       : {
+                'title': 'minimum proxy fee',
+                'body' : <ul>
+                    <li>
+                        minimum fee your node will accept to verify transaction if it is chosen as proxy
                     </li>
                 </ul>
             }
