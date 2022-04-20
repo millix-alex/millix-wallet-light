@@ -231,27 +231,29 @@ ul {
     display: flex;
 
 
-    .button-container{
-      height: 20px;
-      -webkit-transition-duration: 0.3s;
-      -moz-transition-duration: 0.3s;
-      -o-transition-duration: 0.3s;
-      transition-duration: 0.3s;
+    .button-container {
+      &.rotate {
+        .toggle-button {
+          transform: rotate(180deg);
+        }
+      }
 
-      -webkit-transition-property: -webkit-transform;
-      -moz-transition-property: -moz-transform;
-      -o-transition-property: -o-transform;
-      transition-property: transform;
+      .toggle-button {
+        cursor: pointer;
+        margin-left: 0.3rem;
 
-      overflow:hidden;
-    }
-    
-    .toggle-button{
-      cursor:pointer;
-    }
+        -webkit-transition-duration: 0.3s;
+        -moz-transition-duration: 0.3s;
+        -o-transition-duration: 0.3s;
+        transition-duration: 0.3s;
 
-    .rotate{
-      transform: rotate(180deg);
+        -webkit-transition-property: -webkit-transform;
+        -moz-transition-property: -moz-transform;
+        -o-transition-property: -o-transform;
+        transition-property: transform;
+
+        overflow: hidden;
+      }
     }
 
     > svg {
@@ -261,7 +263,7 @@ ul {
       margin-right: 0.3rem;
     }
 
-    .stable-millix {
+    .stable_millix {
       display: flex;
       color: $color-white;
       font-size: 2.8rem;
@@ -271,8 +273,6 @@ ul {
       }
     }
 
-    
-
     .pending {
       > span {
         margin-left: 0.5rem;
@@ -280,22 +280,24 @@ ul {
     }
   }
 
-  .stable-millix-price {
+  .stable_fiat {
     display: flex;
-    color: $color-white;
-    font-size: 2.4rem; 
-    margin-top: 0.45rem;
-    max-height: 0px;
-    transition:max-height 0.3s;
+    font-size: 2.4rem;
+    height: 0;
+    transition: height 0.3s;
     overflow: hidden;
+
+    &.show {
+      height: 2.4rem;
+    }
+
+    > .symbol {
+      margin-right: 0.3rem;
+    }
+
     > span {
       line-height: 1;
     }
-  }
-
-  .show-price{
-    height: auto;
-    max-height: 100px;
   }
 
   .primary_address,
@@ -303,20 +305,6 @@ ul {
     font-size: 1.4rem;
     word-break: break-all;
   }
-
-  
-
-
-  .text-primary{
-    color:#171827;
-  }
-
-  .accordion-body{
-    text-align: center;
-    font-size: 2.4rem;
-    padding: 0px;
-  }
-
 }
 
 h1, .h1,

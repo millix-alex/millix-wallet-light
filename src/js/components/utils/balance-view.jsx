@@ -8,50 +8,49 @@ import * as svg from '../../helper/svg';
 import store from '../../redux/store';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 
+
 class BalanceView extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            showMillixPrice: false
-        };
-        this.wrapperMillixPrice = React.createRef();
-        this.wrapperButtonToggle = React.createRef();
+        this.balanceStableFiatRef = React.createRef();
+        this.toggleButtonRef      = React.createRef();
     }
 
     handleClick() {
-        this.wrapperMillixPrice.current.classList.toggle('show-price'); 
-        if(this.wrapperButtonToggle.current)
-            this.wrapperButtonToggle.current.classList.toggle('rotate');  
+        this.balanceStableFiatRef.current.classList.toggle('show');
+        if (this.toggleButtonRef.current) {
+            this.toggleButtonRef.current.classList.toggle('rotate');
+        }
     }
-    
+
 
     render() {
         let stable_millix;
         if (convert.is_currency_pair_summary_available()) {
-            stable_millix = <div className='balance_panel'>
-                    <div className={'balance_container'}>
-                        {svg.millix_logo()}
-                        <div className={'stable-millix'}>
-                            <span>{format.millix(this.props.stable, false)}</span>
-                        </div>
-                        <div className='button-container' ref={this.wrapperButtonToggle}>
-                            <FontAwesomeIcon                                
-                                className='toggle-button'
-                                onClick={() => this.handleClick()}
-                                icon="chevron-down"
-                                size="1x"/>
-                        </div>
-                    </div>               
-                    <div ref={this.wrapperMillixPrice} className={'stable-millix-price'}>
-                        <span className="text-primary">{store.getState().currency_pair_summary.symbol}</span>
-                        <span>{convert.fiat(this.props.stable, false)}</span>
+            stable_millix = <div className="balance_panel">
+                <div className={'balance_container'}>
+                    {svg.millix_logo()}
+                    <div className={'stable_millix'}>
+                        <span>{format.millix(this.props.stable, false)}</span>
                     </div>
-                </div>                 
+                    <div className="button-container" ref={this.toggleButtonRef}>
+                        <FontAwesomeIcon
+                            className="toggle-button"
+                            onClick={() => this.handleClick()}
+                            icon="chevron-down"
+                            size="1x"/>
+                    </div>
+                </div>
+                <div ref={this.balanceStableFiatRef} className={'stable_fiat'}>
+                    <span className="text-primary symbol">{store.getState().currency_pair_summary.symbol}</span>
+                    <span>{convert.fiat(this.props.stable, false)}</span>
+                </div>
+            </div>;
         }
         else {
             stable_millix = <div className={'balance_container'}>
                 {svg.millix_logo()}
-                <div className={'stable-millix'}>
+                <div className={'stable_millix'}>
                     <span>{format.millix(this.props.stable, false)}</span>
                 </div>
             </div>;
