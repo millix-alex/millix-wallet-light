@@ -4,7 +4,7 @@ import {
     UPDATE_NETWORK_NODE_LIST, UPDATE_NETWORK_STATE, UPDATE_TRANSACTION_DETAILS,
     UPDATE_WALLET_ADDRESS, UPDATE_WALLET_CONFIG, UPDATE_WALLET_MAINTENANCE,
     UPDATE_WALLET_TRANSACTIONS, WALLET_READY, UPDATE_WALLET_ADDRESS_VERSION,
-    ADD_WALLET_ADDRESS_VERSION, GET_NODE_ATTRIBUTES, UPDATE_WALLET_BALANCE,
+    GET_NODE_ATTRIBUTES, UPDATE_WALLET_BALANCE,
     WALLET_VERSION_AVAILABLE, UPDATE_WALLET_NOTIFICATION, UPDATE_NODE_ATTRIBUTE,
     UPDATE_NOTIFICATION_VOLUME, UPDATE_CURRENCY_PAIR_SUMMARY
 } from '../constants/action-types';
@@ -221,17 +221,6 @@ function rootReducer(state = initialState, action) {
         });
     }
     else if (action.type === UPDATE_WALLET_ADDRESS_VERSION) {
-        return Object.assign({}, state, {
-            wallet: {
-                ...state.wallet,
-                address_version_list: [...action.payload]
-            }
-        });
-    }
-    else if (action.type === ADD_WALLET_ADDRESS_VERSION) {
-        if (action.payload.is_default === 1) {
-            _.each(state.wallet.address_version_list, version => version['is_default'] = 0);
-        }
         return Object.assign({}, state, {
             wallet: {
                 ...state.wallet,
