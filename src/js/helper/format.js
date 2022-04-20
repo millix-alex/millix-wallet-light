@@ -90,6 +90,6 @@ function get_fixed_value({
             options['minimumFractionDigits'] = float_part_length;
         }
 
-        return value.toLocaleString('en-EN', options);
+        return value.toLocaleString('en-US', options);
     }
 }

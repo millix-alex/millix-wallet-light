@@ -1,6 +1,5 @@
 import store from '../redux/store';
 import {fiat as format_fiat} from './format';
-import {CURRENCY_PAIR_SUMMARY_REFRESH_INTERVAL_MS} from '../../config';
 
 export function fiat(amount, append_ticker = true) {
     let currency_pair_summary = store.getState().currency_pair_summary;
@@ -13,17 +12,5 @@ export function fiat(amount, append_ticker = true) {
 }
 
 export function is_currency_pair_summary_available() {
-    let actualDate  = new Date();
-    let dateUpdated = store.getState().currency_pair_summary.date_updated;
-
-    let result = false;
-    if (dateUpdated) {
-        let update = new Date(dateUpdated.getTime() + CURRENCY_PAIR_SUMMARY_REFRESH_INTERVAL_MS + 1000);
-
-        if (update > actualDate) {
-            result = true;
-        }
-    }
-
-    return result;
+    return store.getState().currency_pair_summary.price > 0;
 }
