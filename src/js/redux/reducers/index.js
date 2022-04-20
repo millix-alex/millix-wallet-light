@@ -59,8 +59,8 @@ const initialState = {
         size: 0
     },
     transactionDetails   : null,
-    node              : {},
-    notification      : {
+    node                 : {},
+    notification         : {
         volume: 0
     }
 };
