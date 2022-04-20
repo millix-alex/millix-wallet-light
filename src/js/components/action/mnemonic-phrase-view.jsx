@@ -73,6 +73,11 @@ class MnemonicPhraseView extends Component {
                                 }}>
                             save millix_private_key.json
                         </Button>
+                        <a style={{display: 'none'}}
+                           download="millix_private_key.json"
+                           href={this.state.fileDownloadUrl}
+                           ref={e => this.dofileDownload = e}
+                        />
                     </div>
                     <div className={'text-center'}>
                         <Button variant="outline-primary"

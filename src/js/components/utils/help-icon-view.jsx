@@ -66,17 +66,16 @@ class HelpIconView extends Component {
                 'title': 'transaction maximum input number',
                 'body' : <ul>
                     <li>
-                        the millix protocol limits each transaction to be funded
-                        by a maximum of 128 inputs
+                        the millix protocol limits each transaction to be funded by a maximum of 128 inputs
                     </li>
                     <li>
-                        you can resolve this situation by aggregating your
-                        unspent outputs manually
-                        before you send a large amount
+                        you can resolve this situation by aggregating your unspents manually before you send a large amount
                     </li>
                     <li>
-                        you can aggregate your unspent outputs manually
-                        by sending transactions to yourself
+                        you can aggregate your unspents manually by sending transactions to yourself
+                    </li>
+                    <li>
+                        you can aggregate your unspents on this <a className={''} onClick={() => this.props.history.push('/actions')}>page</a>
                     </li>
                 </ul>
             },

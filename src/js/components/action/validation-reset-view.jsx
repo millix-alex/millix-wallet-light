@@ -33,7 +33,7 @@ class ValidationResetView extends Component {
             <ModalView show={this.state.modalShowResetValidation}
                        size={'lg'}
                        heading={'reset validation'}
-                       on_close={() => this.changeModalShow(false)}
+                       on_close={() => this.changeModalShowResetValidation(false)}
                        on_accept={() => this.resetTransactionValidation()}
                        body={<div>
                            <div>continuing will force your node to
@@ -49,7 +49,7 @@ class ValidationResetView extends Component {
                     validation
                 </div>
                 <div className={'panel-body'}>
-                    <p>
+                    <div className={'form-group'}>
                         reset validation forces your node to
                         revalidate all your transactions (to or from
                         you). it is recommended to do in one of the
@@ -63,7 +63,7 @@ class ValidationResetView extends Component {
                                 you think that your balance is wrong
                             </li>
                         </ul>
-                    </p>
+                    </div>
 
                     <div className={'text-center'}>
                         <Button

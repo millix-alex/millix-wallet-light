@@ -9,9 +9,9 @@ class ActionView extends Component {
     render() {
         return (
             <>
-                <ValidationResetView/>
-                <MnemonicPhraseView/>
                 <OutputAggregateView/>
+                <MnemonicPhraseView/>
+                <ValidationResetView/>
             </>
         );
     }
