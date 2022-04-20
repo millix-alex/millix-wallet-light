@@ -5,7 +5,6 @@ import {Col, Row, Form, Table, Button, Badge} from 'react-bootstrap';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import API from '../api/index';
 import ErrorList from './utils/error-list-view';
-import HelpIconView from './utils/help-icon-view';
 import ModalView from './utils/modal-view';
 import * as format from '../helper/format';
 import BalanceView from './utils/balance-view';
@@ -152,11 +151,11 @@ class WalletView extends Component {
             let sendTransactionErrorMessage;
             let error_list = [];
             if (e !== 'validation_error') {
-                if (e.api_message) {
-                    sendTransactionErrorMessage = this.getUiError(e.api_message);
+                if (e && e.api_message) {
+                    sendTransactionErrorMessage = text.get_ui_error(e.api_message);
                 }
                 else {
-                    sendTransactionErrorMessage = `your transaction could not be sent: (${e.api_message.error.error || e.api_message.error || e.message || e.api_message || e})`;
+                    sendTransactionErrorMessage = `your transaction could not be sent: (${e?.api_message?.error.error || e?.api_message?.error || e?.message || e?.api_message || e || 'undefined behaviour'})`;
                 }
 
                 error_list.push({
@@ -171,51 +170,6 @@ class WalletView extends Component {
             });
             this.changeModalShow(false);
         });
-    }
-
-    getUiError(api_message) {
-        let error          = '';
-        let api_error_name = 'unknown';
-
-        if (typeof (api_message) === 'object') {
-            let result_error = api_message.error;
-            if (typeof (result_error.error) !== 'undefined') {
-                api_error_name = result_error.error;
-            }
-            else {
-                api_error_name = result_error;
-            }
-
-            switch (api_error_name) {
-                case 'transaction_input_max_error':
-                    error = <>your
-                        transaction tried to use too many outputs<HelpIconView help_item_name={'transaction_max_input_number'}/>.
-                        please try to send a smaller amount or aggregate manually by sending a smaller
-                        amounts to yourself. the max amount you can send is {format.millix(result_error.data.amount_max)}.</>;
-                    break;
-                case 'insufficient_balance':
-                    error = <>your balance is lower than the amount you are trying to send. the max amount you can send
-                        is {format.millix(result_error.data.balance_stable)}.</>;
-                    break;
-                case 'transaction_send_interrupt':
-                    error = <>transaction has been canceled.</>;
-                    break;
-                case 'proxy_not_found':
-                    error = <>proxy not found. please try again.</>;
-                    break;
-                case 'transaction_proxy_rejected':
-                    error = <>transaction rejected by a proxy. please try again.</>;
-                    break;
-                default:
-                    break;
-            }
-        }
-        else if (typeof (api_message) === 'string') {
-            const match = /unexpected generic api error: \((?<message>.*)\)/.exec(api_message);
-            error       = `your transaction could not be sent: (${match.groups.message})`;
-        }
-
-        return error;
     }
 
     cancelSendTransaction() {
@@ -336,8 +290,8 @@ class WalletView extends Component {
                                                     {this.state.sending ?
                                                      <>
                                                          <div style={{
-                                                             fontSize: '6px',
-                                                             float   : 'left'
+                                                             float      : 'left',
+                                                             marginRight: 10
                                                          }}
                                                               className="loader-spin"/>
                                                          {this.state.canceling ? 'canceling' : 'cancel transaction'}

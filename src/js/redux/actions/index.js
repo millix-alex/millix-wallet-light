@@ -1,7 +1,32 @@
-import {ADD_LOG_EVENT, ADD_WALLET_ADDRESS_VERSION, ADD_WALLET_CONFIG, CLEAR_TRANSACTION_DETAILS, LOCK_WALLET, SET_BACKLOG_SIZE, SET_LOG_SIZE, UNLOCK_WALLET, UPDATE_CLOCK, UPDATE_NETWORK_CONNECTIONS, UPDATE_NETWORK_STATE, UPDATE_NODE_ATTRIBUTE, UPDATE_TRANSACTION_DETAILS, UPDATE_WALLET_ADDRESS_VERSION, UPDATE_WALLET_BALANCE, UPDATE_CURRENCY_PAIR_SUMMARY, UPDATE_WALLET_CONFIG, UPDATE_WALLET_MAINTENANCE, UPDATE_WALLET_NOTIFICATION, UPDATE_WALLET_TRANSACTIONS, WALLET_READY, WALLET_VERSION_AVAILABLE} from '../constants/action-types';
+import {
+    ADD_LOG_EVENT,
+    ADD_WALLET_CONFIG,
+    CLEAR_TRANSACTION_DETAILS,
+    LOCK_WALLET,
+    SET_BACKLOG_SIZE,
+    SET_LOG_SIZE,
+    UNLOCK_WALLET,
+    UPDATE_CLOCK,
+    UPDATE_NETWORK_CONNECTIONS,
+    UPDATE_NETWORK_STATE,
+    UPDATE_NODE_ATTRIBUTE,
+    UPDATE_TRANSACTION_DETAILS,
+    UPDATE_WALLET_ADDRESS_VERSION,
+    UPDATE_WALLET_BALANCE,
+    UPDATE_WALLET_CONFIG,
+    UPDATE_WALLET_MAINTENANCE,
+    UPDATE_WALLET_NOTIFICATION,
+    UPDATE_WALLET_TRANSACTIONS,
+    WALLET_READY,
+    WALLET_VERSION_AVAILABLE,
+    UPDATE_CURRENCY_PAIR_SUMMARY,
+    UPDATE_NOTIFICATION_VOLUME
+} from '../constants/action-types';
 import API from '../../api/index';
 import async from 'async';
 import _ from 'lodash';
+import localforage from 'localforage';
+
 
 export function updateNodeAttribute(payload) {
     return {
@@ -47,14 +72,6 @@ export function removeWalletAddressVersion(payload) {
                                     });
                                 }
                             );
-}
-
-export function addWalletAddressVersion(payload) {
-    return (dispatch) => API.addWalletAddressVersion(payload)
-                            .then(payload => dispatch({
-                                type: ADD_WALLET_ADDRESS_VERSION,
-                                payload
-                            }));
 }
 
 export function unlockWallet(payload) {
@@ -205,5 +222,16 @@ export function updateCurrencyPairSummary(payload) {
     return {
         type: UPDATE_CURRENCY_PAIR_SUMMARY,
         payload
+    };
+}
+
+export function updateNotificationVolume(volume) {
+    return (dispatch) => {
+        return localforage.setItem('notification_volume', volume, () => {
+            return dispatch({
+                type   : UPDATE_NOTIFICATION_VOLUME,
+                payload: {volume}
+            });
+        });
     };
 }

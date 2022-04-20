@@ -1,0 +1,58 @@
+@import "variable";
+
+.volume-control {
+  display: flex;
+
+  .icon {
+    width: 2rem;
+
+    svg {
+      color: $color-primary;
+      max-height: 100%;
+      max-width: 100%;
+    }
+  }
+
+  .slider {
+    position: relative;
+    margin-left: 0.5rem;
+    width: 100%;
+
+    .bar,
+    .thumb {
+      top: 50%;
+      position: absolute;
+    }
+
+    .bar {
+      background: $border-color;
+      overflow: hidden;
+      transform: translateY(-50%);
+      height: 0.25rem;
+      width: 100%;
+
+      .bottom-part {
+        background: $color-primary;
+        height: 1rem;
+        width: 0;
+      }
+    }
+
+    .thumb {
+      background: $color-primary;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      height: 1rem;
+      width: 1rem;
+    }
+
+    input[type=range] {
+      position: absolute;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+  }
+}

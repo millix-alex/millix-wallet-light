@@ -1,9 +1,12 @@
 import moment from 'moment';
 
 export function millix(amount, append_name = true) {
-    let result = amount.toLocaleString('en-US');
-    if (append_name) {
-        result += ' millix';
+    let result = '';
+    if (amount) {
+        result = amount.toLocaleString('en-US');
+        if (append_name) {
+            result += ' millix';
+        }
     }
 
     return result;
@@ -17,7 +20,11 @@ export function fiat(amount) {
 }
 
 export function number(number) {
-    return number.toLocaleString('en-US');
+    if (number) {
+        number = number.toLocaleString('en-US');
+    }
+
+    return number;
 }
 
 export function date(timestamp) {
