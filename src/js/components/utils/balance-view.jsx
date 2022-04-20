@@ -23,43 +23,35 @@ class BalanceView extends Component {
         }
     }
 
-
     render() {
-        let stable_millix;
+        let stable_fiat               = '';
+        let stable_fiat_toggle_button = '';
         if (convert.is_currency_pair_summary_available()) {
-            stable_millix = <div className="balance_panel">
-                <div className={'balance_container'}>
-                    {svg.millix_logo()}
-                    <div className={'stable_millix'}>
-                        <span>{format.millix(this.props.stable, false)}</span>
-                    </div>
-                    <div className="button-container" ref={this.toggleButtonRef}>
-                        <FontAwesomeIcon
-                            className="toggle-button"
-                            onClick={() => this.handleClick()}
-                            icon="chevron-down"
-                            size="1x"/>
-                    </div>
-                </div>
-                <div ref={this.balanceStableFiatRef} className={'stable_fiat'}>
-                    <span className="text-primary symbol">{store.getState().currency_pair_summary.symbol}</span>
-                    <span>{convert.fiat(this.props.stable, false)}</span>
-                </div>
+            stable_fiat_toggle_button = <div className="toggle_button_container" ref={this.toggleButtonRef}>
+                <FontAwesomeIcon
+                    className="toggle_button"
+                    onClick={() => this.handleClick()}
+                    icon="chevron-down"
+                    size="1x"/>
             </div>;
-        }
-        else {
-            stable_millix = <div className={'balance_container'}>
-                {svg.millix_logo()}
-                <div className={'stable_millix'}>
-                    <span>{format.millix(this.props.stable, false)}</span>
-                </div>
+
+            stable_fiat = <div ref={this.balanceStableFiatRef} className={'stable_fiat'}>
+                <span className="text-primary symbol">{store.getState().currency_pair_summary.symbol}</span>
+                <span>{convert.fiat(this.props.stable, false)}</span>
             </div>;
         }
 
         return (
             <div className={'panel panel-filled'}>
                 <div className={'panel-body balance_panel'}>
-                    {stable_millix}
+                    <div className={'balance_container'}>
+                        {svg.millix_logo()}
+                        <div className={'stable_millix'}>
+                            <span>{format.millix(this.props.stable, false)}</span>
+                        </div>
+                        {stable_fiat_toggle_button}
+                    </div>
+                    {stable_fiat}
 
                     <div className={'balance_container'}>
                         <div>

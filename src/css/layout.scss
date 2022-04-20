@@ -231,14 +231,14 @@ ul {
     display: flex;
 
 
-    .button-container {
+    .toggle_button_container {
       &.rotate {
-        .toggle-button {
+        .toggle_button {
           transform: rotate(180deg);
         }
       }
 
-      .toggle-button {
+      .toggle_button {
         cursor: pointer;
         margin-left: 0.3rem;
 
