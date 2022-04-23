@@ -96,6 +96,10 @@ class API {
         return this.fetchApiTangled('/aerijOtODMtkHo6i');
     }
 
+    adsCounters() {
+        return this.fetchApiTangled('/ce43d210be3c0afd');
+    }
+
     listAdTypes() {
         return this.fetchApiTangled('/jbUwv8IG6XeYMqCq');
 

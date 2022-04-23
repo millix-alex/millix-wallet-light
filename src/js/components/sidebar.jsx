@@ -106,6 +106,14 @@ class Sidebar extends Component {
         ) {
             result = true;
         }
+        else if (section === 'advertisement' &&
+                 (
+                     (defaultSelected === '/advertisement-list') ||
+                     (defaultSelected === '/advertisement-summary')
+                 )
+        ) {
+            result = true;
+        }
         else if (section === 'settings' &&
                  (
                      (defaultSelected === '/fee') ||
@@ -232,11 +240,30 @@ class Sidebar extends Component {
                         </NavItem>
                     </NavItem>
 
-                    <NavItem key={'advertisement-list'}
-                             eventKey="/advertisement-list">
+                    <NavItem  
+                        expanded={this.isExpanded('advertisement', defaultSelected)}
+                        eventKey="advertisement"
+                    >
                         <NavText>
-                            advertisements
+                            advertisements <FontAwesomeIcon className={'icon'}
+                                                          icon="chevron-down"
+                                                          size="1x"/>
+                            <FontAwesomeIcon className={'icon hidden'}
+                                             icon="chevron-up"
+                                             size="1x"/>
                         </NavText>
+                        <NavItem key={'advertisement-list'}
+                                 eventKey="/advertisement-list">
+                            <NavText>
+                                all
+                            </NavText>
+                        </NavItem>
+                        <NavItem key={'advertisement-summary'}
+                                 eventKey="/advertisement-summary">
+                            <NavText>
+                                summary
+                            </NavText>
+                        </NavItem>
                     </NavItem>
 
                     {/*
