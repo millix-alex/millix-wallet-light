@@ -8,6 +8,7 @@ import ErrorList from '../utils/error-list-view';
 import ModalView from '../utils/modal-view';
 import * as validate from '../../helper/validate';
 import * as format from '../../helper/format';
+import HelpIconView from '../utils/help-icon-view';
 
 
 class ConfigNetworkView extends Component {
@@ -126,7 +127,7 @@ class ConfigNetworkView extends Component {
                                 </Col>
                                 <Col>
                                     <Form.Group className="form-group">
-                                        <label>node ip</label>
+                                        <label>node ip<HelpIconView help_item_name={'node_ip'}/></label>
                                         <Form.Control
                                             type="text"
                                             ref={(c) => this.node_host = c}
@@ -149,7 +150,7 @@ class ConfigNetworkView extends Component {
                                 </Col>
                                 <Col>
                                     <Form.Group className="form-group">
-                                        <label>api port</label>
+                                        <label>api port<HelpIconView help_item_name={'api_port'}/></label>
                                         <Form.Control
                                             type="text"
                                             ref={(c) => this.node_port_api = c}
@@ -160,7 +161,7 @@ class ConfigNetworkView extends Component {
                                 </Col>
                                 <Col>
                                     <Form.Group className="form-group">
-                                        <label>max connections in</label>
+                                        <label>max connections in<HelpIconView help_item_name={'max_connections_in'}/></label>
                                         <Form.Control
                                             type="text"
                                             ref={(c) => this.node_connection_inbound_max = c}
@@ -171,7 +172,7 @@ class ConfigNetworkView extends Component {
                                 </Col>
                                 <Col>
                                     <Form.Group className="form-group">
-                                        <label>max connections out</label>
+                                        <label>max connections out<HelpIconView help_item_name={'max_connections_out'}/></label>
                                         <Form.Control
                                             type="text"
                                             ref={(c) => this.node_connection_outbound_max = c}
@@ -182,7 +183,7 @@ class ConfigNetworkView extends Component {
                                 </Col>
                                 <Col>
                                     <Form.Group className="form-group">
-                                        <label>initial peer list</label>
+                                        <label>initial peer list<HelpIconView help_item_name={'initial_peer_list'}/></label>
                                         <Form.Control as="textarea" rows={5}
                                                       ref={(c) => this.node_initial_list = c}/>
                                     </Form.Group>
