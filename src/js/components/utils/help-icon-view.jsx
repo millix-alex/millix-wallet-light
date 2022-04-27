@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {Route, withRouter} from 'react-router-dom';
+import {withRouter} from 'react-router-dom';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {OverlayTrigger, Popover} from 'react-bootstrap';
 
@@ -16,29 +16,6 @@ class HelpIconView extends Component {
 
     getHelpItem(help_item_name) {
         const result_help = {
-            'pending_balance'             : {
-                'title': 'pending balance',
-                'body' : <ul>
-                    <li>
-                        transactions appear as pending and included in pending
-                        balance until they are validated by your node. you can
-                        find a list of your pending transactions on this <a
-                        className={''}
-                        onClick={() => this.props.history.push('/unspent-transaction-output-list/pending')}>page</a>
-                    </li>
-                    <li>
-                        it should not take more than 10-15 minutes to validate
-                        transaction. if you observe pending balance for a longer
-                        period of time it is recommended to restart your
-                        node/browser
-                    </li>
-                    <li>
-                        if step above didn't help it may help to perform reset
-                        validation on this <a className={''}
-                                              onClick={() => this.props.history.push('/actions')}>page</a>
-                    </li>
-                </ul>
-            },
             'network_state'               : {
                 'title': 'network state',
                 'body' : <ul>
