@@ -62,7 +62,7 @@ class ValidationResetView extends Component {
                        heading={'reset transaction validation'}
                        body={
                            <div>validation has been reset for all
-                               your pending transactions
+                               your transactions
                                <div>
                                    click <Link to={'/unspent-transaction-output-list/pending'}>here</Link> to see all your pending transactions
                                </div>
