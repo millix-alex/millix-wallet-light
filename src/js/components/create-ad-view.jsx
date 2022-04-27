@@ -5,6 +5,7 @@ import API from '../api/index';
 import ErrorList from './utils/error-list-view';
 import {walletUpdateAddresses, walletUpdateBalance} from '../redux/actions/index';
 import {withRouter} from 'react-router-dom';
+import AdPreview from './utils/ap-preview';
 import ModalView from './utils/modal-view';
 import * as format from '../helper/format';
 import _ from 'lodash';
@@ -256,22 +257,6 @@ class CreateAdView extends Component {
         this.setState({fields});
     }
 
-    getDomain(url) {
-        let domain;
-        try {
-            domain = new URL(url).host;
-        }
-        catch (e) {
-            return '';
-        }
-
-        if (domain.startsWith('www.')) {
-            return domain.substring(4);
-        }
-
-        return domain;
-    }
-
     changeModalShow(value = true) {
         this.setState({
             modalShow: value
@@ -363,30 +348,17 @@ class CreateAdView extends Component {
                                               onChange={this.handleInputChange.bind(this, 'url')}/>
                             </FormGroup>
 
-                            <FormGroup className="ad-preview form-group"
-                                       controlId="preview">
+                            <FormGroup className="ad-preview form-group" >
                                 <Form.Label>
                                     preview
-                                </Form.Label>
-                                {(this.state.fields['url'] || this.state.fields['deck'] || this.state.fields['headline']) && (
-                                    <div className="preview-holder"
-                                         aria-readonly="true">
-                                        <div
-                                            className="ads-slider">
-                                                    <span>
-                                                        <a id="advertisement_headline"
-                                                           href={this.state.fields['url'] ? this.state.fields['url'] : ''}
-                                                           title={this.state.fields['deck'] ? this.state.fields['deck'] : ''}>{this.state.fields['headline'] ? this.state.fields['headline'] : ''}</a>
-                                                    </span>
-                                            <span>
-                                                        {(this.state.fields['url'] || this.state.fields['deck']) && (
-                                                            <a id="advertisement_deck"
-                                                               href={this.state.fields['url'] ? this.getDomain(this.state.fields['url']) : ''}
-                                                               title={this.state.fields['deck'] ? this.state.fields['deck'] : ''}>{this.state.fields['deck'] ? this.state.fields['deck'] : ''} - {this.state.fields['url'] ? this.state.fields['url'] : ''}</a>)}</span>
-                                        </div>
-                                    </div>)}
-                            </FormGroup>
-
+                                </Form.Label>  
+                                {(this.state.fields['url'] || this.state.fields['deck'] || this.state.fields['headline']) && (                          
+                                <AdPreview
+                                    url={this.state.fields['url']}
+                                    headline={this.state.fields['headline']}
+                                    deck={this.state.fields['deck']}>
+                                </AdPreview>)}
+                            </FormGroup>                                 
                             <hr/>
 
                             {/*<Form.Group as={Row}

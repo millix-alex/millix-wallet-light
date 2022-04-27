@@ -29,7 +29,7 @@ import ConfigConnection from './config/config-connection-view';
 import ConfigConsensus from './config/config-consensus-view';
 import ConfigAddressVersion from './config/config-address-version-view';
 import ErrorModalRequestApi from './utils/error-handler-request-api';
-
+import AdConsumerSummaryView from './ad-consumer-summary';
 
 class AppContainer extends Component {
     constructor(props) {
@@ -53,6 +53,8 @@ class AppContainer extends Component {
                                                  component={CreateAdView}/>
                     <UnlockedWalletRequiredRoute path="/advertisement-list/"
                                                  component={ListAdView}/>
+                    <UnlockedWalletRequiredRoute path="/advertisement-consumer-summary/"
+                                                 component={AdConsumerSummaryView}/>
                     <UnlockedWalletRequiredRoute path="/peers"
                                                  component={PeerListView}/>
                     <UnlockedWalletRequiredRoute path="/peer/:peer"

@@ -91,16 +91,18 @@ class API {
 
     listLanguages() {
         return this.fetchApiTangled('/wDqnBLvXY6FGUSfc');
-
     }
 
     listAds() {
         return this.fetchApiTangled('/aerijOtODMtkHo6i');
     }
 
+    adsConsumerSummary() {
+        return this.fetchApiTangled('/B1Gg7nMljx0yX9z9');
+    }
+
     listAdTypes() {
         return this.fetchApiTangled('/jbUwv8IG6XeYMqCq');
-
     }
 
     toggleAdStatus(advertisement_guid) {
