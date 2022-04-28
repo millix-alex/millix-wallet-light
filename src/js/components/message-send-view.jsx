@@ -257,7 +257,7 @@ class MessageNewView extends Component {
                                         </Col>
                                         <Col>
                                             <Form.Group className="form-group">
-                                                <label>from</label>
+                                                <label>to</label>
                                                 <Form.Control type="text"
                                                               placeholder="address"
                                                               ref={c => this.destinationAddress = c}/>

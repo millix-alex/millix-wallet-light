@@ -28,7 +28,7 @@ class MessageView extends Component {
                                     <Form>
                                         <Col>
                                             <Form.Group className="form-group">
-                                                <label>{data.sent ? 'from' : 'from'}</label>
+                                                <label>{data.sent ? 'to' : 'from'}</label>
                                                 <Form.Control type="text"
                                                               placeholder="address"
                                                               value={data.address}
