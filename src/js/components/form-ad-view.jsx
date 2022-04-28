@@ -101,12 +101,11 @@ class FormAdView extends Component {
             
             API.getAdById(this.state.edit_advertisement.advertisement_guid).then(data => {
                 this.state.edit_advertisement = data;
-
                 let fields = {
                     creative_name          : data.advertisement_name,
                     category               : data.advertisement_category_guid,
-                    headline               : data.advertisement_headline.value,
-                    deck                   : data.advertisement_deck.value,
+                    headline               : data.advertisement_headline,
+                    deck                   : data.advertisement_deck,
                     url                    : data.advertisement_url,
                     target_language        : this.state.fields.target_language,
                     search_phrase          : 'no target phrase',
@@ -227,7 +226,6 @@ class FormAdView extends Component {
     handleSubmit(event) {
         event.preventDefault();
         if (this.handleValidation()) {
-
             if(this.state.editing){
                 let update_data = {
                     guid: this.state.edit_advertisement.advertisement_guid,
@@ -236,8 +234,7 @@ class FormAdView extends Component {
                     deck_attribute_guid: this.state.edit_advertisement.advertisement_deck.guid,
                     target_phrase_attribute_guid: this.state.edit_advertisement.target_phrase.guid,
                     target_language_guid: this.state.edit_advertisement.target_language.guid,
-                }
-
+                };
 
                 API.submitUpdateAd(update_data).then(data => {
                     this.setState({submitData: data});
@@ -255,7 +252,6 @@ class FormAdView extends Component {
             }else{
                 API.submitCreateAd(this.state.fields).then(data => {
                     this.setState({submitData: data});
-
                     if (typeof (data.api_status) !== 'undefined' && data.api_status === 'ok') {
                         this.flushForm();
                         this.props.history.push('/advertisement-list');
@@ -282,7 +278,6 @@ class FormAdView extends Component {
             daily_budget_mlx       : '',
             bid_per_impressions_mlx: ''
         };
-        // this.inputRef.current.clear();
         this.setState({fields: fields});
     }
 
@@ -705,3 +700,4 @@ export default connect(
         walletUpdateBalance
     }
 )(withRouter(FormAdView));
+
