@@ -93,7 +93,7 @@ class MessageReceivedView extends Component {
                             </p>
                         </div>
                         <div className={'primary_address'}>
-                            {this.props.wallet.address_public_key}{this.props.wallet.address_key_identifier.startsWith('1') ? '0b0' : 'lbl'}{this.props.wallet.address_key_identifier}
+                            {this.props.wallet.address_public_key}{this.props.wallet.address_key_identifier.startsWith('1') ? '0b0' : 'lb0l'}{this.props.wallet.address_key_identifier}
                         </div>
                     </div>
                 </div>
