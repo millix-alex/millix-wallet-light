@@ -97,22 +97,21 @@ class FormAdView extends Component {
         if(this.props.history.location.state)
             this.state.edit_advertisement = this.props.history.location.state[0];
             
-        if(this.state.edit_advertisement){
-            
-            API.getAdById(this.state.edit_advertisement.advertisement_guid).then(data => {
-                this.state.edit_advertisement = data;
+        if(this.state.edit_advertisement){            
+            API.getAdById(this.state.edit_advertisement.advertisement_guid).then(data => {                
+                //this.state.edit_advertisement = data.advertisement;
                 let fields = {
-                    creative_name          : data.advertisement_name,
-                    category               : data.advertisement_category_guid,
-                    headline               : data.advertisement_headline,
-                    deck                   : data.advertisement_deck,
-                    url                    : data.advertisement_url,
+                    creative_name          : data.advertisement.advertisement_name,
+                    category               : data.advertisement.advertisement_category_guid,
+                    headline               : data.advertisement.advertisement_headline.value,
+                    deck                   : data.advertisement.advertisement_deck.value,
+                    url                    : data.advertisement.advertisement_url,
                     target_language        : this.state.fields.target_language,
                     search_phrase          : 'no target phrase',
-                    daily_budget_mlx       : data.budget_daily_mlx,
-                    bid_per_impressions_mlx: data.bid_impression_mlx
+                    daily_budget_mlx       : data.advertisement.budget_daily_mlx,
+                    bid_per_impressions_mlx: data.advertisement.bid_impression_mlx
                 };
-
+                this.state.edit_advertisement = data.advertisement;
                 this.state.fields = fields;
                 this.state.editing = true;
                 this.state.title = 'edit advertisement';
