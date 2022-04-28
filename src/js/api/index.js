@@ -97,8 +97,10 @@ class API {
         return this.fetchApiTangled('/aerijOtODMtkHo6i');
     }
 
-    adsConsumerSummary() {
-        return this.fetchApiTangled('/B1Gg7nMljx0yX9z9');
+    listAdsLedgerDetails(from_unix_date) {
+        return this.fetchApiTangled('/B1Gg7nMljx0yX9z9',{
+            p0: from_unix_date,
+        });
     }
 
     listAdTypes() {

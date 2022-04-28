@@ -5,23 +5,27 @@ import {Row} from 'react-bootstrap';
 import DatatableView from './utils/datatable-view';
 import API from '../api';
 import AdPreview from './utils/ap-preview';
+import * as format from '../helper/format';
 
 class AdConsumerSummaryView extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            ad_list:[{
-                payment_date:"12/12/12",
-                presentation_date:"12/12/12",
-                amount:"100 mlx",
-                preview:this.adPreview("url de prueba","headline","deck")                
-            }]
+            ad_list:[]
         };        
     }
 
     componentDidMount(){
-        API.adsConsumerSummary().then(res => {
-            this.setState({ad_list:res});
+        API.listAdsLedgerDetails(0).then(res => {
+           console.log(res)
+           res.ad_list.forEach(ad => {
+                this.state.ad_list.push({
+                     payment_date       :format.date(ad.payment_date),
+                     presentation_date  :format.date(ad.presentation_date),
+                     amount             :ad.bid_impression_mlx+" mlx",
+                     preview            :this.adPreview(ad.advertisement_url,ad.advertisement_headline,ad.advertisement_deck)
+                })
+           });
         });
     }
 
