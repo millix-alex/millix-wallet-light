@@ -7,6 +7,8 @@ import * as format from '../helper/format';
 import DatatableView from './utils/datatable-view';
 import {connect} from 'react-redux';
 import DatatableActionButtonView from './utils/datatable-action-button-view';
+import * as svg from '../helper/svg';
+import HelpIconView from './utils/help-icon-view';
 
 
 class MessageReceivedView extends Component {
@@ -82,35 +84,49 @@ class MessageReceivedView extends Component {
 
     render() {
         return (
-            <div className={'panel panel-filled'}>
-                <div className={'panel-heading bordered'}>messages sent
+            <>
+                <div className={'panel panel-filled'}>
+                    <div className={'panel-body'} style={{textAlign: 'center'}}>
+                        <div>
+                            <p>
+                                use this address to receive messages
+                            </p>
+                        </div>
+                        <div className={'primary_address'}>
+                            {this.props.wallet.address_public_key}{this.props.wallet.address_key_identifier.startsWith('1') ? '0b0' : 'lbl'}{this.props.wallet.address_key_identifier}
+                        </div>
+                    </div>
                 </div>
-                <div className={'panel-body'}>
-                    <Row>
-                        <DatatableView
-                            reload_datatable={() => this.reloadDatatable()}
-                            datatable_reload_timestamp={this.state.datatable_reload_timestamp}
-                            value={this.state.message_list}
-                            sortField={'date'}
-                            sortOrder={-1}
-                            showActionColumn={true}
-                            resultColumn={[
-                                {
-                                    field: 'date'
-                                },
-                                {
-                                    field: 'subject'
-                                },
-                                {
-                                    field: 'address'
-                                },
-                                {
-                                    field: 'amount'
-                                }
-                            ]}/>
-                    </Row>
+                <div className={'panel panel-filled'}>
+                    <div className={'panel-heading bordered'}>messages sent
+                    </div>
+                    <div className={'panel-body'}>
+                        <Row>
+                            <DatatableView
+                                reload_datatable={() => this.reloadDatatable()}
+                                datatable_reload_timestamp={this.state.datatable_reload_timestamp}
+                                value={this.state.message_list}
+                                sortField={'date'}
+                                sortOrder={-1}
+                                showActionColumn={true}
+                                resultColumn={[
+                                    {
+                                        field: 'date'
+                                    },
+                                    {
+                                        field: 'subject'
+                                    },
+                                    {
+                                        field: 'address'
+                                    },
+                                    {
+                                        field: 'amount'
+                                    }
+                                ]}/>
+                        </Row>
+                    </div>
                 </div>
-            </div>
+            </>
         );
     }
 }
