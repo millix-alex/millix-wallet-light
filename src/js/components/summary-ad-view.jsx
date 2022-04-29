@@ -80,5 +80,4 @@ class SummaryAdView extends Component {
     }
 }
 
-
 export default withRouter(SummaryAdView);
