@@ -14,12 +14,18 @@ class EventsLogView extends Component {
             datatable     : {
                 reload_timestamp: new Date(),
                 loading         : false
-            }
+            },
+            update_handler: null
         };
     }
 
     componentDidMount() {
         this.loadEventLogToState();
+        this.update_handler = setInterval(() => this.loadEventLogToState(), 20 * 1000);
+    }
+
+    componentWillUnmount() {
+        clearTimeout(this.update_handler);
     }
 
     loadEventLogToState() {
@@ -44,7 +50,7 @@ class EventsLogView extends Component {
 
     render() {
         return (
-            <Row>
+            <div>
                 <div className={'panel panel-filled'}>
                     <div className={'panel-heading bordered'}>
                         event logs
@@ -55,7 +61,7 @@ class EventsLogView extends Component {
                             datatable_reload_timestamp={this.state.datatable.reload_timestamp}
                             value={this.state.event_log_list}
                             loading={this.state.datatable.loading}
-                            sortField={'date'}
+                            sortField={'timestamp'}
                             sortOrder={1}
                             resultColumn={[
                                 {
@@ -77,7 +83,7 @@ class EventsLogView extends Component {
                             ]}/>
                     </div>
                 </div>
-            </Row>
+            </div>
         );
     }
 }
