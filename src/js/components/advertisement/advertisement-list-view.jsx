@@ -33,7 +33,7 @@ class AdvertisementListView extends Component {
 
     toggleAdvertisementStatus(advertisement_guid) {
         API.toggleAdvertisementStatus(advertisement_guid).then(data => {
-            if (typeof data.api_status != 'undefined' && data.api_status === 'ok') {
+            if (typeof data.api_status != 'undefined' && data.api_status === 'success') {
                 this.reloadDatatable();
             }
         });
@@ -132,7 +132,7 @@ class AdvertisementListView extends Component {
         })
             .then(() => {
                 API.getAdvertisementList().then(data => {
-                    if (typeof data.api_status != 'undefined' && data.api_status === 'ok') {
+                    if (typeof data.api_status != 'undefined' && data.api_status === 'success') {
                         let advertisement_list = [];
                         if (typeof data.advertisement_list != 'undefined') {
                             data.advertisement_list.forEach((item, idx) => {

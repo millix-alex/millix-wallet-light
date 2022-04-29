@@ -134,7 +134,7 @@ class AdvertisementFormView extends Component {
 
     handleSaveResponse(promise) {
         promise.then(data => {
-            if (typeof (data.api_status) !== 'undefined' && data.api_status === 'ok') {
+            if (typeof (data.api_status) !== 'undefined' && data.api_status === 'success') {
                 this.populateForm();
                 this.props.history.push('/advertisement-list');
             }
