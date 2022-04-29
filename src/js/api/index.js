@@ -125,14 +125,8 @@ class API {
         });
     }
 
-    createAdvertisement(formData) {
+    upsertAdvertisement(formData) {
         return this.fetchApiTangled(`/scWZ0yhuk5hHLd8s`, {
-            p0: formData
-        });
-    }
-
-    updateAdvertisement(formData) {
-        return this.fetchApiTangled(`/ef710ca33ad9d2fb`, {
             p0: formData
         });
     }

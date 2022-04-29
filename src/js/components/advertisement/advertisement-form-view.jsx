@@ -8,323 +8,185 @@ import {withRouter} from 'react-router-dom';
 import ModalView from '../utils/modal-view';
 import * as format from '../../helper/format';
 import _ from 'lodash';
+import * as validate from '../../helper/validate';
 
 
 class AdvertisementFormView extends Component {
+    result_field_reference = {};
+
     constructor(props) {
         super(props);
 
-        this.handleSubmit = this.handleSubmit.bind(this);
-        this.state        = {
+        this.state = {
             title                      : 'create advertisement',
-            editing                    : false,
-            edit_advertisement         : undefined,
-            submitData                 : {},
+            advertisement_guid         : '',
+            advertisement              : {},
             error_list                 : [],
-            fields                     : {
-                creative_name          : '',
-                category               : '',
-                headline               : '',
-                deck                   : '',
-                url                    : '',
-                target_language        : '',
-                search_phrase          : 'no target phrase',
-                daily_budget_mlx       : '',
-                bid_per_impressions_mlx: ''
-            },
             advertisement_category_list: [],
-            advertisement_language_list: [],
-            countries                  : [
-                //todo: replace me
-                'united states',
-                'antigua and barbuda',
-                'barbados',
-                'czech republic'
-            ],
-            regions                    : [
-                //todo: replace me
-                'alaska',
-                'california',
-                'delaware',
-                'florida',
-
-                'st. john',
-                'st. mary',
-                'st. paul',
-                'st. peter',
-
-                'christ church',
-                'saint andrew',
-                'saint george',
-                'saint james',
-
-                'karlovy vary',
-                'liberec',
-                'moravian-silesia',
-                'pardubice'
-            ],
-            cities                     : [
-                //todo: replace me
-                'new york',
-                'los angeles',
-                'chicago',
-                'houston',
-
-                'saint john\'s',
-                'all saints',
-                'liberta',
-                'potter\'s village',
-
-                'bridgetown',
-                'speightstown',
-                'distins',
-                'bathsheba',
-
-                'prague',
-                'brno',
-                'ostrava',
-                'plzeň'
-            ],
-            searchphrases              : [
-                //todo: replace me
-                'car insurance',
-                'auto insurance',
-                'honda insurance'
-            ],
             modalShow                  : false
         };
-
-        if (this.props.history.location.state) {
-            this.state.edit_advertisement = this.props.history.location.state[0];
-        }
-
-        if (this.state.edit_advertisement) {
-            API.getAdvertisementById(this.state.edit_advertisement.advertisement_guid).then(data => {
-                //this.state.edit_advertisement = data.advertisement;
-                let fields                    = {
-                    creative_name          : data.advertisement.advertisement_name,
-                    category               : data.advertisement.advertisement_category_guid,
-                    headline               : data.advertisement.advertisement_headline.value,
-                    deck                   : data.advertisement.advertisement_deck.value,
-                    url                    : data.advertisement.advertisement_url,
-                    target_language        : this.state.fields.target_language,
-                    search_phrase          : 'no target phrase',
-                    daily_budget_mlx       : data.advertisement.budget_daily_mlx,
-                    bid_per_impressions_mlx: data.advertisement.bid_impression_mlx
-                };
-                this.state.edit_advertisement = data.advertisement;
-                this.state.fields             = fields;
-                this.state.editing            = true;
-                this.state.title              = 'edit advertisement';
-
-            }).catch(err => {
-                console.log(err);
-            });
-
-
-        }
+        this.save  = this.save.bind(this);
     }
 
     componentDidMount() {
         this.loadAdvertisementCategoryList();
-        this.loadAdvertisementLanguageList();
+
+        if (this.props.history.location.state) {
+            const advertisement_guid = this.props.history.location.state[0].advertisement_guid;
+
+            API.getAdvertisementById(advertisement_guid).then(data => {
+                let fields = {
+                    advertisement_name: data.advertisement.advertisement_name,
+                    category          : data.advertisement.advertisement_category_guid,
+                    headline          : data.advertisement.advertisement_headline.value,
+                    deck              : data.advertisement.advertisement_deck.value,
+                    url               : data.advertisement.advertisement_url,
+                    budget_daily_mlx  : data.advertisement.budget_daily_mlx,
+                    bid_impression_mlx: data.advertisement.bid_impression_mlx
+                };
+
+                this.setState({
+                    advertisement_guid: advertisement_guid,
+                    fields            : fields,
+                    title             : 'edit advertisement',
+                    advertisement     : data.advertisement
+                });
+
+                this.populateForm(data.advertisement);
+            }).catch(err => {
+                console.log(err);
+            });
+        }
     }
 
-    async loadAdvertisementCategoryList() {
+    populateForm(advertisement = {}) {
+        this.result_field_reference.advertisement_name.value = advertisement?.advertisement_name;
+        this.result_field_reference.category.value           = advertisement?.advertisement_category_guid;
+        this.result_field_reference.headline.value           = advertisement?.advertisement_headline?.value;
+        this.result_field_reference.deck.value               = advertisement?.advertisement_deck?.value;
+        this.result_field_reference.advertisement_url.value  = advertisement?.advertisement_url;
+        this.result_field_reference.budget_daily_mlx.value   = format.millix(advertisement?.budget_daily_mlx, false);
+        this.result_field_reference.bid_impression_mlx.value = format.millix(advertisement?.bid_impression_mlx, false);
+    }
+
+    getFormData() {
+        const error_list = [];
+        let form_data    = {};
+        if (Object.keys(this.result_field_reference).length > 0) {
+            form_data = {
+                advertisement_name         : validate.required('name', this.result_field_reference.advertisement_name.value, error_list),
+                advertisement_category_guid: this.result_field_reference.category.value,
+                headline                   : validate.required('headline', this.result_field_reference.headline.value, error_list),
+                deck                       : validate.required('deck', this.result_field_reference.deck.value, error_list),
+                url                        : validate.required('url', this.result_field_reference.advertisement_url.value, error_list),
+                budget_daily_mlx           : validate.amount('daily budget', this.result_field_reference.budget_daily_mlx.value, error_list),
+                bid_impression_mlx         : validate.amount('bid per impression', this.result_field_reference.bid_impression_mlx.value, error_list),
+                advertisement_guid         : this.state.advertisement_guid,
+                head_line_attribute_guid   : this.state.advertisement.advertisement_headline?.guid,
+                deck_attribute_guid        : this.state.advertisement.advertisement_deck?.guid
+            };
+
+            if (form_data.bid_impression_mlx > form_data.budget_daily_mlx) {
+                error_list.push('bid per impression cannot exceed the daily budget');
+            }
+        }
+
+        return {
+            form_data,
+            error_list
+        };
+    }
+
+    loadAdvertisementCategoryList() {
         API.getAdvertisementCategoryList().then(data => {
             let result_option = data.map(d => ({
                 'value': d.advertisement_category_guid,
                 'label': d.advertisement_category
             }));
-            let fields        = this.state.fields;
-            fields.category   = result_option[0].value;
-
-            result_option = _.orderBy(result_option, ['label'], ['asc']);
+            result_option     = _.orderBy(result_option, ['label'], ['asc']);
+            if (this.result_field_reference.category) {
+                this.result_field_reference.category.value = result_option[0].value;
+            }
 
             this.setState({
-                advertisement_category_list: result_option,
-                fields                     : fields
+                advertisement_category_list: result_option
             });
         });
     }
 
-    async loadAdvertisementLanguageList() {
-        API.getAdvertisementLanguageList().then(data => {
-            const options          = data.map(d => ({
-                'value': d.language_guid,
-                'label': d.language_name + ' - ' + d.language_name_native
-            }));
-            let fields             = this.state.fields;
-            fields.target_language = options[0].value;
+    save() {
+        this.setState({
+            error_list: []
+        });
+        const {
+                  form_data,
+                  error_list
+              } = this.getFormData();
 
-            this.setState({
-                advertisement_language_list: options,
-                fields                     : fields
-            });
+        if (error_list.length === 0) {
+            this.handleSaveResponse(API.upsertAdvertisement(form_data));
+        }
+
+        this.setState({
+            error_list: error_list
         });
     }
 
-    handleValidation() {
-        let fields      = this.state.fields;
-        let error_list  = [];
-        let formIsValid = true;
-
-        if (!fields['creative_name']) {
-            formIsValid = false;
-            error_list.push('creative_name is required');
-        }
-
-        if (!fields['headline']) {
-            formIsValid = false;
-            error_list.push('headline is required');
-        }
-
-        if (!fields['deck']) {
-            formIsValid = false;
-            error_list.push('deck is required');
-        }
-
-        if (!fields['url']) {
-            formIsValid = false;
-            error_list.push('url is required');
-        }
-
-        if (!fields['daily_budget_mlx']) {
-            formIsValid = false;
-            error_list.push('daily budget is required');
-        }
-
-        if (typeof fields['daily_budget_mlx'] !== 'undefined' && (typeof fields['daily_budget_mlx']) == 'string') {
-            if (!fields['daily_budget_mlx'].match(/^[0-9]+$/)) {
-                formIsValid = false;
-                error_list.push('daily budget must be a number');
-            }
-        }
-
-        if (!fields['bid_per_impressions_mlx']) {
-            formIsValid = false;
-            error_list.push('bid per impression is required');
-        }
-
-        if (typeof fields['bid_per_impressions_mlx'] !== 'undefined' && (typeof fields['daily_budget_mlx']) == 'string') {
-            if (!fields['bid_per_impressions_mlx'].match(/^[0-9]+$/)) {
-                formIsValid = false;
-                error_list.push('bid per impression must be a number');
-            }
-        }
-
-        if (parseFloat(fields['bid_per_impressions_mlx']) > parseFloat(fields['daily_budget_mlx'])) {
-            formIsValid = false;
-            error_list.push('bid per impression cannot exceed the daily budget');
-        }
-
-        this.setState({error_list: error_list});
-        return formIsValid;
-    }
-
-    handleSubmit(event) {
-        event.preventDefault();
-        if (this.handleValidation()) {
-            if (this.state.editing) {
-                let update_data = {
-                    guid: this.state.edit_advertisement.advertisement_guid,
-                    ...this.state.fields,
-                    head_line_attribute_guid    : this.state.edit_advertisement.advertisement_headline.guid,
-                    deck_attribute_guid         : this.state.edit_advertisement.advertisement_deck.guid,
-                    target_phrase_attribute_guid: this.state.edit_advertisement.target_phrase.guid,
-                    target_language_guid        : this.state.edit_advertisement.target_language.guid
-                };
-
-                API.updateAdvertisement(update_data).then(data => {
-                    this.setState({submitData: data});
-
-                    if (typeof (data.api_status) !== 'undefined' && data.api_status === 'ok') {
-                        this.flushForm();
-                        this.props.history.push('/advertisement-list');
-                    }
-                    else {
-                        let error_list = [];
-                        error_list.push(data.api_message);
-                        this.setState({error_list: error_list});
-                    }
-                });
+    handleSaveResponse(promise) {
+        promise.then(data => {
+            if (typeof (data.api_status) !== 'undefined' && data.api_status === 'ok') {
+                this.populateForm();
+                this.props.history.push('/advertisement-list');
             }
             else {
-                API.createAdvertisement(this.state.fields).then(data => {
-                    this.setState({submitData: data});
-                    if (typeof (data.api_status) !== 'undefined' && data.api_status === 'ok') {
-                        this.flushForm();
-                        this.props.history.push('/advertisement-list');
-                    }
-                    else {
-                        let error_list = [];
-                        error_list.push(data.api_message);
-                        this.setState({error_list: error_list});
-                    }
+                let error_list = [];
+                error_list.push(data.api_message);
+
+                this.setState({
+                    error_list: error_list
                 });
             }
-        }
+        });
     }
 
-    flushForm() {
-        let fields = {
-            creative_name          : '',
-            category               : this.state.advertisement_category_list[0].value,
-            headline               : '',
-            deck                   : '',
-            url                    : '',
-            target_language        : this.state.advertisement_language_list[0].value,
-            search_phrase          : [],
-            daily_budget_mlx       : '',
-            bid_per_impressions_mlx: ''
-        };
-        this.setState({fields: fields});
-    }
+    getAdvertisementPreview() {
+        let result = '';
+        const {
+                  form_data,
+                  error_list
+              }    = this.getFormData();
 
-    extractDomain(url) {
-        let a  = document.createElement('a');
-        a.href = url;
-        return a.hostname;
-    }
-
-    handleInputChange(field, e) {
-        let fields = this.state.fields;
-        if (field === 'search_phrase') {
-            fields[field] = e;
+        if (form_data.url && form_data.deck && form_data.headline) {
+            result = <div className="preview-holder" aria-readonly="true">
+                <div className="ads-slider">
+                        <span>
+                            <a id="advertisement_headline"
+                               href={form_data.url}
+                               title={form_data.deck}>{form_data.headline}</a>
+                        </span>
+                    <span>
+                    {(form_data.url || form_data.deck) && (
+                        <a id="advertisement_deck"
+                           href={this.getDomain(form_data.url)}
+                           title={form_data.deck}>{form_data.deck} - {form_data.url}</a>)}</span>
+                </div>
+            </div>;
         }
-        else if (field === 'daily_budget_mlx' || field === 'bid_per_impressions_mlx') {
-            console.log('daily processor');
 
-            let cursorStart = e.target.selectionStart,
-                cursorEnd   = e.target.selectionEnd;
-            let amount      = e.target.value.replace(/[,.]/g, '');
-            let offset      = 0;
-            if ((amount.length - 1) % 3 === 0) {
-                offset = 1;
-            }
-
-            amount        = parseInt(amount);
-            fields[field] = !isNaN(amount) ? amount : 0;
-
-            e.target.setSelectionRange(cursorStart + offset, cursorEnd + offset);
-        }
-        else {
-            fields[field] = e.target.value;
-        }
-        this.setState({fields});
+        return result;
     }
 
     getDomain(url) {
         let domain;
         try {
             domain = new URL(url).host;
+
+            if (domain.startsWith('www.')) {
+                domain = domain.substring(4);
+            }
         }
         catch (e) {
-            return '';
-        }
-
-        if (domain.startsWith('www.')) {
-            return domain.substring(4);
+            domain = '';
         }
 
         return domain;
@@ -338,7 +200,7 @@ class AdvertisementFormView extends Component {
 
     render() {
         return (
-            <div>
+            <>
                 <ModalView show={this.state.modalShow}
                            size={'lg'}
                            on_close={() => this.changeModalShow(false)}
@@ -351,23 +213,22 @@ class AdvertisementFormView extends Component {
                            </div>}/>
 
                 <div className="panel panel-filled">
-                    <div className={'panel-heading bordered'}>{this.state.title}
+                    <div className={'panel-heading bordered'}>
+                        {this.state.title}
                     </div>
                     <div className="panel-body">
                         <div className="section_subtitle">creative</div>
-                        <Form onSubmit={this.handleSubmit.bind(this)}>
+                        <Form>
                             <ErrorList
                                 error_list={this.state.error_list}/>
-                            <FormGroup controlId="creative_name"
+                            <FormGroup controlId="advertisement_name"
                                        className={'form-group'}>
                                 <Form.Label>
                                     name
                                 </Form.Label>
                                 <Form.Control
                                     type="text"
-                                    value={this.state.fields['creative_name']}
-                                    onChange={this.handleInputChange.bind(this, 'creative_name')}
-                                    placeholder=""/>
+                                    ref={(c) => this.result_field_reference.advertisement_name = c}/>
                             </FormGroup>
 
                             <FormGroup controlId="category"
@@ -377,15 +238,12 @@ class AdvertisementFormView extends Component {
                                 </Form.Label>
                                 <Form.Control
                                     as="select"
-                                    value={this.state.fields['category']}
-                                    onChange={this.handleInputChange.bind(this, 'category')}
+                                    ref={(c) => this.result_field_reference.category = c}
                                 >
-                                    {
-                                        this.state.advertisement_category_list ? this.state.advertisement_category_list.map((res, i) => (
-                                            <option key={i}
-                                                    value={res.value}>{res.label}</option>
-                                        )) : ''
-                                    }
+                                    {this.state.advertisement_category_list.map((res, i) => (
+                                        <option key={i}
+                                                value={res.value}>{res.label}</option>
+                                    ))}
                                 </Form.Control>
                             </FormGroup>
 
@@ -396,9 +254,7 @@ class AdvertisementFormView extends Component {
                                 </Form.Label>
                                 <Form.Control
                                     type="text"
-                                    value={this.state.fields['headline']}
-                                    onChange={this.handleInputChange.bind(this, 'headline')}
-                                    placeholder=""/>
+                                    ref={(c) => this.result_field_reference.headline = c}/>
                             </FormGroup>
 
                             <FormGroup controlId="deck"
@@ -408,9 +264,7 @@ class AdvertisementFormView extends Component {
                                 </Form.Label>
                                 <Form.Control
                                     type="text"
-                                    value={this.state.fields['deck']}
-                                    onChange={this.handleInputChange.bind(this, 'deck')}
-                                    placeholder=""/>
+                                    ref={(c) => this.result_field_reference.deck = c}/>
                             </FormGroup>
 
                             <FormGroup controlId="url" className={'form-group'}>
@@ -418,9 +272,7 @@ class AdvertisementFormView extends Component {
                                     url
                                 </Form.Label>
                                 <Form.Control type="text"
-                                              value={this.state.fields['url']}
-                                              onChange={this.handleInputChange.bind(this, 'url')}
-                                              placeholder=""/>
+                                              ref={(c) => this.result_field_reference.advertisement_url = c}/>
                             </FormGroup>
 
                             <FormGroup className="ad-preview form-group"
@@ -428,152 +280,15 @@ class AdvertisementFormView extends Component {
                                 <Form.Label>
                                     preview
                                 </Form.Label>
-                                {(this.state.fields['url'] || this.state.fields['deck'] || this.state.fields['headline']) && (
-                                    <div className="preview-holder"
-                                         aria-readonly="true">
-                                        <div
-                                            className="ads-slider">
-                                                    <span>
-                                                        <a id="advertisement_headline"
-                                                           href={this.state.fields['url'] ? this.state.fields['url'] : ''}
-                                                           title={this.state.fields['deck'] ? this.state.fields['deck'] : ''}>{this.state.fields['headline'] ? this.state.fields['headline'] : ''}</a>
-                                                    </span>
-                                            <span>
-                                                        {(this.state.fields['url'] || this.state.fields['deck']) && (
-                                                            <a id="advertisement_deck"
-                                                               href={this.state.fields['url'] ? this.getDomain(this.state.fields['url']) : ''}
-                                                               title={this.state.fields['deck'] ? this.state.fields['deck'] : ''}>{this.state.fields['deck'] ? this.state.fields['deck'] : ''} - {this.state.fields['url'] ? this.state.fields['url'] : ''}</a>)}</span>
-                                        </div>
-                                    </div>)}
+                                {this.getAdvertisementPreview()}
                             </FormGroup>
 
                             <hr/>
 
-                            {/*<Form.Group as={Row}
-                             controlId="target_language">
-                             <Col sm="2" className={'align-right'}>
-                             <Form.Label
-                             className="text-right col-sm-12">
-                             target language:
-                             </Form.Label>
-                             </Col>
-                             <Col sm="10">
-                             <FormControl
-                             as="select"
-                             value={this.state.fields['target_language']}
-                             onChange={this.handleInputChange.bind(this, 'target_language')}>
-                             {
-                             this.state.languages ? this.state.languages.map((res, i) => (
-                             <option key={i}
-                             value={res.value}>{res.label}</option>
-                             )) : ''
-                             }
+                            <div className="section_subtitle">
+                                funding
+                            </div>
 
-                             </FormControl>
-                             </Col>
-                             </Form.Group>*/}
-
-                            {/*temporarily omitted according to requirements from MILLIX-15*/}
-                            {/*<Form.Group as={Row}*/}
-                            {/*            controlId="target-geography">*/}
-                            {/*    <Col sm="2">*/}
-                            {/*        <Form.Label*/}
-                            {/*            className="text-right col-sm-12">*/}
-                            {/*            target geography:*/}
-                            {/*        </Form.Label>*/}
-                            {/*    </Col>*/}
-
-                            {/*    <Col sm="10">*/}
-                            {/*        <div>*/}
-                            {/*            <div className="row"*/}
-                            {/*                 style={{padding: '0 0 10px 0'}}>*/}
-                            {/*                <Col sm="10">*/}
-                            {/*                    <Col sm="4"*/}
-                            {/*                         className="no-padding-left no-padding-right">*/}
-                            {/*                        <FormControl as="select">*/}
-                            {/*                            {*/}
-                            {/*                                this.state.countries ? this.state.countries.map((res, i) => (*/}
-                            {/*                                    <option*/}
-                            {/*                                        key={i}>{res}</option>*/}
-                            {/*                                )) : ''*/}
-                            {/*                            }*/}
-                            {/*                        </FormControl>*/}
-                            {/*                    </Col>*/}
-                            {/*                    <Col sm="4">*/}
-                            {/*                        <FormControl*/}
-                            {/*                            as="select">*/}
-                            {/*                            {*/}
-                            {/*                                this.state.regions ? this.state.regions.map((res, i) => (*/}
-                            {/*                                    <option*/}
-                            {/*                                        key={i}>{res}</option>*/}
-                            {/*                                )) : ''*/}
-                            {/*                            }*/}
-                            {/*                        </FormControl>*/}
-                            {/*                    </Col>*/}
-                            {/*                    <Col sm="4"*/}
-                            {/*                         className="no-padding-left no-padding-right">*/}
-                            {/*                        <FormControl*/}
-                            {/*                            as="select">*/}
-                            {/*                            {*/}
-                            {/*                                this.state.cities ? this.state.cities.map((res, i) => (*/}
-                            {/*                                    <option*/}
-                            {/*                                        key={i}>{res}</option>*/}
-                            {/*                                )) : ''*/}
-                            {/*                            }*/}
-                            {/*                        </FormControl>*/}
-                            {/*                    </Col>*/}
-                            {/*                </Col>*/}
-                            {/*                <Col sm="2">*/}
-                            {/*                    <Col sm="6">*/}
-                            {/*                        <FontAwesomeIcon*/}
-                            {/*                            icon="plus"*/}
-                            {/*                            size="2x"*/}
-                            {/*                            style={{*/}
-                            {/*                                margin : '0 auto',*/}
-                            {/*                                display: 'block'*/}
-                            {/*                            }}/>*/}
-                            {/*                    </Col>*/}
-                            {/*                    <Col sm="6">*/}
-                            {/*                        <FontAwesomeIcon*/}
-                            {/*                            icon="times"*/}
-                            {/*                            size="2x"*/}
-                            {/*                            style={{*/}
-                            {/*                                margin : '0 auto',*/}
-                            {/*                                display: 'block'*/}
-                            {/*                            }}*/}
-                            {/*                        />*/}
-                            {/*                    </Col>*/}
-                            {/*                </Col>*/}
-                            {/*            </div>*/}
-                            {/*            {renderDummyGeo()}*/}
-                            {/*            {renderDummyGeo()}*/}
-                            {/*        </div>*/}
-                            {/*    </Col>*/}
-                            {/*</Form.Group>*/}
-
-                            {/*<Form.Group as={Row}
-                             controlId="target_search_phrase">
-                             <Col sm="2">
-                             <Form.Label
-                             className="text-right col-sm-12">
-                             target search phrases:
-                             </Form.Label>
-                             </Col>
-                             <Col sm="10">
-                             <Typehead
-                             as="select"
-                             ref={this.inputRef}
-                             id="search_phrase"
-                             placeholder=""
-                             options={this.state.searchphrases}
-                             multiple
-                             allowNew
-                             selected={this.state.fields.selected}
-                             onChange={this.handleInputChange.bind(this, 'search_phrase')}
-                             />
-                             </Col>
-                             </Form.Group>*/}
-                            <div className="section_subtitle">funding</div>
                             <Form.Group controlId="funding"
                                         className={'form-group'}>
                                 <Form.Label>
@@ -592,34 +307,15 @@ class AdvertisementFormView extends Component {
                                 </div>
                             </Form.Group>
 
-                            <Form.Group controlId="daliy-budget"
+                            <Form.Group controlId="daily-budget"
                                         className={'form-group'}>
                                 <Form.Label>
                                     daily budget
                                 </Form.Label>
-                                {/*temporarily omitted according to requirements from MILLIX-15*/}
-                                {/*<Col sm="5"*/}
-                                {/*     className="no-padding-left">*/}
-                                {/*    <Form.Control*/}
-                                {/*        type="text"*/}
-                                {/*        className="col-sm-12"*/}
-                                {/*        placeholder="$5"*/}
-                                {/*    />*/}
-                                {/*</Col>*/}
-                                {/*<Col className="no-padding-right"*/}
-                                {/*     sm="1">*/}
-                                {/*    =*/}
-                                {/*</Col>*/}
                                 <Form.Control
                                     type="text"
-                                    onChange={this.handleInputChange.bind(this, 'daily_budget_mlx')}
-                                    ref={c => {
-                                        this.budget = c;
-                                        if (this.budget && this.state.fields['daily_budget_mlx'] !== undefined) {
-                                            this.budget.value = format.millix(this.state.fields['daily_budget_mlx'], false);
-                                        }
-                                    }}
-                                    placeholder=""
+                                    onChange={validate.handleAmountInputChange.bind(this)}
+                                    ref={(c) => this.result_field_reference.budget_daily_mlx = c}
                                 />
                             </Form.Group>
 
@@ -628,68 +324,27 @@ class AdvertisementFormView extends Component {
                                 <Form.Label>
                                     bid per impression
                                 </Form.Label>
-                                <div>
-                                    {/*temporarily omitted according to requirements from MILLIX-15*/}
-                                    {/*<Col sm="5"*/}
-                                    {/*     className="no-padding-left">*/}
-                                    {/*    <Form.Control*/}
-                                    {/*        type="text"*/}
-                                    {/*        className="col-sm-12"*/}
-                                    {/*        placeholder="$10"*/}
-                                    {/*    />*/}
-                                    {/*</Col>*/}
-                                    {/*<Col*/}
-                                    {/*    className="no-padding-right"*/}
-                                    {/*    sm="1">*/}
-                                    {/*    =*/}
-                                    {/*</Col>*/}
-                                    <Form.Control
-                                        type="text"
-                                        className="col-sm-12"
-                                        onChange={this.handleInputChange.bind(this, 'bid_per_impressions_mlx')}
-                                        ref={c => {
-                                            this.impression = c;
-                                            if (this.impression && this.state.fields['bid_per_impressions_mlx'] !== undefined) {
-                                                this.impression.value = format.millix(this.state.fields['bid_per_impressions_mlx'], false);
-                                            }
-                                        }}
-                                        placeholder=""
-                                    />
-                                    {/*<Col sm="3">
-                                     <Button
-                                     className="{btn btn-w-md btn-accent}"
-                                     style={{
-                                     width: '100%'
-                                     }}
-                                     >market analysis</Button>
-                                     </Col>*/}
-                                </div>
-                                {/*<div>
-                                 <div className="hint">
-                                 other advertisers with similar
-                                 targeting are currently bidding
-                                 between $8 and $14 per thousand
-                                 impressions.
-                                 </div>
-                                 </div>*/}
+                                <Form.Control
+                                    type="text"
+                                    className="col-sm-12"
+                                    onChange={validate.handleAmountInputChange.bind(this)}
+                                    ref={(c) => this.result_field_reference.bid_impression_mlx = c}
+                                />
                             </Form.Group>
-                            <div
-                                style={{
-                                    display       : 'flex',
-                                    justifyContent: 'center'
-                                }}>
+                            <div>
                                 <Button
                                     variant="outline-primary"
-                                    type="submit">continue</Button>
+                                    onClick={() => this.save()}
+                                >continue</Button>
                             </div>
-
                         </Form>
                     </div>
                 </div>
-            </div>
+            </>
         );
     }
-};
+}
+
 
 export default connect(
     state => ({
