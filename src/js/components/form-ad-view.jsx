@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import {Button, Col, Container, Form, FormControl, FormGroup, Row, Modal} from 'react-bootstrap';
+import {Button, Form, FormGroup} from 'react-bootstrap';
 import API from '../api/index';
 import ErrorList from './utils/error-list-view';
 import {walletUpdateAddresses, walletUpdateBalance} from '../redux/actions/index';
@@ -12,16 +12,16 @@ import _ from 'lodash';
 
 class FormAdView extends Component {
     constructor(props) {
-        super(props);       
+        super(props);
 
         this.handleSubmit = this.handleSubmit.bind(this);
         this.state        = {
-            title: 'create advertisement',
-            editing: false,
-            edit_advertisement:undefined,
-            submitData: {},
-            error_list: [],
-            fields    : {
+            title                      : 'create advertisement',
+            editing                    : false,
+            edit_advertisement         : undefined,
+            submitData                 : {},
+            error_list                 : [],
+            fields                     : {
                 creative_name          : '',
                 category               : '',
                 headline               : '',
@@ -32,16 +32,16 @@ class FormAdView extends Component {
                 daily_budget_mlx       : '',
                 bid_per_impressions_mlx: ''
             },
-            categories   : [],
-            languages    : [],
-            countries    : [
+            advertisement_category_list: [],
+            advertisement_language_list: [],
+            countries                  : [
                 //todo: replace me
                 'united states',
                 'antigua and barbuda',
                 'barbados',
                 'czech republic'
             ],
-            regions      : [
+            regions                    : [
                 //todo: replace me
                 'alaska',
                 'california',
@@ -63,7 +63,7 @@ class FormAdView extends Component {
                 'moravian-silesia',
                 'pardubice'
             ],
-            cities       : [
+            cities                     : [
                 //todo: replace me
                 'new york',
                 'los angeles',
@@ -85,22 +85,23 @@ class FormAdView extends Component {
                 'ostrava',
                 'plzeň'
             ],
-            searchphrases: [
+            searchphrases              : [
                 //todo: replace me
                 'car insurance',
                 'auto insurance',
                 'honda insurance'
             ],
-            modalShow    : false
+            modalShow                  : false
         };
 
-        if(this.props.history.location.state)
+        if (this.props.history.location.state) {
             this.state.edit_advertisement = this.props.history.location.state[0];
-            
-        if(this.state.edit_advertisement){            
-            API.getAdById(this.state.edit_advertisement.advertisement_guid).then(data => {                
+        }
+
+        if (this.state.edit_advertisement) {
+            API.getAdvertisementById(this.state.edit_advertisement.advertisement_guid).then(data => {
                 //this.state.edit_advertisement = data.advertisement;
-                let fields = {
+                let fields                    = {
                     creative_name          : data.advertisement.advertisement_name,
                     category               : data.advertisement.advertisement_category_guid,
                     headline               : data.advertisement.advertisement_headline.value,
@@ -112,26 +113,25 @@ class FormAdView extends Component {
                     bid_per_impressions_mlx: data.advertisement.bid_impression_mlx
                 };
                 this.state.edit_advertisement = data.advertisement;
-                this.state.fields = fields;
-                this.state.editing = true;
-                this.state.title = 'edit advertisement';
+                this.state.fields             = fields;
+                this.state.editing            = true;
+                this.state.title              = 'edit advertisement';
 
             }).catch(err => {
                 console.log(err);
             });
-        
 
-           
+
         }
     }
 
     componentDidMount() {
-        this.getCategories();
-        this.getLanguages();
+        this.loadAdvertisementCategoryList();
+        this.loadAdvertisementLanguageList();
     }
 
-    async getCategories() {
-        API.listCategories().then(data => {
+    async loadAdvertisementCategoryList() {
+        API.getAdvertisementCategoryList().then(data => {
             let result_option = data.map(d => ({
                 'value': d.advertisement_category_guid,
                 'label': d.advertisement_category
@@ -142,14 +142,14 @@ class FormAdView extends Component {
             result_option = _.orderBy(result_option, ['label'], ['asc']);
 
             this.setState({
-                categories: result_option,
-                fields    : fields
+                advertisement_category_list: result_option,
+                fields                     : fields
             });
         });
     }
 
-    async getLanguages() {
-        API.listLanguages().then(data => {
+    async loadAdvertisementLanguageList() {
+        API.getAdvertisementLanguageList().then(data => {
             const options          = data.map(d => ({
                 'value': d.language_guid,
                 'label': d.language_name + ' - ' + d.language_name_native
@@ -158,8 +158,8 @@ class FormAdView extends Component {
             fields.target_language = options[0].value;
 
             this.setState({
-                languages: options,
-                fields   : fields
+                advertisement_language_list: options,
+                fields                     : fields
             });
         });
     }
@@ -225,17 +225,17 @@ class FormAdView extends Component {
     handleSubmit(event) {
         event.preventDefault();
         if (this.handleValidation()) {
-            if(this.state.editing){
+            if (this.state.editing) {
                 let update_data = {
                     guid: this.state.edit_advertisement.advertisement_guid,
                     ...this.state.fields,
-                    head_line_attribute_guid: this.state.edit_advertisement.advertisement_headline.guid,
-                    deck_attribute_guid: this.state.edit_advertisement.advertisement_deck.guid,
+                    head_line_attribute_guid    : this.state.edit_advertisement.advertisement_headline.guid,
+                    deck_attribute_guid         : this.state.edit_advertisement.advertisement_deck.guid,
                     target_phrase_attribute_guid: this.state.edit_advertisement.target_phrase.guid,
-                    target_language_guid: this.state.edit_advertisement.target_language.guid,
+                    target_language_guid        : this.state.edit_advertisement.target_language.guid
                 };
 
-                API.submitUpdateAd(update_data).then(data => {
+                API.updateAdvertisement(update_data).then(data => {
                     this.setState({submitData: data});
 
                     if (typeof (data.api_status) !== 'undefined' && data.api_status === 'ok') {
@@ -248,8 +248,9 @@ class FormAdView extends Component {
                         this.setState({error_list: error_list});
                     }
                 });
-            }else{
-                API.submitCreateAd(this.state.fields).then(data => {
+            }
+            else {
+                API.createAdvertisement(this.state.fields).then(data => {
                     this.setState({submitData: data});
                     if (typeof (data.api_status) !== 'undefined' && data.api_status === 'ok') {
                         this.flushForm();
@@ -268,11 +269,11 @@ class FormAdView extends Component {
     flushForm() {
         let fields = {
             creative_name          : '',
-            category               : this.state.categories[0].value,
+            category               : this.state.advertisement_category_list[0].value,
             headline               : '',
             deck                   : '',
             url                    : '',
-            target_language        : this.state.languages[0].value,
+            target_language        : this.state.advertisement_language_list[0].value,
             search_phrase          : [],
             daily_budget_mlx       : '',
             bid_per_impressions_mlx: ''
@@ -380,7 +381,7 @@ class FormAdView extends Component {
                                     onChange={this.handleInputChange.bind(this, 'category')}
                                 >
                                     {
-                                        this.state.categories ? this.state.categories.map((res, i) => (
+                                        this.state.advertisement_category_list ? this.state.advertisement_category_list.map((res, i) => (
                                             <option key={i}
                                                     value={res.value}>{res.label}</option>
                                         )) : ''

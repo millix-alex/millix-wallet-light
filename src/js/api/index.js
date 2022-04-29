@@ -1,5 +1,6 @@
 import {escape_url_param} from '../helper/security';
 import {showErrorModalRequestApi} from '../components/utils/error-handler-request-api';
+import _ from 'lodash';
 
 
 class API {
@@ -46,7 +47,12 @@ class API {
             if (result_param) {
                 const param_array = [];
                 Object.keys(result_param).forEach(function(param_key, index) {
-                    param_array.push(param_key + '=' + result_param[param_key]);
+                    let value = result_param[param_key];
+                    if (_.isArray(value) || typeof (value) === 'object') {
+                        value = encodeURIComponent(JSON.stringify(value));
+                    }
+
+                    param_array.push(param_key + '=' + value);
                 });
                 if (param_array.length > 0) {
                     param_string = '?' + param_array.join('&');
@@ -85,60 +91,50 @@ class API {
         return API.HOST_TANGLED_API;
     }
 
-    listCategories() {
+    getAdvertisementCategoryList() {
         return this.fetchApiTangled('/dAjjWCtPW1JbYwf6');
     }
 
-    listLanguages() {
+    getAdvertisementLanguageList() {
         return this.fetchApiTangled('/wDqnBLvXY6FGUSfc');
-
     }
 
-    listAds() {
+    getAdvertisementList() {
         return this.fetchApiTangled('/aerijOtODMtkHo6i');
     }
 
-    getAdById(advertisement_id) {
-        try {
-            return fetch(this.getTangledApiURL() + `/ae60ccb743cd3c79?p0=${advertisement_id}`)
-                .then(response => response.ok ? response.json() : Promise.reject());
-        }
-        catch (e) {
-            return Promise.reject(e);
-        }
-    }
-
-    listAdTypes() {
+    getAdvertisementTypeList() {
         return this.fetchApiTangled('/jbUwv8IG6XeYMqCq');
-
     }
 
-    toggleAdStatus(advertisement_guid) {
+    toggleAdvertisementStatus(advertisement_guid) {
         return this.fetchApiTangled(`/C7neErVANMWXWuse`, {
-            p0: encodeURIComponent(JSON.stringify({advertisement_guid: advertisement_guid}))
+            p0: {advertisement_guid: advertisement_guid}
         });
     }
 
-    resetAd(advertisementGUID) {
+    resetAdvertisement(advertisementGUID) {
         return this.fetchApiTangled(`/pKZdzEZrrdPA1jtl`, {
             p0: advertisementGUID
         });
     }
 
-    submitAdForm(formData) {
-        return this.fetchApiTangled(`/scWZ0yhuk5hHLd8s`, {
-            p0: encodeURIComponent(JSON.stringify(formData))
+    getAdvertisementById(advertisement_id) {
+        return this.fetchApiTangled('/ae60ccb743cd3c79', {
+            p0: advertisement_id
         });
     }
 
-    submitUpdateAd(formData) {
-        try {
-            return fetch(this.getTangledApiURL() + `/ef710ca33ad9d2fb?p0=${encodeURIComponent(JSON.stringify(formData))}`)
-                .then(response => response.ok ? response.json() : Promise.reject());
-        }
-        catch (e) {
-            return Promise.reject(e);
-        }
+    createAdvertisement(formData) {
+        return this.fetchApiTangled(`/scWZ0yhuk5hHLd8s`, {
+            p0: formData
+        });
+    }
+
+    updateAdvertisement(formData) {
+        return this.fetchApiTangled(`/ef710ca33ad9d2fb`, {
+            p0: formData
+        });
     }
 
     requestAdvertisementPayment(advertisementGUID) {

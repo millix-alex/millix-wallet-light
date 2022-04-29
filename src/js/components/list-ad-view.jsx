@@ -1,14 +1,11 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import {Col, Container, Row} from 'react-bootstrap';
+import {Row} from 'react-bootstrap';
 import {withRouter} from 'react-router-dom';
 import API from '../api/index';
 import DatatableView from './utils/datatable-view';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {Button} from 'react-bootstrap';
-import moment from 'moment';
-import DatatableHeaderView from './utils/datatable-header-view';
 import * as format from '../helper/format';
+import DatatableActionButtonView from './utils/datatable-action-button-view';
 
 
 class ListAdView extends Component {
@@ -16,12 +13,12 @@ class ListAdView extends Component {
         super(props);
         this.adListUpdateHandler = undefined;
         this.state               = {
-            categories                : [],
-            types                     : [],
-            fileKey                   : new Date().getTime(),
-            ad_list                   : [],
-            datatable_reload_timestamp: '',
-            datatable_loading         : false
+            advertisement_category_list: [],
+            advertisement_type_list    : [],
+            fileKey                    : new Date().getTime(),
+            advertisement_list         : [],
+            datatable_reload_timestamp : '',
+            datatable_loading          : false
         };
     }
 
@@ -34,69 +31,53 @@ class ListAdView extends Component {
         return label;
     }
 
-    toggleAdStatus(advertisement_guid) {
-        API.toggleAdStatus(advertisement_guid).then(data => {
+    toggleAdvertisementStatus(advertisement_guid) {
+        API.toggleAdvertisementStatus(advertisement_guid).then(data => {
             if (typeof data.api_status != 'undefined' && data.api_status === 'ok') {
                 this.reloadDatatable();
             }
         });
     }
 
-    resetAd(advertisement_guid) {
-        API.resetAd(advertisement_guid).then(_ => _);
-    }
-
-
-    getEditButton(item) {
-        return <Button
-            id={item.advertisement_guid}
-            variant="outline-default"
-            className={'btn-xs icon_only ms-auto'}
-            onClick={() => this.openEdit(item)}>
-            <FontAwesomeIcon
-                icon="pencil"
-                size="1x"/>
-        </Button>;
-    }
-
-    getStatusButton(item) {
-        let icon = item.status === 1 ? 'pause' : 'play';
-        return <Button
-            id={item.advertisement_guid}
-            variant="outline-default"
-            className={'btn-xs icon_only ms-auto'}
-            onClick={() => this.toggleAdStatus(item.advertisement_guid)}>
-            <FontAwesomeIcon
-                icon={icon}
-                size="1x"/>
-        </Button>;
-    }
-
-    getResetButton(item) {
-        return <Button
-            id={item.advertisement_guid}
-            variant="outline-default"
-            className={'btn-xs icon_only ms-auto'}
-            onClick={() => this.resetAd(item.advertisement_guid)}>
-            <FontAwesomeIcon
-                icon={'redo'}
-                size="1x"/>
-        </Button>;
+    resetAdvertisement(advertisement_guid) {
+        API.resetAdvertisement(advertisement_guid).then(_ => _);
     }
 
     getActionButton(item) {
-        return <div>
-            {this.getEditButton(item)}
-            {this.getStatusButton(item)}
-            {this.getResetButton(item)}
-        </div>;
+        let toggle_status_icon  = 'play';
+        let toggle_status_title = 'activate';
+        if (item.status === 1) {
+            toggle_status_icon  = 'pause';
+            toggle_status_title = 'deactivate';
+        }
+
+        return <>
+            <DatatableActionButtonView
+                icon={'pencil'}
+                title={'edit'}
+                callback={() => this.edit(item)}
+                callback_args={item}
+            />
+            <DatatableActionButtonView
+                icon={toggle_status_icon}
+                title={toggle_status_title}
+                callback={() => this.toggleAdvertisementStatus(item.advertisement_guid)}
+                callback_args={item.advertisement_guid}
+            />
+            <DatatableActionButtonView
+                icon={'redo'}
+                title={'reset'}
+                callback={() => this.resetAdvertisement(item.advertisement_guid)}
+                callback_args={item.advertisement_guid}
+            />
+        </>;
     }
 
-    loadTypes() {
-        if (this.state.types.length === 0) {
-            return API.listAdTypes().then(data => {
+    loadAdvertisementTypeList() {
+        if (this.state.advertisement_type_list.length === 0) {
+            return API.getAdvertisementTypeList().then(data => {
                 this.setState({
-                    types: data
+                    advertisement_type_list: data
                 });
             });
         }
@@ -104,11 +85,11 @@ class ListAdView extends Component {
         return Promise.resolve();
     }
 
-    loadCategories() {
-        if (this.state.categories.length === 0) {
-            return API.listCategories().then(data => {
+    loadAdvertisementCategoryList() {
+        if (this.state.advertisement_category_list.length === 0) {
+            return API.getAdvertisementCategoryList().then(data => {
                 this.setState({
-                    categories: data
+                    advertisement_category_list: data
                 });
             });
         }
@@ -116,9 +97,9 @@ class ListAdView extends Component {
         return Promise.resolve();
     }
 
-    getAdType(item) {
+    getAdvertisementType(item) {
         let type = '';
-        this.state.types.forEach((ad_type) => {
+        this.state.advertisement_type_list.forEach((ad_type) => {
             if (ad_type.advertisement_type_guid === item.advertisement_type_guid) {
                 type = ad_type.advertisement_type;
             }
@@ -127,9 +108,9 @@ class ListAdView extends Component {
         return type;
     }
 
-    getAdCategory(item) {
+    getAdvertisementCategory(item) {
         let category = '';
-        this.state.categories.forEach((cat) => {
+        this.state.advertisement_category_list.forEach((cat) => {
             if (cat.advertisement_category_guid === item.advertisement_category_guid) {
                 category = cat.advertisement_category;
             }
@@ -137,8 +118,8 @@ class ListAdView extends Component {
         return category;
     }
 
-    openEdit(advertisement) {      
-        this.props.history.push('/advertisement-form/', [advertisement]);        
+    edit(advertisement) {
+        this.props.history.push('/advertisement-form/', [advertisement]);
     }
 
     async reloadDatatable() {
@@ -146,22 +127,22 @@ class ListAdView extends Component {
             datatable_loading: true
         });
 
-        this.loadCategories().then(() => {
-            return this.loadTypes();
+        this.loadAdvertisementCategoryList().then(() => {
+            return this.loadAdvertisementTypeList();
         })
             .then(() => {
-                API.listAds().then(data => {
+                API.getAdvertisementList().then(data => {
                     if (typeof data.api_status != 'undefined' && data.api_status === 'ok') {
-                        let ad_list = [];
+                        let advertisement_list = [];
                         if (typeof data.advertisement_list != 'undefined') {
                             data.advertisement_list.forEach((item, idx) => {
-                                ad_list.push({
+                                advertisement_list.push({
                                     idx                        : item.advertisement_id,
                                     advertisement_guid         : item.advertisement_guid,
                                     advertisement_type_guid    : item.advertisement_type_guid,
-                                    advertisement_type         : this.getAdType(item),
+                                    advertisement_type         : this.getAdvertisementType(item),
                                     advertisement_category_guid: item.advertisement_category_guid,
-                                    advertisement_category     : this.getAdCategory(item),
+                                    advertisement_category     : this.getAdvertisementCategory(item),
                                     advertisement_name         : item.advertisement_name,
                                     advertisement_url          : item.advertisement_url,
                                     protocol_address_funding   : item.protocol_address_funding,
@@ -176,7 +157,7 @@ class ListAdView extends Component {
                                 });
                             });
                             this.setState({
-                                ad_list                   : ad_list,
+                                advertisement_list        : advertisement_list,
                                 datatable_reload_timestamp: new Date(),
                                 datatable_loading         : false
                             });
@@ -219,7 +200,7 @@ class ListAdView extends Component {
                                 label   : 'create advertisement',
                                 on_click: () => this.props.history.push('/advertisement-form/')
                             }}
-                            value={this.state.ad_list}
+                            value={this.state.advertisement_list}
                             sortField={'date'}
                             sortOrder={-1}
                             loading={this.state.datatable_loading}
