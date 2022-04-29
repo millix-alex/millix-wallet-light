@@ -331,7 +331,7 @@ class AdvertisementFormView extends Component {
                                     ref={(c) => this.result_field_reference.bid_impression_mlx = c}
                                 />
                             </Form.Group>
-                            <div>
+                            <div className={'text-center'}>
                                 <Button
                                     variant="outline-primary"
                                     onClick={() => this.save()}
