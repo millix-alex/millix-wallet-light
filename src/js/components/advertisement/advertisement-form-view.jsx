@@ -1,16 +1,16 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {Button, Form, FormGroup} from 'react-bootstrap';
-import API from '../api/index';
-import ErrorList from './utils/error-list-view';
-import {walletUpdateAddresses, walletUpdateBalance} from '../redux/actions/index';
+import API from '../../api';
+import ErrorList from '../utils/error-list-view';
+import {walletUpdateAddresses, walletUpdateBalance} from '../../redux/actions';
 import {withRouter} from 'react-router-dom';
-import ModalView from './utils/modal-view';
-import * as format from '../helper/format';
+import ModalView from '../utils/modal-view';
+import * as format from '../../helper/format';
 import _ from 'lodash';
 
 
-class FormAdView extends Component {
+class AdvertisementFormView extends Component {
     constructor(props) {
         super(props);
 
@@ -699,5 +699,5 @@ export default connect(
         walletUpdateAddresses,
         walletUpdateBalance
     }
-)(withRouter(FormAdView));
+)(withRouter(AdvertisementFormView));
 

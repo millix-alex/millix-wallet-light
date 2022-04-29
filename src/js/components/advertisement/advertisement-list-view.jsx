@@ -2,13 +2,13 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {Row} from 'react-bootstrap';
 import {withRouter} from 'react-router-dom';
-import API from '../api/index';
-import DatatableView from './utils/datatable-view';
-import * as format from '../helper/format';
-import DatatableActionButtonView from './utils/datatable-action-button-view';
+import API from '../../api';
+import DatatableView from '../utils/datatable-view';
+import * as format from '../../helper/format';
+import DatatableActionButtonView from '../utils/datatable-action-button-view';
 
 
-class ListAdView extends Component {
+class AdvertisementListView extends Component {
     constructor(props) {
         super(props);
         this.adListUpdateHandler = undefined;
@@ -240,4 +240,4 @@ class ListAdView extends Component {
 
 export default connect(state => ({
     ads: state.ads
-}))(withRouter(ListAdView));
+}))(withRouter(AdvertisementListView));
