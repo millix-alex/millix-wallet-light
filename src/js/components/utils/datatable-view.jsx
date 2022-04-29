@@ -73,6 +73,7 @@ class DatatableView extends Component {
         if (this.props.showActionColumn) {
             result_column.push(<Column
                 key={'action'}
+                className={'datatable_action_column'}
                 field={'action'}
                 header={'action'}
                 sortable={false}/>);
@@ -161,7 +162,9 @@ class DatatableView extends Component {
                 return <div
                     className={'paginator-dropdown-wrapper'}>show<Dropdown
                     value={options.value} options={dropdownOptions}
-                    onChange={options.onChange}/>records</div>;
+                    onChange={options.onChange} className={'align-middle'}/>
+                    records
+                . total records {options.totalRecords}.</div>;
             }
         };
     }
