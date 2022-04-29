@@ -6,7 +6,6 @@ import {Dropdown} from 'primereact/dropdown';
 import {Ripple} from 'primereact/ripple';
 import {classNames} from 'primereact/utils';
 import * as format from '../../helper/format';
-import {Button} from 'primereact/button';
 import {FilterMatchMode} from 'primereact/api';
 import DatatableHeaderView from './datatable-header-view';
 
@@ -94,17 +93,6 @@ class DatatableView extends Component {
 
     bodyTemplateAmount(rowData, field) {
         return format.millix(rowData[field], false);
-    }
-
-    exportCsvButton() {
-        if(this.props.export_csv_button) {
-            return (
-                <React.Fragment>
-                    <Button type="button" icon="pi pi-file" onClick={() => this.exportCSV(false)} className="mr-2" data-pr-tooltip="CSV" />
-                </React.Fragment>
-            );
-        }
-        return '';
     }
 
     getPaginatorTemplate() {
@@ -207,24 +195,21 @@ class DatatableView extends Component {
         });
     }
 
-    exportCSV(selectionOnly) {
-        this.dt.exportCSV({ selectionOnly });
-    }
-
     render() {
         return (
             <>
-                <div className="datatable_export_row">
-                    {this.exportCsvButton()}
-                </div>
                 <DatatableHeaderView
                     reload_datatable={this.props.reload_datatable}
                     datatable_reload_timestamp={this.props.datatable_reload_timestamp}
                     action_button={this.props.action_button}
                     on_global_search_change={(e) => this.on_global_search_change(e)}
+                    datatable_reference={this.datatable_reference}
+                    allow_export={this.props.allow_export}
                 />
                 <DataTable value={this.props.value}
-                           ref={(el) => { this.dt = el; }}
+                           ref={(el) => {
+                               this.datatable_reference = el;
+                           }}
                            paginator
                            paginatorTemplate={this.getPaginatorTemplate()}
                            first={this.state.first}
@@ -263,7 +248,8 @@ DatatableView.propTypes = {
     loading                   : PropTypes.bool,
     datatable_reload_timestamp: PropTypes.any,
     reload_datatable          : PropTypes.func,
-    action_button             : PropTypes.any
+    action_button             : PropTypes.any,
+    allow_export              : PropTypes.bool
 };
 
 

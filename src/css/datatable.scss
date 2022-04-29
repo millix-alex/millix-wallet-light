@@ -25,29 +25,6 @@
   }
 }
 
-.datatable_export_row {
-  margin-bottom: 1rem;
-  text-align: right;
-
-  button {
-    background-color: transparent;
-    border: 1px solid #9400ce;
-  }
-
-  .p-button:enabled:hover {
-    background: #9400ce !important;
-    border: 1px solid #9400ce !important;
-
-    .p-button-icon {
-      color: #ffffff !important;
-    }
-  }
-
-  span {
-    color: #a9a9a9;
-  }
-}
-
 .p-datatable-table {
   margin-bottom: 1rem;
   width: 100%;

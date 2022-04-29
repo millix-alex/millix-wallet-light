@@ -57,6 +57,7 @@ class EventsLogView extends Component {
                             loading={this.state.datatable.loading}
                             sortField={'date'}
                             sortOrder={1}
+                            allow_export={true}
                             resultColumn={[
                                 {
                                     field : 'idx',
