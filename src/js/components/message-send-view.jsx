@@ -163,6 +163,8 @@ class MessageNewView extends Component {
         }).then(data => {
             this.destinationAddress.value = '';
             this.amount.value             = '';
+            this.subject.value            = '';
+            this.message.value            = '';
 
             if (this.props.config.TRANSACTION_FEE_DEFAULT !== undefined) {
                 this.fee.value = format.millix(this.props.config.TRANSACTION_FEE_DEFAULT, false);
@@ -242,7 +244,9 @@ class MessageNewView extends Component {
                             <div className={'panel-heading bordered'}>send message</div>
                             <div className={'panel-body'}>
                                 <p>
-                                    send an encrypted message to any tangled browser user.  the message will be stored on your device and the recipients device.  to allow the message to reach the recipient, the message is stored on the millix network for up to 90 days.  only you and the recipient can read your messages.
+                                    send an encrypted message to any tangled browser user. the message will be stored on your device and the recipients device.
+                                    to allow the message to reach the recipient, the message is stored on the millix network for up to 90 days. only you and the
+                                    recipient can read your messages.
                                 </p>
                                 <ErrorList
                                     error_list={this.state.error_list}/>
