@@ -55,7 +55,7 @@ class MessageReceivedView extends Component {
                                     txid   : transaction.transaction_id,
                                     amount : format.number(transaction.amount),
                                     subject: message.subject,
-                                    address: transaction.address_to,
+                                    address: transaction.address_from,
                                     message: message.message,
                                     sent   : false
                                 };
