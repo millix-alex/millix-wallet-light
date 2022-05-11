@@ -171,7 +171,7 @@ class MessageNewView extends Component {
             }
 
             const transaction = data.transaction.find(item => {
-                return item.version.indexOf('la') !== -1;
+                return item.version.indexOf('0a') !== -1;
             });
 
             const modalBodySendResult = <div>
