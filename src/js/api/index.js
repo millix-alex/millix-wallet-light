@@ -169,7 +169,7 @@ class API {
 
     listTransactionWithDataSent(addressKeyIdentifier) {
         try {
-            return fetch(this.getAuthenticatedMillixApiURL() + `/F7APEv5JfCY1siyz?p9=la3l&p10=${addressKeyIdentifier}&p11=Adl87cz8kC190Nqc`)
+            return fetch(this.getAuthenticatedMillixApiURL() + `/F7APEv5JfCY1siyz?p9=${addressKeyIdentifier.startsWith('1') ? '0a30' : 'la3l'}&p10=${addressKeyIdentifier}&p11=Adl87cz8kC190Nqc`)
                 .then(response => response.ok ? response.json() : Promise.reject());
         }
         catch (e) {
@@ -179,7 +179,7 @@ class API {
 
     listTransactionWithDataReceived(addressKeyIdentifier) {
         try {
-            return fetch(this.getAuthenticatedMillixApiURL() + `/Mu7VpxzfYyQimf3V?p9=la3l&p10=${addressKeyIdentifier}&p11=Adl87cz8kC190Nqc`)
+            return fetch(this.getAuthenticatedMillixApiURL() + `/Mu7VpxzfYyQimf3V?p9=${addressKeyIdentifier.startsWith('1') ? '0a30' : 'la3l'}&p10=${addressKeyIdentifier}&p11=Adl87cz8kC190Nqc`)
                 .then(response => response.ok ? response.json() : Promise.reject());
         }
         catch (e) {
