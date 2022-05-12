@@ -13,7 +13,7 @@ class MessageView extends Component {
     }
 
     reply() {
-
+        this.props.history.push('/message-new/', this.props.location.state);
     }
 
     render() {
@@ -23,7 +23,7 @@ class MessageView extends Component {
                 <Row>
                     <Col md={12}>
                         <div className={'panel panel-filled'}>
-                            <div className={'panel-heading bordered'}>send message</div>
+                            <div className={'panel-heading bordered'}>{!data ? 'send message' : 'view message'}</div>
                             <div className={'panel-body'}>
                                 <Row>
                                     <Form>

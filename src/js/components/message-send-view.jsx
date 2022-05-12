@@ -46,7 +46,8 @@ const styles = {
 class MessageNewView extends Component {
     constructor(props) {
         super(props);
-        this.state = {
+        const propsState = props.location.state || {};
+        this.state       = {
             feeInputLocked        : true,
             error_list            : [],
             modalShow             : false,
@@ -57,8 +58,9 @@ class MessageNewView extends Component {
             address_key_identifier: '',
             amount                : '',
             fee                   : '',
-            subject               : '',
-            message               : ''
+            destinationAddress   : propsState.address || '',
+            subject               : propsState.subject ? `re: ${propsState.subject}` : '',
+            message               : propsState.message ? `\n______________________________\n${propsState.message}` : ''
         };
 
         this.send = this.send.bind(this);
@@ -184,6 +186,10 @@ class MessageNewView extends Component {
             </div>;
 
             this.setState({
+                amount             : '',
+                subject            : '',
+                message            : '',
+                destinationAddress: '',
                 sending            : false,
                 feeInputLocked     : true,
                 modalBodySendResult: modalBodySendResult
@@ -263,6 +269,8 @@ class MessageNewView extends Component {
                                             <Form.Group className="form-group">
                                                 <label>to</label>
                                                 <Form.Control type="text"
+                                                              value={this.state.destinationAddress}
+                                                              onChange={v => this.setState({destinationAddress: v.value})}
                                                               placeholder="address"
                                                               ref={c => this.destinationAddress = c}/>
                                             </Form.Group>
@@ -271,6 +279,8 @@ class MessageNewView extends Component {
                                             <Form.Group className="form-group">
                                                 <label>subject</label>
                                                 <Form.Control type="text"
+                                                              value={this.state.subject}
+                                                              onChange={v => this.setState({subject: v.value})}
                                                               placeholder="subject"
                                                               ref={c => this.subject = c}/>
                                             </Form.Group>
@@ -279,6 +289,8 @@ class MessageNewView extends Component {
                                             <Form.Group className="form-group">
                                                 <label>message</label>
                                                 <Form.Control as="textarea" rows={10}
+                                                              value={this.state.message}
+                                                              onChange={v => this.setState({message: v.value})}
                                                               placeholder="message"
                                                               ref={c => this.message = c}/>
                                             </Form.Group>
