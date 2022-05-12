@@ -1,9 +1,6 @@
 import React, {Component} from 'react';
 import {withRouter} from 'react-router-dom';
-import {Col, Form, Row} from 'react-bootstrap';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import * as format from '../helper/format';
-import * as validate from '../helper/validate';
+import {Button, Col, Form, Row} from 'react-bootstrap';
 
 
 class MessageView extends Component {
@@ -13,6 +10,10 @@ class MessageView extends Component {
     }
 
     componentWillUnmount() {
+    }
+
+    reply() {
+
     }
 
     render() {
@@ -61,6 +62,15 @@ class MessageView extends Component {
                                                               pattern="[0-9]+([,][0-9]{1,2})?"
                                                               value={data.amount}
                                                               disabled={true}/>
+                                            </Form.Group>
+                                        </Col>
+                                        <Col className={'d-flex justify-content-center'}>
+                                            <Form.Group className="form-group">
+                                                <Button
+                                                    variant="outline-primary"
+                                                    onClick={() => this.reply()}>
+                                                    reply
+                                                </Button>
                                             </Form.Group>
                                         </Col>
                                     </Form>
