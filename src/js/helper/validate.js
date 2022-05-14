@@ -178,3 +178,23 @@ export function handleInputChangeAlphanumericString(e, length = false) {
 export function handleAmountInputChange(e) {
     handleInputChangeInteger(e, false, 'millix');
 }
+
+export function handleInputChangeDNSString(e) {
+    if (e.target.value.length === 0) {
+        return;
+    }
+
+    e.target.value = e.target.value.replace(/[^a-z0-9\\.-]/g, '');
+}
+
+export function dns(field_name, dns, error_list){
+    const match = new RegExp("^([a-z0-9]+(-[a-z0-9]+)*\\.)+[a-z]{2,}$", "gi")
+    if(dns && !match.test(dns)) {
+        error_list.push({
+            name   : get_error_name('dns_invalid', field_name),
+            message: `${field_name} must be a valid dns`
+        });
+        return null;
+    }
+    return dns;
+}

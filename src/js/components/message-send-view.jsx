@@ -3,13 +3,11 @@ import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 import {Button, Col, Form, Row} from 'react-bootstrap';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {MDBDataTable as DataTable, MDBInput} from 'mdbreact';
 import * as format from '../helper/format';
 import * as validate from '../helper/validate';
 import ModalView from './utils/modal-view';
 import * as text from '../helper/text';
 import API from '../api';
-import BalanceView from './utils/balance-view';
 import ErrorList from './utils/error-list-view';
 
 
@@ -48,6 +46,7 @@ class MessageNewView extends Component {
         super(props);
         const propsState = props.location.state || {};
         this.state       = {
+            dnsValidated          : false,
             feeInputLocked        : true,
             error_list            : [],
             modalShow             : false,
@@ -58,9 +57,10 @@ class MessageNewView extends Component {
             address_key_identifier: '',
             amount                : '',
             fee                   : '',
-            destinationAddress   : propsState.address || '',
+            destinationAddress    : propsState.address || '',
             subject               : propsState.subject ? `re: ${propsState.subject}` : '',
-            message               : propsState.message ? `\n______________________________\n${propsState.message}` : ''
+            message               : propsState.message ? `\n______________________________\n${propsState.message}` : '',
+            txid                  : propsState.txid
         };
 
         this.send = this.send.bind(this);
@@ -69,6 +69,22 @@ class MessageNewView extends Component {
     componentWillUnmount() {
         if (this.state.sending) {
             API.interruptTransaction().then(_ => _);
+        }
+    }
+
+    verifyDNS() {
+        const dns = validate.dns('dns', this.dns.value, []);
+        if (dns === null) {
+            this.setState({dnsValidated: false});
+        }
+        else {
+            API.isDNSVerified(dns, this.props.wallet.address_key_identifier)
+               .then(data => {
+                   this.setState({dnsValidated: data.is_address_verified});
+               })
+               .catch(() => {
+                   this.setState({dnsValidated: false});
+               });
         }
     }
 
@@ -92,6 +108,7 @@ class MessageNewView extends Component {
         const message = validate.required('message', this.message.value, error_list);
         const amount  = validate.amount('amount', this.amount.value, error_list);
         const fee     = validate.amount('fee', this.fee.value, error_list);
+        const dns     = validate.dns('dns', this.dns.value, error_list);
 
         this.setState({
             error_list: error_list
@@ -122,6 +139,7 @@ class MessageNewView extends Component {
                            subject               : subject,
                            message               : message,
                            amount                : amount,
+                           dns                   : dns,
                            fee                   : fee
                        });
 
@@ -136,13 +154,23 @@ class MessageNewView extends Component {
             sending: true
         });
 
+        const transactionOutputAttribute = {};
+
+        if (!!this.state.dns) {
+            transactionOutputAttribute['dns'] = this.state.dns;
+        }
+        if(!!this.state.txid){
+            transactionOutputAttribute['parent_transaction_id'] = this.state.txid;
+        }
+
         const amount = this.state.amount;
         API.sendTransactionWithData({
-            transaction_data       : {
+            transaction_output_attribute: transactionOutputAttribute,
+            transaction_data            : {
                 subject: this.state.subject,
                 message: this.state.message
             },
-            transaction_output_list: [
+            transaction_output_list     : [
                 {
                     address_base          : this.state.address_base,
                     address_version       : this.state.address_version,
@@ -150,7 +178,7 @@ class MessageNewView extends Component {
                     amount
                 }
             ],
-            transaction_output_fee : {
+            transaction_output_fee      : {
                 fee_type: 'transaction_fee_default',
                 amount  : this.state.fee
             }
@@ -189,7 +217,7 @@ class MessageNewView extends Component {
                 amount             : '',
                 subject            : '',
                 message            : '',
-                destinationAddress: '',
+                destinationAddress : '',
                 sending            : false,
                 feeInputLocked     : true,
                 modalBodySendResult: modalBodySendResult
@@ -270,7 +298,7 @@ class MessageNewView extends Component {
                                                 <label>to</label>
                                                 <Form.Control type="text"
                                                               value={this.state.destinationAddress}
-                                                              onChange={v => this.setState({destinationAddress: v.value})}
+                                                              onChange={c => this.setState({destinationAddress: c.target.value})}
                                                               placeholder="address"
                                                               ref={c => this.destinationAddress = c}/>
                                             </Form.Group>
@@ -280,7 +308,7 @@ class MessageNewView extends Component {
                                                 <label>subject</label>
                                                 <Form.Control type="text"
                                                               value={this.state.subject}
-                                                              onChange={v => this.setState({subject: v.value})}
+                                                              onChange={c => this.setState({subject: c.target.value})}
                                                               placeholder="subject"
                                                               ref={c => this.subject = c}/>
                                             </Form.Group>
@@ -290,7 +318,7 @@ class MessageNewView extends Component {
                                                 <label>message</label>
                                                 <Form.Control as="textarea" rows={10}
                                                               value={this.state.message}
-                                                              onChange={v => this.setState({message: v.value})}
+                                                              onChange={c => this.setState({message: c.target.value})}
                                                               placeholder="message"
                                                               ref={c => this.message = c}/>
                                             </Form.Group>
@@ -331,6 +359,43 @@ class MessageNewView extends Component {
                                                             size="sm"/>
                                                     </button>
                                                 </Col>
+                                            </Form.Group>
+                                        </Col>
+                                        <Col>
+                                            <Form.Group className="form-group"
+                                                        as={Row}>
+                                                <label>verified sender</label>
+                                                <Col className={'input-group'}>
+                                                    <Form.Control type="text"
+                                                                  placeholder="dns"
+                                                                  pattern="^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$"
+                                                                  ref={c => this.dns = c}
+                                                                  onChange={e => {
+                                                                      validate.handleInputChangeDNSString(e);
+                                                                      this.setState({dnsValidated: undefined});
+                                                                      clearTimeout(this.checkDNSHandler);
+                                                                      this.checkDNSHandler = setTimeout(() => this.verifyDNS(), 800);
+                                                                  }}/>
+                                                    <button
+                                                        className="btn btn-outline-input-group-addon icon_only"
+                                                        type="button"
+                                                        style={{opacity: '1!important'}}
+                                                        disabled={true}>
+                                                        {this.state.dnsValidated === undefined ? <div style={{
+                                                                                                   margin: 0,
+                                                                                                   width : '0.9rem',
+                                                                                                   height: '0.9rem'
+                                                                                               }} className="loader-spin"/> :
+                                                         <FontAwesomeIcon
+                                                             color={this.state.dnsValidated ? '#42a5f5' : '#a9a9a9'}
+                                                             icon={this.state.dnsValidated ? 'check-circle' : 'question-circle'}
+                                                             size="sm"/>}
+                                                    </button>
+                                                </Col>
+                                                <div>
+                                                    anyone with a domain name can be a verified sender. this allows the recipient of your message to trust your
+                                                    identity. <a href="#">click to lear more</a>
+                                                </div>
                                             </Form.Group>
                                         </Col>
                                         <Col

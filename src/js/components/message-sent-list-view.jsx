@@ -48,14 +48,16 @@ class MessageSentView extends Component {
                             const message = outputAttributeValue.file_data[fileHash];
                             if (!_.isNil(message.subject) && !_.isNil(message.message)) {
                                 const newRow     = {
-                                    idx    : idx,
-                                    date   : format.date(transaction.transaction_date),
-                                    txid   : transaction.transaction_id,
-                                    amount : format.number(transaction.amount),
-                                    subject: message.subject,
-                                    address: transaction.address_to,
-                                    message: message.message,
-                                    sent   : true
+                                    idx        : idx,
+                                    date       : format.date(transaction.transaction_date),
+                                    txid       : transaction.transaction_id,
+                                    txid_parent: outputAttributeValue.parent_transaction_id,
+                                    dns        : outputAttributeValue.dns,
+                                    amount     : format.number(transaction.amount),
+                                    subject    : message.subject,
+                                    address    : transaction.address_to,
+                                    message    : message.message,
+                                    sent       : true
                                 };
                                 newRow['action'] = <>
                                     <DatatableActionButtonView
