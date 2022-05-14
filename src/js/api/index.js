@@ -398,6 +398,13 @@ class API {
             'POST'
         );
     }
+
+    isDNSVerified(dns, addressKeyIdentified) {
+        return this.fetchApiMillix('/DjwvDZ4bGUzKxOHW', {
+            p0: dns,
+            p1: addressKeyIdentified
+        });
+    }
 }
 
 
