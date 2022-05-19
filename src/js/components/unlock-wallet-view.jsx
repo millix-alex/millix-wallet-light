@@ -71,7 +71,6 @@ class UnlockWalletView extends Component {
         }).catch(() => setTimeout(() => this.isPrivateKeyExist(), 1000));
     }
 
-
     render() {
         let props = this.props;
         if (props.wallet.unlocked) {
