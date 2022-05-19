@@ -242,13 +242,9 @@ class API {
     }
 
     getEventLogList(limit = 1000) {
-        try {
-            return fetch(this.getAuthenticatedMillixApiURL() + `/PZ7x3HVHVstLNYf0?p0=${limit}`)
-                .then(response => response.ok ? response.json() : Promise.reject());
-        }
-        catch (e) {
-            return Promise.reject(e);
-        }
+        return this.fetchApiMillix('/PZ7x3HVHVstLNYf0', {
+            'p0': limit
+        });
     }
 
     getNodeConfigValueByName(name) {
