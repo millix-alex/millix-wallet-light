@@ -3,43 +3,12 @@ import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 import {Button, Col, Form, Row} from 'react-bootstrap';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import * as format from '../helper/format';
-import * as validate from '../helper/validate';
-import ModalView from './utils/modal-view';
-import * as text from '../helper/text';
-import API from '../api';
-import ErrorList from './utils/error-list-view';
-
-
-const styles = {
-    centered: {
-        display       : 'flex',
-        justifyContent: 'center'
-    },
-    left    : {
-        display       : 'flex',
-        justifyContent: 'left'
-    },
-    right   : {
-        display       : 'flex',
-        justifyContent: 'flex-end'
-    },
-    checkbox: {
-        height: '20px'
-    },
-    button  : {
-        padding: '0px 0px'
-    },
-    icon    : {
-        fontSize: '1.5em'
-    },
-    tableBtn: {
-        display: 'block',
-        padding: '0px 0px',
-        margin : 'auto'
-    }
-};
-
+import * as format from '../../helper/format';
+import * as validate from '../../helper/validate';
+import ModalView from './../utils/modal-view';
+import * as text from '../../helper/text';
+import API from '../../api';
+import ErrorList from './../utils/error-list-view';
 
 class MessageNewView extends Component {
     constructor(props) {
