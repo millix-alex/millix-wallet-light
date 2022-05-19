@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
-import {Row} from 'react-bootstrap';
 import DatatableView from './utils/datatable-view';
 import API from '../api';
 
@@ -21,7 +20,6 @@ class EventsLogView extends Component {
 
     componentDidMount() {
         this.loadEventLogToState();
-        this.update_handler = setInterval(() => this.loadEventLogToState(), 20 * 1000);
     }
 
     componentWillUnmount() {
@@ -44,6 +42,9 @@ class EventsLogView extends Component {
                         loading         : false
                     }
                 });
+
+                clearTimeout(this.update_handler);
+                this.update_handler = setTimeout(() => this.loadEventLogToState(), 20 * 1000);
             }
         });
     }
