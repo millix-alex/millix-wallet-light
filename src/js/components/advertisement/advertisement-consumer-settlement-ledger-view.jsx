@@ -3,7 +3,7 @@ import {withRouter} from 'react-router-dom';
 import {Row} from 'react-bootstrap';
 import DatatableView from '../utils/datatable-view';
 import API from '../../api';
-import AdPreview from '../utils/ap-preview';
+import AdvertisementPreview from './advertisement-preview';
 import * as format from '../../helper/format';
 import moment from 'moment';
 
@@ -44,7 +44,7 @@ class AdvertisementConsumerSettlementLedgerView extends Component {
                     payment_date     : format.date(item_ledger.payment_date),
                     presentation_date: format.date(item_ledger.presentation_date),
                     amount           : format.millix(item_ledger.deposit),
-                    preview          : this.adPreview(item_ledger)
+                    preview          : this.advertisementPreview(item_ledger)
                 });
             });
 
@@ -57,13 +57,13 @@ class AdvertisementConsumerSettlementLedgerView extends Component {
         });
     }
 
-    adPreview(item_ledger) {
+    advertisementPreview(item_ledger) {
         return (<>
-            <AdPreview
+            <AdvertisementPreview
                 url={item_ledger.advertisement_url}
                 headline={item_ledger.advertisement_headline}
                 deck={item_ledger.advertisement_deck}>
-            </AdPreview>
+            </AdvertisementPreview>
         </>);
     }
 
@@ -75,8 +75,10 @@ class AdvertisementConsumerSettlementLedgerView extends Component {
                 <div className={'panel-body'}>
                     <div className={'form-group'}>
                         <p>
-                            these are advertisements you have been presented in the past 24 hours. you should receive advertisement deposits on a consistent basis.
-                            if you are not receiving advertisement deposits click <a className={''} onClick={() => this.props.history.push('/report-issue')}>here</a> to
+                            these are advertisements you have been presented in the past 24 hours. you should receive advertisement deposits on a consistent
+                            basis.
+                            if you are not receiving advertisement deposits click <a className={''}
+                                                                                     onClick={() => this.props.history.push('/report-issue')}>here</a> to
                             request assistance.
                         </p>
                         <span>you have received {format.millix(this.state.total_paid_amount)} in the past 24 hours.</span>
