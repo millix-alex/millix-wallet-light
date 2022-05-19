@@ -6,9 +6,7 @@ import {Dropdown} from 'primereact/dropdown';
 import {Ripple} from 'primereact/ripple';
 import {classNames} from 'primereact/utils';
 import * as format from '../../helper/format';
-import {Button} from 'primereact/button';
-import {MultiSelect} from 'primereact/multiselect';
-import {FilterMatchMode, FilterOperator} from 'primereact/api';
+import {FilterMatchMode} from 'primereact/api';
 import DatatableHeaderView from './datatable-header-view';
 
 
@@ -75,6 +73,7 @@ class DatatableView extends Component {
         if (this.props.showActionColumn) {
             result_column.push(<Column
                 key={'action'}
+                className={'datatable_action_column'}
                 field={'action'}
                 header={'action'}
                 sortable={false}/>);
@@ -163,7 +162,9 @@ class DatatableView extends Component {
                 return <div
                     className={'paginator-dropdown-wrapper'}>show<Dropdown
                     value={options.value} options={dropdownOptions}
-                    onChange={options.onChange}/>records</div>;
+                    onChange={options.onChange} className={'align-middle'}/>
+                    records
+                . total records {options.totalRecords}.</div>;
             }
         };
     }
@@ -205,8 +206,13 @@ class DatatableView extends Component {
                     datatable_reload_timestamp={this.props.datatable_reload_timestamp}
                     action_button={this.props.action_button}
                     on_global_search_change={(e) => this.on_global_search_change(e)}
+                    datatable_reference={this.datatable_reference}
+                    allow_export={this.props.allow_export}
                 />
                 <DataTable value={this.props.value}
+                           ref={(el) => {
+                               this.datatable_reference = el;
+                           }}
                            paginator
                            paginatorTemplate={this.getPaginatorTemplate()}
                            first={this.state.first}
@@ -245,7 +251,8 @@ DatatableView.propTypes = {
     loading                   : PropTypes.bool,
     datatable_reload_timestamp: PropTypes.any,
     reload_datatable          : PropTypes.func,
-    action_button             : PropTypes.any
+    action_button             : PropTypes.any,
+    allow_export              : PropTypes.bool
 };
 
 

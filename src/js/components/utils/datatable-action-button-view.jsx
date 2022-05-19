@@ -24,7 +24,7 @@ class DatatableActionButtonView extends Component {
         if (this.props.icon) {
             icon = this.props.icon;
         }
-        let title = 'details';
+        let title = '';
         if (this.props.title) {
             title = this.props.title;
         }
@@ -32,7 +32,7 @@ class DatatableActionButtonView extends Component {
         return (
             <Button
                 variant="outline-default"
-                className={'btn-xs icon_only ms-auto'}
+                className={'btn-xs icon_only'}
                 title={title}
                 onClick={() => this.onClickHandler()}>
                 <FontAwesomeIcon
