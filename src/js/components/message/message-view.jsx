@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
 import {withRouter} from 'react-router-dom';
 import {Button, Col, Form, Row} from 'react-bootstrap';
-import * as validate from '../helper/validate';
+import * as validate from '../../helper/validate';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import API from '../api';
+import API from '../../api';
 
 
 class MessageView extends Component {
