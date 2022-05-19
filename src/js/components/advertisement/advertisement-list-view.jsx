@@ -6,7 +6,7 @@ import API from '../../api';
 import DatatableView from '../utils/datatable-view';
 import * as format from '../../helper/format';
 import DatatableActionButtonView from '../utils/datatable-action-button-view';
-
+import ModalView from '../utils/modal-view';
 
 class AdvertisementListView extends Component {
     constructor(props) {
@@ -18,7 +18,9 @@ class AdvertisementListView extends Component {
             fileKey                    : new Date().getTime(),
             advertisement_list         : [],
             datatable_reload_timestamp : '',
-            datatable_loading          : false
+            datatable_loading          : false,
+            delete_confirm_show        : false,
+            delete_confirm_guid        : ''
         };
     }
 
@@ -39,8 +41,19 @@ class AdvertisementListView extends Component {
         });
     }
 
+    async showDeleteConfirmation(advertisement) {
+        this.delete_advertisement = advertisement;
+        this.changeConfirmModalShow();       
+    }
+
     resetAdvertisement(advertisement_guid) {
         API.resetAdvertisement(advertisement_guid).then(_ => _);
+    }
+
+    deleteAdvertisement() {
+        API.deleteAdvertisement(this.delete_advertisement.advertisement_guid).then(_ =>{
+            this.reloadDatatable();
+        });
     }
 
     getActionButton(item) {
@@ -68,6 +81,12 @@ class AdvertisementListView extends Component {
                 icon={'redo'}
                 title={'reset'}
                 callback={() => this.resetAdvertisement(item.advertisement_guid)}
+                callback_args={item.advertisement_guid}
+            />
+            <DatatableActionButtonView
+                icon={'trash'}
+                title={'delete'}
+                callback={() => this.showDeleteConfirmation(item)}
                 callback_args={item.advertisement_guid}
             />
         </>;
@@ -163,6 +182,17 @@ class AdvertisementListView extends Component {
             });
     }
 
+    getDeleteAdvertisementName(){
+        return this.delete_advertisement? this.delete_advertisement.advertisement_name: '';
+    }
+
+    changeConfirmModalShow(value = true) {
+        this.setState({
+            delete_confirm_show        : value,
+            delete_confirm_guid        : ''
+        });
+    }
+
     componentDidMount() {
         this.reloadDatatable();
         this.adListUpdateHandler = setInterval(() => this.reloadDatatable(), 60000);
@@ -174,6 +204,13 @@ class AdvertisementListView extends Component {
 
     render() {
         return (<div>
+            <ModalView
+                show={this.state.delete_confirm_show}
+                size={'lg'}
+                heading={'delete advertisement'}
+                on_accept={() => this.deleteAdvertisement()}
+                on_close={() => this.changeConfirmModalShow(false)}
+                body={'are you sure you want to delete '+this.getDeleteAdvertisementName()+' advertisement?'}/>
             <div className={'panel panel-filled'}>
                 <div className={'panel-heading bordered'}>advertisements
                 </div>

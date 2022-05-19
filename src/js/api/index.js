@@ -129,6 +129,12 @@ class API {
         });
     }
 
+    deleteAdvertisement(advertisementGUID) {
+        return this.fetchApiTangled(`/aa74f91cfcf3ddae`, {
+            p0: advertisementGUID
+        });
+    }
+
     getAdvertisementById(advertisement_id) {
         return this.fetchApiTangled('/ae60ccb743cd3c79', {
             p0: advertisement_id
