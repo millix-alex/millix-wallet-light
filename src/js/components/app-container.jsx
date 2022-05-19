@@ -11,12 +11,11 @@ import UnspentTransactionOutputView from './unspent-transaction-output-view';
 import TransactionDetails from './transaction-details-view';
 import PeerListView from './peer-list-view';
 import PeerInfoView from './peer-info-view';
-import CreateAdView from './create-ad-view';
-import ListAdView from './list-ad-view';
+import AdvertisementFormView from './advertisement/advertisement-form-view';
+import AdvertisementListView from './advertisement/advertisement-list-view';
 /*
  import EventLogView from './event-log-view';
  */
-import ConfigView from './config-view';
 import ActionView from './action-view';
 import NewWalletView from './new-wallet-view';
 import ManageWalletView from './manage-wallet-view';
@@ -25,6 +24,14 @@ import BacklogView from './backlog-view';
 import ReportIssueView from './report-issue-view';
 import FaqView from './faq-view';
 import AddressListView from './address-list-view';
+import ConfigGeneralView from './config/config-general-view';
+import ConfigNetwork from './config/config-network-view';
+import ConfigConnection from './config/config-connection-view';
+import ConfigConsensus from './config/config-consensus-view';
+import ConfigAddressVersion from './config/config-address-version-view';
+import ErrorModalRequestApi from './utils/error-handler-request-api';
+import AdvertisementConsumerSettlementLedgerView from './advertisement/advertisement-consumer-settlement-ledger-view';
+import EventsLogView from './event-log-view';
 
 
 class AppContainer extends Component {
@@ -33,39 +40,40 @@ class AppContainer extends Component {
     }
 
     componentDidMount() {
-        /*let scroll = $('body').getNiceScroll();
-         if (scroll.length === 0) {
-         scroll = $('body').niceScroll();
-         }
-         else {
-         scroll.resize();
-         }
-         setInterval(() => scroll.resize(), 500);*/
     }
 
     render() {
         return <Provider store={this.props.store}>
             <Router>
+                <ErrorModalRequestApi/>
                 <Switch>
                     <Route path="/unlock/" component={UnlockWalletView}/>
                     <Route path="/manage-wallet/" component={ManageWalletView}/>
                     <Route path="/new-wallet/" component={NewWalletView}/>
                     <Route path="/import-wallet/" component={ImportWalletView}/>
 
-                    <UnlockedWalletRequiredRoute path="/advertisement-create/"
-                                                 component={CreateAdView}/>
-                    <UnlockedWalletRequiredRoute path="/advertisement-list/"
-                                                 component={ListAdView}/>
+                    <UnlockedWalletRequiredRoute path="/advertisement-form"
+                                                 component={AdvertisementFormView}/>
+                    <UnlockedWalletRequiredRoute path="/advertisement-list"
+                                                 component={AdvertisementListView}/>
+                    <UnlockedWalletRequiredRoute path="/advertisement-deposit-list"
+                                                 component={AdvertisementConsumerSettlementLedgerView}/>
                     <UnlockedWalletRequiredRoute path="/peers"
                                                  component={PeerListView}/>
+                    <UnlockedWalletRequiredRoute path="/event-log"
+                                                 component={EventsLogView}/>
                     <UnlockedWalletRequiredRoute path="/peer/:peer"
                                                  component={PeerInfoView}/>
-                    <UnlockedWalletRequiredRoute path="/config"
-                                                 component={ConfigView}/>
-
-                    {/*<UnlockedWalletRequiredRoute path='/log'*/}
-                    {/*                             component={EventLogView}/>*/}
-
+                    <UnlockedWalletRequiredRoute path="/config/general"
+                                                 component={ConfigGeneralView}/>
+                    <UnlockedWalletRequiredRoute path="/config/network"
+                                                 component={ConfigNetwork}/>
+                    <UnlockedWalletRequiredRoute path="/config/connection"
+                                                 component={ConfigConnection}/>
+                    <UnlockedWalletRequiredRoute path="/config/consensus"
+                                                 component={ConfigConsensus}/>
+                    <UnlockedWalletRequiredRoute path="/config/address-version"
+                                                 component={ConfigAddressVersion}/>
                     <UnlockedWalletRequiredRoute path="/actions"
                                                  component={ActionView}/>
                     <UnlockedWalletRequiredRoute path="/status-summary"

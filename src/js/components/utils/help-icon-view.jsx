@@ -58,7 +58,7 @@ class HelpIconView extends Component {
                         if you node is private you can use port forwarding on
                         your router to make your node public. you can edit your
                         node's network configuration <a className={''}
-                                                        onClick={() => this.props.history.push('/config')}>here</a>
+                                                        onClick={() => this.props.history.push('/config/network')}>here</a>
                     </li>
                 </ul>
             },
@@ -66,17 +66,16 @@ class HelpIconView extends Component {
                 'title': 'transaction maximum input number',
                 'body' : <ul>
                     <li>
-                        the millix protocol limits each transaction to be funded
-                        by a maximum of 128 inputs
+                        the millix protocol limits each transaction to be funded by a maximum of 128 inputs
                     </li>
                     <li>
-                        you can resolve this situation by aggregating your
-                        unspent outputs manually
-                        before you send a large amount
+                        you can resolve this situation by aggregating your unspents manually before you send a large amount
                     </li>
                     <li>
-                        you can aggregate your unspent outputs manually
-                        by sending transactions to yourself
+                        you can aggregate your unspents manually by sending transactions to yourself
+                    </li>
+                    <li>
+                        you can aggregate your unspents on this <a className={''} onClick={() => this.props.history.push('/actions')}>page</a>
                     </li>
                 </ul>
             },
@@ -166,7 +165,7 @@ class HelpIconView extends Component {
                     </li>
                 </ul>
             },
-            'key_identifier'      : {
+            'key_identifier'              : {
                 'title': 'key identifier',
                 'body' : <ul>
                     <li>
@@ -177,6 +176,91 @@ class HelpIconView extends Component {
                     </li>
                     <li>
                         wallet and all the addresses are associated with the key identifier
+                    </li>
+                </ul>
+            },
+            'full_node'                   : {
+                'title': 'full node',
+                'body' : <ul>
+                    <li>
+                        it is not required to send and receive transactions or receive payments from advertisers
+                    </li>
+                    <li>
+                        it is recommended for devices with good bandwidth availability as it strengthens the millix network
+                    </li>
+                    <li>
+                        it increases your ability and efficiency to earn fees from the millix network
+                    </li>
+                </ul>
+            },
+            'transaction_fee_default'     : {
+                'title': 'default fee',
+                'body' : <ul>
+                    <li>
+                        default fee you are willing to pay to send transaction
+                    </li>
+                </ul>
+            },
+            'transaction_fee_proxy'       : {
+                'title': 'minimum proxy fee',
+                'body' : <ul>
+                    <li>
+                        minimum fee your node will accept to verify transaction if it is chosen as proxy
+                    </li>
+                </ul>
+            },
+            'buy_and_sell'                : {
+                'title': 'buy & sell millix',
+                'body' : <ul>
+                    <li>
+                        go to <a href="" onClick={() => window.open('https://millix.com', '_blank').focus()}>millix.com</a> and trade millix for
+                        bitcoin with zero fees
+                    </li>
+                </ul>
+            },
+            'node_ip'                     : {
+                'title': 'node ip',
+                'body' : <ul>
+                    <li>
+                        ip your node is listening to receive connections from other peers in the network
+                    </li>
+                </ul>
+            },
+            'api_port'                    : {
+                'title': 'api port',
+                'body' : <ul>
+                    <li>
+                        port your node is listening to receive API requests
+                    </li>
+                    <li>
+                        API can be used for integration with external applications
+                    </li>
+                </ul>
+            },
+            'max_connections_in'          : {
+                'title': 'max connections in',
+                'body' : <ul>
+                    <li>
+                        maximum number of connections your node accepts from other (public or private) peers in the network
+                    </li>
+                </ul>
+            },
+            'max_connections_out'         : {
+                'title': 'max connections out',
+                'body' : <ul>
+                    <li>
+                        maximum number of connections your node will try to establish with public nodes in the network
+                    </li>
+                </ul>
+            },
+            'initial_peer_list'           : {
+                'title': 'initial peer list',
+                'body' : <ul>
+                    <li>
+                        it is list of peers to which your node will connect first
+                    </li>
+                    <li>
+                        peer list is not limited to initial peer list
                     </li>
                 </ul>
             }
