@@ -98,8 +98,8 @@ class AdvertisementFormView extends Component {
     }
 
     loadAdvertisementCategoryList() {
-        API.getAdvertisementCategoryList().then(data => {
-            let result_option = data.map(d => ({
+        API.getAdvertisementCategoryList().then(response => {
+            let result_option = response.map(d => ({
                 'value': d.advertisement_category_guid,
                 'label': d.advertisement_category
             }));

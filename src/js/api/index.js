@@ -69,7 +69,11 @@ class API {
                 showErrorModalRequestApi(error);
 
                 return Promise.reject(error);
-            });
+            })
+            .catch(_ => Promise.reject({
+                api_status : 'fail',
+                api_message: `request error`
+            })); // in case of failed request (e.g. connection refused) it prevents app from crash
     }
 
     setNodeID(nodeID) {

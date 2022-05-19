@@ -109,7 +109,7 @@ class Sidebar extends Component {
         else if (section === 'advertisement' &&
                  (
                      (defaultSelected === '/advertisement-list') ||
-                     (defaultSelected === '/advertisement-consumer-summary')
+                     (defaultSelected === '/advertisement-deposit-list')
                  )
         ) {
             result = true;
@@ -261,13 +261,13 @@ class Sidebar extends Component {
                         <NavItem key={'advertisement-list'}
                                  eventKey="/advertisement-list">
                             <NavText>
-                                all
+                                list
                             </NavText>
                         </NavItem>
-                        <NavItem key={'advertisement-summary'}
-                                 eventKey="/advertisement-consumer-summary">
+                        <NavItem key={'advertisement-deposit-list'}
+                                 eventKey="/advertisement-deposit-list">
                             <NavText>
-                                consumer summary
+                                deposits
                             </NavText>
                         </NavItem>
                     </NavItem>
