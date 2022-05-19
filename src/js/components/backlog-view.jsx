@@ -13,7 +13,7 @@ class BacklogView extends Component {
     constructor(props) {
         super(props);
         this.update_handler = null;
-        this.state         = {
+        this.state          = {
             backlog_list              : [],
             datatable_loading         : false,
             datatable_reload_timestamp: new Date(),
@@ -21,33 +21,26 @@ class BacklogView extends Component {
         };
     }
 
-    loadBacklogToState() {
+    loadBacklogList() {
         this.setState({
             datatable_loading: true
         });
 
-        API.listBacklog()
+        API.backlogList()
            .then(data => {
-               let backlog = [];
-               if (data.backlog_list) {
-                   backlog = Object.values(data.backlog_list);
-               }
-               backlog.forEach((element, index) => {
-                   backlog[index]['id'] = index;
-               });
                this.setState({
-                   backlog_list              : backlog,
+                   backlog_list              : data.backlog_list,
                    datatable_reload_timestamp: new Date(),
                    datatable_loading         : false
                });
            });
     }
 
-    resetBacklog() {
-        API.resetBacklog()
+    backlogReset() {
+        API.backlogReset()
            .then(() => {
                this.showModal(false);
-               this.loadBacklogToState();
+               this.loadBacklogList();
            });
     }
 
@@ -58,8 +51,8 @@ class BacklogView extends Component {
     }
 
     componentDidMount() {
-        this.loadBacklogToState();
-        this.update_handler = setInterval(() => this.loadBacklogToState(), 10000);
+        this.loadBacklogList();
+        this.update_handler = setInterval(() => this.loadBacklogList(), 10000);
     }
 
     componentWillUnmount() {
@@ -73,10 +66,10 @@ class BacklogView extends Component {
                            size={'lg'}
                            heading={'reset backlog'}
                            on_close={() => this.showModal(false)}
-                           on_accept={() => this.resetBacklog()}
+                           on_accept={() => this.backlogReset()}
                            body={<div>
                                <div>
-                                   continuing will reset backlog of your node.
+                                   continuing will force your node to reset backlog.
                                </div>
                                {text.get_confirmation_modal_question()}
                            </div>}/>
@@ -85,35 +78,33 @@ class BacklogView extends Component {
                 </div>
                 <div className={'panel-body'}>
                     <div className={'form-group'}>
-                        <span>backlog size is calculated from items with key "transaction". this page display every backlog size item.</span>
+                        <span>backlog size is calculated from items with key "transaction". this page display every backlog size item, so count will not match.</span>
                     </div>
                     <DatatableView
-                        reload_datatable={() => this.loadBacklogToState()}
+                        reload_datatable={() => this.loadBacklogList()}
                         datatable_reload_timestamp={this.state.datatable_reload_timestamp}
                         action_button={{
                             label   : 'reset backlog',
                             on_click: () => this.showModal()
                         }}
                         value={this.state.backlog_list}
-                        sortField={'node_idx'}
+                        sortField={'datetime'}
                         loading={this.state.datatable_loading}
-                        sortOrder={-1}
+                        sortOrder={1}
                         resultColumn={[
                             {
-                                field : 'id',
-                                header: 'id'
+                                field : 'datetime',
+                                header: 'datetime'
                             },
                             {
-                                field : 'datetime',
-                                header: 'date'
+                                field: 'job_group_name'
                             },
                             {
                                 field : 'timestamp',
                                 header: 'timestamp'
                             },
                             {
-                                field : 'type',
-                                header: 'type'
+                                field: 'arr_keys'
                             }
                         ]}/>
                 </div>

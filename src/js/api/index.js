@@ -326,24 +326,12 @@ class API {
         });
     }
 
-    listBacklog() {
-        try {
-            return fetch(this.getAuthenticatedMillixApiURL() + '/0df01ae7dd51cec4')
-                .then(response => response.ok ? response.json() : Promise.reject());
-        }
-        catch (e) {
-            return Promise.reject(e);
-        }
+    backlogList() {
+        return this.fetchApiMillix('/0df01ae7dd51cec4');
     }
 
-    resetBacklog() {
-        try {
-            return fetch(this.getAuthenticatedMillixApiURL() + '/epOW5kdvb12QdgsV')
-                .then(response => response.ok ? response.json() : Promise.reject());
-        }
-        catch (e) {
-            return Promise.reject(e);
-        }
+    backlogReset() {
+        return this.fetchApiMillix('/epOW5kdvb12QdgsV');
     }
 
     getNodeAttributes(nodeID) {
