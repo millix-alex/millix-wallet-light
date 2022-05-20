@@ -112,7 +112,8 @@ class Sidebar extends Component {
                      (defaultSelected === '/config/network') ||
                      (defaultSelected === '/config/connection') ||
                      (defaultSelected === '/config/consensus') ||
-                     (defaultSelected === '/config/address-version')
+                     (defaultSelected === '/config/address-version') ||
+                     (defaultSelected === '/config/config-storage')
                  )
         ) {
             result = true;
@@ -257,16 +258,16 @@ class Sidebar extends Component {
                                              icon="chevron-up"
                                              size="1x"/>
                         </NavText>
-                        <NavItem key={'message-new'}
-                                 eventKey="/message-new">
+                        <NavItem key={'message-compose'}
+                                 eventKey="/message-compose">
                             <NavText>
-                                new
+                                compose
                             </NavText>
                         </NavItem>
-                        <NavItem key={'message-received'}
-                                 eventKey={'/message-received'}>
+                        <NavItem key={'message-inbox'}
+                                 eventKey={'/message-inbox'}>
                             <NavText>
-                                received
+                                inbox
                             </NavText>
                         </NavItem>
                         <NavItem key={'message-sent'}
@@ -357,6 +358,11 @@ class Sidebar extends Component {
                         <NavItem key={'config-address-version'} eventKey="/config/address-version">
                             <NavText>
                                 address version
+                            </NavText>
+                        </NavItem>
+                        <NavItem key={'config-storage'} eventKey="/config/storage">
+                            <NavText>
+                                storage
                             </NavText>
                         </NavItem>
                     </NavItem>

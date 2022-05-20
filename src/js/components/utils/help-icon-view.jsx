@@ -193,6 +193,20 @@ class HelpIconView extends Component {
                     </li>
                 </ul>
             },
+            'full_storage_sync'                   : {
+                'title': 'full storage sync',
+                'body' : <ul>
+                    <li>
+                        i dont know how exactly describe this
+                    </li>
+                    <li>
+                        i dont know how exactly describe this
+                    </li>
+                    <li>
+                        i dont know how exactly describe this
+                    </li>
+                </ul>
+            },
             'transaction_fee_default'     : {
                 'title': 'default fee',
                 'body' : <ul>
