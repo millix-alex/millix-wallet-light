@@ -28,6 +28,7 @@ import ConfigGeneralView from './config/config-general-view';
 import ConfigNetwork from './config/config-network-view';
 import ConfigConnection from './config/config-connection-view';
 import ConfigConsensus from './config/config-consensus-view';
+import ConfigStorage from './config/config-storage-view';
 import ConfigAddressVersion from './config/config-address-version-view';
 import ErrorModalRequestApi from './utils/error-handler-request-api';
 import AdvertisementConsumerSettlementLedgerView from './advertisement/advertisement-consumer-settlement-ledger-view';
@@ -76,6 +77,8 @@ class AppContainer extends Component {
                                                  component={ConfigConnection}/>
                     <UnlockedWalletRequiredRoute path="/config/consensus"
                                                  component={ConfigConsensus}/>
+                    <UnlockedWalletRequiredRoute path="/config/storage"
+                                                 component={ConfigStorage}/>
                     <UnlockedWalletRequiredRoute path="/config/address-version"
                                                  component={ConfigAddressVersion}/>
                     <UnlockedWalletRequiredRoute path="/config"

@@ -9,7 +9,7 @@ import {connect} from 'react-redux';
 import DatatableActionButtonView from './../utils/datatable-action-button-view';
 
 
-class MessageReceivedView extends Component {
+class MessageInboxView extends Component {
     constructor(props) {
         super(props);
         this.datatable_reload_interval = undefined;
@@ -97,7 +97,7 @@ class MessageReceivedView extends Component {
                     </div>
                 </div>
                 <div className={'panel panel-filled'}>
-                    <div className={'panel-heading bordered'}>messages sent
+                    <div className={'panel-heading bordered'}>inbox
                     </div>
                     <div className={'panel-body'}>
                         <Row>
@@ -135,5 +135,5 @@ export default connect(
     state => ({
         wallet: state.wallet
     })
-)(withRouter(MessageReceivedView));
+)(withRouter(MessageInboxView));
 

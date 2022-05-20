@@ -10,7 +10,7 @@ import * as text from '../../helper/text';
 import API from '../../api';
 import ErrorList from './../utils/error-list-view';
 
-class MessageNewView extends Component {
+class MessageComposeView extends Component {
     constructor(props) {
         super(props);
         const propsState = props.location.state || {};
@@ -244,10 +244,10 @@ class MessageNewView extends Component {
                 <Row>
                     <Col md={12}>
                         <div className={'panel panel-filled'}>
-                            <div className={'panel-heading bordered'}>send message</div>
+                            <div className={'panel-heading bordered'}>compose message</div>
                             <div className={'panel-body'}>
                                 <p>
-                                    send an encrypted message to any tangled browser user. the message will be stored on your device and the recipients device.
+                                    compose an encrypted message to any tangled browser user. the message will be stored on your device and the recipients device.
                                     to allow the message to reach the recipient, the message is stored on the millix network for up to 90 days. only you and the
                                     recipient can read your messages.
                                 </p>
@@ -421,4 +421,4 @@ export default connect(
         wallet: state.wallet,
         config: state.config
     })
-)(withRouter(MessageNewView));
+)(withRouter(MessageComposeView));
