@@ -106,8 +106,7 @@ class TransactionHistoryView extends Component {
                                         field: 'stable_date'
                                     },
                                     {
-                                        field: 'double_spend',
-                                        header: 'double spend'
+                                        field: 'double_spend'
                                     }
                                 ]}/>
                         </Row>
