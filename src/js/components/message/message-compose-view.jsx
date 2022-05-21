@@ -9,27 +9,29 @@ import ModalView from './../utils/modal-view';
 import * as text from '../../helper/text';
 import API from '../../api';
 import ErrorList from './../utils/error-list-view';
+import Transaction from '../../common/transaction';
+
 
 class MessageComposeView extends Component {
     constructor(props) {
         super(props);
         const propsState = props.location.state || {};
         this.state       = {
-            dnsValidated          : false,
-            feeInputLocked        : true,
-            error_list            : [],
-            modalShow             : false,
-            modalShowSendResult   : false,
-            modalBodySendResult   : [],
-            address_base          : '',
-            address_version       : '',
-            address_key_identifier: '',
-            amount                : '',
-            fee                   : '',
-            destinationAddress    : propsState.address || '',
-            subject               : propsState.subject ? `re: ${propsState.subject}` : '',
-            message               : propsState.message ? `\n______________________________\n${propsState.message}` : '',
-            txid                  : propsState.txid
+            dns_valid              : false,
+            fee_input_locked       : true,
+            error_list             : [],
+            modal_show_confirmation: false,
+            modal_show_send_result : false,
+            modal_body_send_result : [],
+            address_base           : '',
+            address_version        : '',
+            address_key_identifier : '',
+            amount                 : '',
+            fee                    : '',
+            destination_address    : propsState.address || '',
+            subject                : propsState.subject ? `re: ${propsState.subject}` : '',
+            message                : propsState.message ? `\n______________________________\n${propsState.message}` : '',
+            txid                   : propsState.txid
         };
 
         this.send = this.send.bind(this);
@@ -44,15 +46,15 @@ class MessageComposeView extends Component {
     verifyDNS() {
         const dns = validate.dns('dns', this.dns.value, []);
         if (dns === null) {
-            this.setState({dnsValidated: false});
+            this.setState({dns_valid: false});
         }
         else {
             API.isDNSVerified(dns, this.props.wallet.address_key_identifier)
                .then(data => {
-                   this.setState({dnsValidated: data.is_address_verified});
+                   this.setState({dns_valid: data.is_address_verified});
                })
                .catch(() => {
-                   this.setState({dnsValidated: false});
+                   this.setState({dns_valid: false});
                });
         }
     }
@@ -66,74 +68,68 @@ class MessageComposeView extends Component {
             });
             return;
         }
+        const transaction_params = {
+            address: validate.required('address', this.destination_address.value, error_list),
+            amount : validate.amount('amount', this.amount.value, error_list),
+            fee    : validate.amount('fee', this.fee.value, error_list),
+            subject: validate.required('subject', this.subject.value, error_list),
+            message: validate.required('message', this.message.value, error_list),
+            dns    : validate.dns('dns', this.dns.value, error_list)
+        };
 
-        this.setState({
-            sendTransactionError       : false,
-            sendTransactionErrorMessage: null
-        });
-
-        const address = validate.required('address', this.destinationAddress.value, error_list);
-        const subject = validate.required('subject', this.subject.value, error_list);
-        const message = validate.required('message', this.message.value, error_list);
-        const amount  = validate.amount('amount', this.amount.value, error_list);
-        const fee     = validate.amount('fee', this.fee.value, error_list);
-        const dns     = validate.dns('dns', this.dns.value, error_list);
+        if (error_list.length === 0) {
+            Transaction.verifyAddress(transaction_params).then((data) => {
+                this.setState(data);
+                this.changeModalShowConfirmation();
+            }).catch((error) => {
+                error_list.push(error);
+            });
+        }
 
         this.setState({
             error_list: error_list
         });
-
-        if (error_list.length === 0) {
-            API.verifyAddress(address)
-               .then(data => {
-                   if (!data.is_valid) {
-                       error_list.push({
-                           name   : 'address_invalid',
-                           message: 'valid address is required'
-                       });
-                       this.setState({error_list: error_list});
-                   }
-                   else {
-                       const {
-                                 address_base          : destinationAddress,
-                                 address_key_identifier: destinationAddressIdentifier,
-                                 address_version       : destinationAddressVersion
-                             } = data;
-
-                       this.setState({
-                           error_list            : [],
-                           address_base          : destinationAddress,
-                           address_version       : destinationAddressVersion,
-                           address_key_identifier: destinationAddressIdentifier,
-                           subject               : subject,
-                           message               : message,
-                           amount                : amount,
-                           dns                   : dns,
-                           fee                   : fee
-                       });
-
-                       this.changeModalShow();
-                   }
-               });
-        }
     }
 
     sendTransaction() {
         this.setState({
             sending: true
         });
+        let transaction_output_payload = this.prepareTransactionOutputPayload();
+        Transaction.sendTransaction(transaction_output_payload, true).then((data) => {
+            this.clearSendForm();
+            this.changeModalShowConfirmation(false);
+            this.changeModalShowSendResult();
+            this.setState(data);
+        }).catch((error) => {
+            this.changeModalShowConfirmation(false);
+            this.setState(error);
+        });
 
+    }
+
+    clearSendForm() {
+        this.destination_address.value = '';
+        this.amount.value              = '';
+        this.subject.value             = '';
+        this.message.value             = '';
+
+        if (this.props.config.TRANSACTION_FEE_DEFAULT !== undefined) {
+            this.fee.value = format.millix(this.props.config.TRANSACTION_FEE_DEFAULT, false);
+        }
+    }
+
+    prepareTransactionOutputPayload() {
         const transactionOutputAttribute = {};
 
         if (!!this.state.dns) {
             transactionOutputAttribute['dns'] = this.state.dns;
         }
-        if(!!this.state.txid){
+        if (!!this.state.txid) {
             transactionOutputAttribute['parent_transaction_id'] = this.state.txid;
         }
-
         const amount = this.state.amount;
-        API.sendTransactionWithData({
+        return {
             transaction_output_attribute: transactionOutputAttribute,
             transaction_data            : {
                 subject: this.state.subject,
@@ -151,71 +147,7 @@ class MessageComposeView extends Component {
                 fee_type: 'transaction_fee_default',
                 amount  : this.state.fee
             }
-        }).then(data => {
-            if (data.api_status === 'fail') {
-                this.changeModalShow(false);
-
-                return Promise.reject(data);
-            }
-
-            return data;
-        }).then(data => {
-            this.destinationAddress.value = '';
-            this.amount.value             = '';
-            this.subject.value            = '';
-            this.message.value            = '';
-
-            if (this.props.config.TRANSACTION_FEE_DEFAULT !== undefined) {
-                this.fee.value = format.millix(this.props.config.TRANSACTION_FEE_DEFAULT, false);
-            }
-
-            const transaction = data.transaction.find(item => {
-                return item.version.indexOf('0a') !== -1;
-            });
-
-            const modalBodySendResult = <div>
-                <div>
-                    transaction id
-                </div>
-                <div>
-                    {transaction.transaction_id}
-                </div>
-            </div>;
-
-            this.setState({
-                amount             : '',
-                subject            : '',
-                message            : '',
-                destinationAddress : '',
-                sending            : false,
-                feeInputLocked     : true,
-                modalBodySendResult: modalBodySendResult
-            });
-            this.changeModalShow(false);
-            this.changeModalShowSendResult();
-        }).catch((e) => {
-            let sendTransactionErrorMessage;
-            let error_list = [];
-            if (e !== 'validation_error') {
-                if (e && e.api_message) {
-                    sendTransactionErrorMessage = text.get_ui_error(e.api_message);
-                }
-                else {
-                    sendTransactionErrorMessage = `your transaction could not be sent: (${e?.api_message?.error.error || e?.api_message?.error || e?.message || e?.api_message || e || 'undefined behaviour'})`;
-                }
-
-                error_list.push({
-                    name   : 'sendTransactionError',
-                    message: sendTransactionErrorMessage
-                });
-            }
-            this.setState({
-                error_list: error_list,
-                sending   : false,
-                canceling : false
-            });
-            this.changeModalShow(false);
-        });
+        };
     }
 
     cancelSendTransaction() {
@@ -223,18 +155,18 @@ class MessageComposeView extends Component {
             canceling: false,
             sending  : false
         });
-        this.changeModalShow(false);
+        this.changeModalShowConfirmation(false);
     }
 
-    changeModalShow(value = true) {
+    changeModalShowConfirmation(value = true) {
         this.setState({
-            modalShow: value
+            modal_show_confirmation: value
         });
     }
 
     changeModalShowSendResult(value = true) {
         this.setState({
-            modalShowSendResult: value
+            modal_show_send_result: value
         });
     }
 
@@ -247,29 +179,24 @@ class MessageComposeView extends Component {
                             <div className={'panel-heading bordered'}>compose message</div>
                             <div className={'panel-body'}>
                                 <p>
-                                    compose an encrypted message to any tangled browser user. the message will be stored on your device and the recipients device.
-                                    to allow the message to reach the recipient, the message is stored on the millix network for up to 90 days. only you and the
+                                    compose an encrypted message to any tangled browser user. the message will be stored on your device and the recipients
+                                    device.
+                                    to allow the message to reach the recipient, the message is stored on the millix network for up to 90 days. only you and
+                                    the
                                     recipient can read your messages.
                                 </p>
                                 <ErrorList
                                     error_list={this.state.error_list}/>
                                 <Row>
                                     <Form>
-                                        <Col
-                                            className={'d-flex justify-content-center'}>
-                                            {this.state.sendTransactionError && (
-                                                <div className={'form-error'}>
-                                                    <span>{this.state.sendTransactionErrorMessage}</span>
-                                                </div>)}
-                                        </Col>
                                         <Col>
                                             <Form.Group className="form-group">
                                                 <label>to</label>
                                                 <Form.Control type="text"
-                                                              value={this.state.destinationAddress}
-                                                              onChange={c => this.setState({destinationAddress: c.target.value})}
+                                                              value={this.state.destination_address}
+                                                              onChange={c => this.setState({destination_address: c.target.value})}
                                                               placeholder="address"
-                                                              ref={c => this.destinationAddress = c}/>
+                                                              ref={c => this.destination_address = c}/>
                                             </Form.Group>
                                         </Col>
                                         <Col>
@@ -318,13 +245,13 @@ class MessageComposeView extends Component {
                                                                       }
                                                                   }}
                                                                   onChange={validate.handleAmountInputChange.bind(this)}
-                                                                  disabled={this.state.feeInputLocked}/>
+                                                                  disabled={this.state.fee_input_locked}/>
                                                     <button
                                                         className="btn btn-outline-input-group-addon icon_only"
                                                         type="button"
-                                                        onClick={() => this.setState({feeInputLocked: !this.state.feeInputLocked})}>
+                                                        onClick={() => this.setState({fee_input_locked: !this.state.fee_input_locked})}>
                                                         <FontAwesomeIcon
-                                                            icon={this.state.feeInputLocked ? 'lock' : 'lock-open'}
+                                                            icon={this.state.fee_input_locked ? 'lock' : 'lock-open'}
                                                             size="sm"/>
                                                     </button>
                                                 </Col>
@@ -341,7 +268,7 @@ class MessageComposeView extends Component {
                                                                   ref={c => this.dns = c}
                                                                   onChange={e => {
                                                                       validate.handleInputChangeDNSString(e);
-                                                                      this.setState({dnsValidated: undefined});
+                                                                      this.setState({dns_valid: undefined}); //@todo check with crank
                                                                       clearTimeout(this.checkDNSHandler);
                                                                       this.checkDNSHandler = setTimeout(() => this.verifyDNS(), 800);
                                                                   }}/>
@@ -350,19 +277,20 @@ class MessageComposeView extends Component {
                                                         type="button"
                                                         style={{opacity: '1!important'}}
                                                         disabled={true}>
-                                                        {this.state.dnsValidated === undefined ? <div style={{
-                                                                                                   margin: 0,
-                                                                                                   width : '0.9rem',
-                                                                                                   height: '0.9rem'
-                                                                                               }} className="loader-spin"/> :
+                                                        {this.state.dns_valid === undefined ? <div style={{
+                                                                                                margin: 0,
+                                                                                                width : '0.9rem',
+                                                                                                height: '0.9rem'
+                                                                                            }} className="loader-spin"/> :
                                                          <FontAwesomeIcon
-                                                             color={this.state.dnsValidated ? '#42a5f5' : '#a9a9a9'}
-                                                             icon={this.state.dnsValidated ? 'check-circle' : 'question-circle'}
+                                                             color={this.state.dns_valid ? '#42a5f5' : '#a9a9a9'}
+                                                             icon={this.state.dns_valid ? 'check-circle' : 'question-circle'}
                                                              size="sm"/>}
                                                     </button>
                                                 </Col>
                                                 <div>
-                                                    anyone with a domain name can be a verified sender. this allows the recipient of your message to trust your
+                                                    anyone with a domain name can be a verified sender. this allows the recipient of your message to trust
+                                                    your
                                                     identity. <a href="#">click to lear more</a>
                                                 </div>
                                             </Form.Group>
@@ -370,7 +298,7 @@ class MessageComposeView extends Component {
                                         <Col
                                             className={'d-flex justify-content-center'}>
                                             <ModalView
-                                                show={this.state.modalShow}
+                                                show={this.state.modal_show_confirmation}
                                                 size={'lg'}
                                                 heading={'send confirmation'}
                                                 on_accept={() => this.sendTransaction()}
@@ -380,13 +308,16 @@ class MessageComposeView extends Component {
                                                     <div>{this.state.address_base}{this.state.address_version}{this.state.address_key_identifier}</div>
                                                     {text.get_confirmation_modal_question()}
                                                 </div>}/>
+                                            {/* todo check with crank check text - send confirmation*/}
 
                                             <ModalView
-                                                show={this.state.modalShowSendResult}
+                                                show={this.state.modal_show_send_result}
                                                 size={'lg'}
                                                 on_close={() => this.changeModalShowSendResult(false)}
                                                 heading={'payment has been sent'}
-                                                body={this.state.modalBodySendResult}/>
+                                                body={this.state.modal_body_send_result}/>
+                                            {/* todo check with crank check text - payment has been sent*/}
+
                                             <Form.Group as={Row}>
                                                 <Button
                                                     variant="outline-primary"

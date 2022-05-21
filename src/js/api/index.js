@@ -50,7 +50,7 @@ class API {
             let param_string = '';
             if (result_param) {
                 const param_array = [];
-                Object.keys(result_param).forEach(function(param_key, index) {
+                Object.keys(result_param).forEach(function(param_key) {
                     let value = result_param[param_key];
                     if (_.isArray(value) || typeof (value) === 'object') {
                         value = encodeURIComponent(JSON.stringify(value));
@@ -151,10 +151,15 @@ class API {
         });
     }
 
-    sendTransaction(transactionOutputPayload) {
-        return this.fetchApiMillix(`/XPzc85T3reYmGro1`, {
-            p0: JSON.stringify(transactionOutputPayload)
-        });
+    sendTransaction(transactionOutputPayload, withData = false) {
+        if (withData) {
+            return this.sendTransactionWithData(transactionOutputPayload);
+        }
+        else {
+            return this.fetchApiMillix(`/XPzc85T3reYmGro1`, {
+                p0: JSON.stringify(transactionOutputPayload)
+            });
+        }
     }
 
     sendTransactionWithData(transactionOutputPayload) {
@@ -381,7 +386,7 @@ class API {
     resetTransactionValidationByID(transaction_id = null) {
         let payload = [];
         if (typeof transaction_id === 'object') {
-            transaction_id.forEach((item, idx) => {
+            transaction_id.forEach((item) => {
                 if (typeof item.transaction_id !== 'undefined') {
                     payload.push(item.transaction_id);
                 }

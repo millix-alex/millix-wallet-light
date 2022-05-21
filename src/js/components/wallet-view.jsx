@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
-import {Col, Row, Form, Table, Button, Badge} from 'react-bootstrap';
+import {Col, Row, Form, Button} from 'react-bootstrap';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import API from '../api/index';
 import ErrorList from './utils/error-list-view';
@@ -10,22 +10,23 @@ import * as format from '../helper/format';
 import BalanceView from './utils/balance-view';
 import * as validate from '../helper/validate';
 import * as text from '../helper/text';
+import Transaction from '../common/transaction';
 
 
 class WalletView extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            feeInputLocked        : true,
-            error_list            : [],
-            modalShow             : false,
-            modalShowSendResult   : false,
-            modalBodySendResult   : [],
-            address_base          : '',
-            address_version       : '',
-            address_key_identifier: '',
-            amount                : '',
-            fee                   : ''
+            fee_input_locked       : true,
+            error_list             : [],
+            modal_show_confirmation: false,
+            modal_show_send_result : false,
+            modal_body_send_result : [],
+            address_base           : '',
+            address_version        : '',
+            address_key_identifier : '',
+            amount                 : '',
+            fee                    : ''
         };
 
         this.send = this.send.bind(this);
@@ -47,58 +48,54 @@ class WalletView extends Component {
             return;
         }
 
-        this.setState({
-            sendTransactionError       : false,
-            sendTransactionErrorMessage: null
-        });
+        const transaction_params = {
+            address: validate.required('address', this.destinationAddress.value, error_list),
+            amount : validate.amount('amount', this.amount.value, error_list),
+            fee    : validate.amount('fee', this.fee.value, error_list)
+        };
 
-        const address = validate.required('address', this.destinationAddress.value, error_list);
-        const amount  = validate.amount('amount', this.amount.value, error_list);
-        const fee     = validate.amount('fee', this.fee.value, error_list);
+        if (error_list.length === 0) {
+            Transaction.verifyAddress(transaction_params).then((data) => {
+                this.setState(data);
+                this.changeModalShowConfirmation()
+            }).catch((error) => {
+                error_list.push(error);
+            });
+        }
 
         this.setState({
             error_list: error_list
         });
-
-        if (error_list.length === 0) {
-            API.verifyAddress(address)
-               .then(data => {
-                   if (!data.is_valid) {
-                       error_list.push({
-                           name   : 'address_invalid',
-                           message: 'valid address is required'
-                       });
-                       this.setState({error_list: error_list});
-                   }
-                   else {
-                       const {
-                                 address_base          : destinationAddress,
-                                 address_key_identifier: destinationAddressIdentifier,
-                                 address_version       : destinationAddressVersion
-                             } = data;
-
-                       this.setState({
-                           error_list            : [],
-                           address_base          : destinationAddress,
-                           address_version       : destinationAddressVersion,
-                           address_key_identifier: destinationAddressIdentifier,
-                           amount                : amount,
-                           fee                   : fee
-                       });
-
-                       this.changeModalShow();
-                   }
-               });
-        }
     }
 
     sendTransaction() {
         this.setState({
             sending: true
         });
+        let transaction_output_payload = this.prepareTransactionOutputPayload();
+        Transaction.sendTransaction(transaction_output_payload).then((data) => {
+            this.clearSendForm();
+            this.changeModalShowConfirmation(false);
+            this.changeModalShowSendResult();
+            this.setState(data);
+        }).catch((error) => {
+            this.changeModalShowConfirmation(false);
+            this.setState(error);
+        });
+    }
 
+    clearSendForm() {
+        this.destinationAddress.value = '';
+        this.amount.value             = '';
+
+        if (this.props.config.TRANSACTION_FEE_DEFAULT !== undefined) {
+            this.fee.value = format.millix(this.props.config.TRANSACTION_FEE_DEFAULT, false);
+        }
+    }
+
+    prepareTransactionOutputPayload() {
         const amount = this.state.amount;
-        API.sendTransaction({
+        return {
             transaction_output_list: [
                 {
                     address_base          : this.state.address_base,
@@ -111,65 +108,7 @@ class WalletView extends Component {
                 fee_type: 'transaction_fee_default',
                 amount  : this.state.fee
             }
-        }).then(data => {
-            if (data.api_status === 'fail') {
-                this.changeModalShow(false);
-
-                return Promise.reject(data);
-            }
-
-            return data;
-        }).then(data => {
-            this.destinationAddress.value = '';
-            this.amount.value             = '';
-
-            if (this.props.config.TRANSACTION_FEE_DEFAULT !== undefined) {
-                this.fee.value = format.millix(this.props.config.TRANSACTION_FEE_DEFAULT, false);
-            }
-
-            const transaction = data.transaction.find(item => {
-                return item.version.indexOf('0a') !== -1;
-            });
-
-            const modalBodySendResult = <div>
-                <div>
-                    transaction id
-                </div>
-                <div>
-                    {transaction.transaction_id}
-                </div>
-            </div>;
-
-            this.setState({
-                sending            : false,
-                feeInputLocked     : true,
-                modalBodySendResult: modalBodySendResult
-            });
-            this.changeModalShow(false);
-            this.changeModalShowSendResult();
-        }).catch((e) => {
-            let sendTransactionErrorMessage;
-            let error_list = [];
-            if (e !== 'validation_error') {
-                if (e && e.api_message) {
-                    sendTransactionErrorMessage = text.get_ui_error(e.api_message);
-                }
-                else {
-                    sendTransactionErrorMessage = `your transaction could not be sent: (${e?.api_message?.error.error || e?.api_message?.error || e?.message || e?.api_message || e || 'undefined behaviour'})`;
-                }
-
-                error_list.push({
-                    name   : 'sendTransactionError',
-                    message: sendTransactionErrorMessage
-                });
-            }
-            this.setState({
-                error_list: error_list,
-                sending   : false,
-                canceling : false
-            });
-            this.changeModalShow(false);
-        });
+        };
     }
 
     cancelSendTransaction() {
@@ -177,18 +116,18 @@ class WalletView extends Component {
             canceling: false,
             sending  : false
         });
-        this.changeModalShow(false);
+        this.changeModalShowConfirmation(false);
     }
 
-    changeModalShow(value = true) {
+    changeModalShowConfirmation(value = true) {
         this.setState({
-            modalShow: value
+            modal_show_confirmation: value
         });
     }
 
     changeModalShowSendResult(value = true) {
         this.setState({
-            modalShowSendResult: value
+            modal_show_send_result: value
         });
     }
 
@@ -209,13 +148,6 @@ class WalletView extends Component {
                                     error_list={this.state.error_list}/>
                                 <Row>
                                     <Form>
-                                        <Col
-                                            className={'d-flex justify-content-center'}>
-                                            {this.state.sendTransactionError && (
-                                                <div className={'form-error'}>
-                                                    <span>{this.state.sendTransactionErrorMessage}</span>
-                                                </div>)}
-                                        </Col>
                                         <Col>
                                             <Form.Group className="form-group">
                                                 <label>address</label>
@@ -250,13 +182,13 @@ class WalletView extends Component {
                                                                       }
                                                                   }}
                                                                   onChange={validate.handleAmountInputChange.bind(this)}
-                                                                  disabled={this.state.feeInputLocked}/>
+                                                                  disabled={this.state.fee_input_locked}/>
                                                     <button
                                                         className="btn btn-outline-input-group-addon icon_only"
                                                         type="button"
-                                                        onClick={() => this.setState({feeInputLocked: !this.state.feeInputLocked})}>
+                                                        onClick={() => this.setState({fee_input_locked: !this.state.fee_input_locked})}>
                                                         <FontAwesomeIcon
-                                                            icon={this.state.feeInputLocked ? 'lock' : 'lock-open'}
+                                                            icon={this.state.fee_input_locked ? 'lock' : 'lock-open'}
                                                             size="sm"/>
                                                     </button>
                                                 </Col>
@@ -265,7 +197,7 @@ class WalletView extends Component {
                                         <Col
                                             className={'d-flex justify-content-center'}>
                                             <ModalView
-                                                show={this.state.modalShow}
+                                                show={this.state.modal_show_confirmation}
                                                 size={'lg'}
                                                 heading={'send confirmation'}
                                                 on_accept={() => this.sendTransaction()}
@@ -277,11 +209,11 @@ class WalletView extends Component {
                                                 </div>}/>
 
                                             <ModalView
-                                                show={this.state.modalShowSendResult}
+                                                show={this.state.modal_show_send_result}
                                                 size={'lg'}
                                                 on_close={() => this.changeModalShowSendResult(false)}
                                                 heading={'payment has been sent'}
-                                                body={this.state.modalBodySendResult}/>
+                                                body={this.state.modal_body_send_result}/>
                                             <Form.Group as={Row}>
                                                 <Button
                                                     variant="outline-primary"
