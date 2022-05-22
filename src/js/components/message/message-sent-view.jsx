@@ -45,7 +45,7 @@ class MessageSentView extends Component {
                         }
                         for (const fileHash of _.keys(outputAttributeValue.file_data)) {
                             const message    = outputAttributeValue.file_data[fileHash];
-                            let empty_tx     = !_.isNil(message.subject);
+                            let empty_tx     = _.isNil(message.subject);
                             message.subject  = empty_tx ? this.getPendingTxMessage() : message.subject;
                             message.message  = empty_tx ? this.getPendingTxMessage() : message.message;
                             const newRow     = {

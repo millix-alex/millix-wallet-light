@@ -254,8 +254,8 @@ class Sidebar extends Component {
                     >
                         <NavText>
                             advertisements <FontAwesomeIcon className={'icon'}
-                                                          icon="chevron-down"
-                                                          size="1x"/>
+                                                            icon="chevron-down"
+                                                            size="1x"/>
                             <FontAwesomeIcon className={'icon hidden'}
                                              icon="chevron-up"
                                              size="1x"/>
@@ -272,11 +272,6 @@ class Sidebar extends Component {
                                 deposits
                             </NavText>
                         </NavItem>
-                    <NavItem key={'advertisement-list'}
-                             eventKey="/advertisement-list">
-                        <NavText>
-                            advertisements
-                        </NavText>
                     </NavItem>
 
                     <NavItem
@@ -285,8 +280,8 @@ class Sidebar extends Component {
                     >
                         <NavText>
                             messages <FontAwesomeIcon className={'icon'}
-                                                          icon="chevron-down"
-                                                          size="1x"/>
+                                                      icon="chevron-down"
+                                                      size="1x"/>
                             <FontAwesomeIcon className={'icon hidden'}
                                              icon="chevron-up"
                                              size="1x"/>
@@ -310,14 +305,6 @@ class Sidebar extends Component {
                             </NavText>
                         </NavItem>
                     </NavItem>
-
-                    {/*
-                     <NavItem key={'log'} eventKey="/log">
-                     <NavText>
-                     logs
-                     </NavText>
-                     </NavItem>
-                     */}
                     <NavItem key={'config'} eventKey="/config">
                         <NavText>
                             settings
