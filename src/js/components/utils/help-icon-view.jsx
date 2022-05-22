@@ -193,7 +193,7 @@ class HelpIconView extends Component {
                     </li>
                 </ul>
             },
-            'full_storage_sync'                   : {
+            'full_storage_sync'           : {
                 'title': 'full storage sync',
                 'body' : <ul>
                     <li>
@@ -275,6 +275,14 @@ class HelpIconView extends Component {
                     </li>
                     <li>
                         peer list is not limited to initial peer list
+                    </li>
+                </ul>
+            },
+            'verified_sender'             : {
+                'title': 'verified sender',
+                'body' : <ul>
+                    <li>
+                        anyone with a domain name can be a verified sender. this allows the recipient of your message to trust your identity
                     </li>
                 </ul>
             }

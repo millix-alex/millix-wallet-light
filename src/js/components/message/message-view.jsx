@@ -19,11 +19,8 @@ class MessageView extends Component {
         }
     }
 
-    componentWillUnmount() {
-    }
-
     reply() {
-        this.props.history.push('/message-new/', this.props.location.state);
+        this.props.history.push('/message-compose/', this.props.location.state); //todo ask crank to replace this with popup and universal component for this and message
     }
 
     _getAddressKeyIdentifier(address) {

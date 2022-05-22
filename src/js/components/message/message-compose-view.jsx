@@ -10,6 +10,7 @@ import * as text from '../../helper/text';
 import API from '../../api';
 import ErrorList from './../utils/error-list-view';
 import Transaction from '../../common/transaction';
+import HelpIconView from '../utils/help-icon-view';
 
 
 class MessageComposeView extends Component {
@@ -29,7 +30,7 @@ class MessageComposeView extends Component {
             amount                 : '',
             fee                    : '',
             destination_address    : propsState.address || '',
-            subject                : propsState.subject ? `re: ${propsState.subject}` : '',
+            subject                : propsState.subject ? this.getReplySubjectText(propsState.subject) : '',
             message                : propsState.message ? `\n______________________________\n${propsState.message}` : '',
             txid                   : propsState.txid
         };
@@ -41,6 +42,13 @@ class MessageComposeView extends Component {
         if (this.state.sending) {
             API.interruptTransaction().then(_ => _);
         }
+    }
+
+    getReplySubjectText(subject) {
+        if (subject.indexOf('re:') !== 0) {
+            subject = `re: ${subject}`;
+        }
+        return subject;
     }
 
     verifyDNS() {
@@ -176,7 +184,7 @@ class MessageComposeView extends Component {
                 <Row>
                     <Col md={12}>
                         <div className={'panel panel-filled'}>
-                            <div className={'panel-heading bordered'}>compose message</div>
+                            <div className={'panel-heading bordered'}>compose</div>
                             <div className={'panel-body'}>
                                 <p>
                                     compose an encrypted message to any tangled browser user. the message will be stored on your device and the recipients
@@ -260,7 +268,7 @@ class MessageComposeView extends Component {
                                         <Col>
                                             <Form.Group className="form-group"
                                                         as={Row}>
-                                                <label>verified sender</label>
+                                                <label>verified sender<HelpIconView help_item_name={'verified_sender'}/></label>
                                                 <Col className={'input-group'}>
                                                     <Form.Control type="text"
                                                                   placeholder="dns"
@@ -288,11 +296,6 @@ class MessageComposeView extends Component {
                                                              size="sm"/>}
                                                     </button>
                                                 </Col>
-                                                <div>
-                                                    anyone with a domain name can be a verified sender. this allows the recipient of your message to trust
-                                                    your
-                                                    identity. <a href="#">click to lear more</a>
-                                                </div>
                                             </Form.Group>
                                         </Col>
                                         <Col

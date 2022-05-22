@@ -63,7 +63,16 @@ class MessageInboxView extends Component {
                                         history_path={'/message-view/' + encodeURIComponent(transaction.transaction_id)}
                                         history_state={{...newRow}}
                                         icon={'eye'}/>
+                                    <DatatableActionButtonView
+                                        history_path={'/message-compose/' + encodeURIComponent(transaction.transaction_id)}
+                                        history_state={{...newRow}}
+                                        icon={'reply'}/>
+                                    <DatatableActionButtonView
+                                        history_path={'/message-compose'}
+                                        history_state={{}}
+                                        icon={'envelope'}/>
                                 </>;
+                                //todo ask crank about best practices to redirect or check it by myself
                                 rows.push(newRow);
                                 idx++;
                                 break;

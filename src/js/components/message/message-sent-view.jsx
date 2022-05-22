@@ -35,7 +35,7 @@ class MessageSentView extends Component {
         });
 
         return API.listTransactionWithDataSent(this.props.wallet.address_key_identifier).then(data => {
-            const rows = [];
+            const rows = [];// todo ask crank about extraction this part to common transaction
             data.forEach((transaction, idx) => {
                 transaction?.transaction_output_attribute.forEach(attribute => {
                     if (attribute?.value) {
@@ -63,6 +63,10 @@ class MessageSentView extends Component {
                                         history_path={'/message-view/' + encodeURIComponent(transaction.transaction_id)}
                                         history_state={{...newRow}}
                                         icon={'eye'}/>
+                                    <DatatableActionButtonView
+                                        history_path={'/message-compose'}
+                                        history_state={{}}
+                                        icon={'envelope'}/>
                                 </>;
                                 rows.push(newRow);
                                 idx++;
