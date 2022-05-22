@@ -20,7 +20,7 @@ class MessageView extends Component {
     }
 
     reply() {
-        this.props.history.push('/message-compose/', this.props.location.state); //todo ask crank to replace this with popup and universal component for this and message
+        this.props.history.push('/message-compose/', this.props.location.state);
     }
 
     _getAddressKeyIdentifier(address) {

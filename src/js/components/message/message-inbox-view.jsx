@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {withRouter} from 'react-router-dom';
-import {Row} from 'react-bootstrap';
+import {Row, Spinner} from 'react-bootstrap';
 import API from '../../api';
 import _ from 'lodash';
 import * as format from '../../helper/format';
@@ -44,39 +44,42 @@ class MessageInboxView extends Component {
                             return;
                         }
                         for (const fileHash of _.keys(outputAttributeValue.file_data)) {
-                            const message = outputAttributeValue.file_data[fileHash];
-                            if (!_.isNil(message.subject) && !_.isNil(message.message)) {
-                                const newRow     = {
-                                    idx        : idx,
-                                    date       : format.date(transaction.transaction_date),
-                                    txid       : transaction.transaction_id,
-                                    txid_parent: outputAttributeValue.parent_transaction_id,
-                                    dns        : outputAttributeValue.dns,
-                                    amount     : format.number(transaction.amount),
-                                    subject    : message.subject,
-                                    address    : transaction.address_from,
-                                    message    : message.message,
-                                    sent       : false
-                                };
-                                newRow['action'] = <>
-                                    <DatatableActionButtonView
-                                        history_path={'/message-view/' + encodeURIComponent(transaction.transaction_id)}
-                                        history_state={{...newRow}}
-                                        icon={'eye'}/>
-                                    <DatatableActionButtonView
-                                        history_path={'/message-compose/' + encodeURIComponent(transaction.transaction_id)}
-                                        history_state={{...newRow}}
-                                        icon={'reply'}/>
-                                    <DatatableActionButtonView
-                                        history_path={'/message-compose'}
-                                        history_state={{}}
-                                        icon={'envelope'}/>
-                                </>;
-                                //todo ask crank about best practices to redirect or check it by myself
-                                rows.push(newRow);
-                                idx++;
-                                break;
-                            }
+                            const message    = outputAttributeValue.file_data[fileHash];
+                            let empty_tx = _.isNil(message.subject)
+                            message.subject  = empty_tx ? this.getPendingTxMessage() : message.subject;
+                            message.message  = empty_tx ? this.getPendingTxMessage() : message.message;
+                            const newRow     = {
+                                idx        : idx,
+                                date       : format.date(transaction.transaction_date),
+                                txid       : transaction.transaction_id,
+                                txid_parent: outputAttributeValue.parent_transaction_id,
+                                dns        : outputAttributeValue.dns,
+                                amount     : format.number(transaction.amount),
+                                subject    : message.subject,
+                                address    : transaction.address_from,
+                                message    : message.message,
+                                sent       : false
+                            };
+                            newRow['action'] = <>
+                                <DatatableActionButtonView
+                                    disabled={empty_tx}
+                                    history_path={'/message-view/' + encodeURIComponent(transaction.transaction_id)}
+                                    history_state={{...newRow}}
+                                    icon={'eye'}/>
+                                <DatatableActionButtonView
+                                    disabled={empty_tx}
+                                    history_path={'/message-compose/' + encodeURIComponent(transaction.transaction_id)}
+                                    history_state={{...newRow}}
+                                    icon={'reply'}/>
+                                <DatatableActionButtonView
+                                    history_path={'/message-compose'}
+                                    history_state={{}}
+                                    icon={'envelope'}/>
+                            </>;
+                            rows.push(newRow);
+                            idx++;
+                            break;
+
                         }
                     }
                 });
@@ -88,6 +91,15 @@ class MessageInboxView extends Component {
                 datatable_loading         : false
             });
         });
+    }
+
+    getPendingTxMessage() {
+        return <>
+            <Spinner size={"sm"} animation="border" role="status">
+                <span className="visually-hidden">Loading...</span>
+            </Spinner>
+            <span className="ms-2">waiting for message transaction to validate</span>
+        </>;
     }
 
     render() {

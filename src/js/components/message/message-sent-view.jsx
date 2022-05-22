@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
-import {Row} from 'react-bootstrap';
+import {Row, Spinner} from 'react-bootstrap';
 import API from '../../api';
 import * as format from '../../helper/format';
 import DatatableView from './../utils/datatable-view';
@@ -35,7 +35,7 @@ class MessageSentView extends Component {
         });
 
         return API.listTransactionWithDataSent(this.props.wallet.address_key_identifier).then(data => {
-            const rows = [];// todo ask crank about extraction this part to common transaction
+            const rows = [];
             data.forEach((transaction, idx) => {
                 transaction?.transaction_output_attribute.forEach(attribute => {
                     if (attribute?.value) {
@@ -44,34 +44,37 @@ class MessageSentView extends Component {
                             return;
                         }
                         for (const fileHash of _.keys(outputAttributeValue.file_data)) {
-                            const message = outputAttributeValue.file_data[fileHash];
-                            if (!_.isNil(message.subject) && !_.isNil(message.message)) {
-                                const newRow     = {
-                                    idx        : idx,
-                                    date       : format.date(transaction.transaction_date),
-                                    txid       : transaction.transaction_id,
-                                    txid_parent: outputAttributeValue.parent_transaction_id,
-                                    dns        : outputAttributeValue.dns,
-                                    amount     : format.number(transaction.amount),
-                                    subject    : message.subject,
-                                    address    : transaction.address_to,
-                                    message    : message.message,
-                                    sent       : true
-                                };
-                                newRow['action'] = <>
-                                    <DatatableActionButtonView
-                                        history_path={'/message-view/' + encodeURIComponent(transaction.transaction_id)}
-                                        history_state={{...newRow}}
-                                        icon={'eye'}/>
-                                    <DatatableActionButtonView
-                                        history_path={'/message-compose'}
-                                        history_state={{}}
-                                        icon={'envelope'}/>
-                                </>;
-                                rows.push(newRow);
-                                idx++;
-                                break;
-                            }
+                            const message    = outputAttributeValue.file_data[fileHash];
+                            let empty_tx     = !_.isNil(message.subject);
+                            message.subject  = empty_tx ? this.getPendingTxMessage() : message.subject;
+                            message.message  = empty_tx ? this.getPendingTxMessage() : message.message;
+                            const newRow     = {
+                                idx        : idx,
+                                date       : format.date(transaction.transaction_date),
+                                txid       : transaction.transaction_id,
+                                txid_parent: outputAttributeValue.parent_transaction_id,
+                                dns        : outputAttributeValue.dns,
+                                amount     : format.number(transaction.amount),
+                                subject    : message.subject,
+                                address    : transaction.address_to,
+                                message    : message.message,
+                                sent       : true
+                            };
+                            newRow['action'] = <>
+                                <DatatableActionButtonView
+                                    disabled={empty_tx}
+                                    history_path={'/message-view/' + encodeURIComponent(transaction.transaction_id)}
+                                    history_state={{...newRow}}
+                                    icon={'eye'}/>
+                                <DatatableActionButtonView
+                                    history_path={'/message-compose'}
+                                    history_state={{}}
+                                    icon={'envelope'}/>
+                            </>;
+                            rows.push(newRow);
+                            idx++;
+                            break;
+
                         }
                     }
                 });
@@ -83,6 +86,15 @@ class MessageSentView extends Component {
                 datatable_loading         : false
             });
         });
+    }
+
+    getPendingTxMessage() {
+        return <>
+            <Spinner size={"sm"} animation="border" role="status">
+                <span className="visually-hidden">Loading...</span>
+            </Spinner>
+            <span className="ms-2">waiting for message transaction to validate</span>
+        </>;
     }
 
     render() {

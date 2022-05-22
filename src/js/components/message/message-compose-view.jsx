@@ -276,7 +276,7 @@ class MessageComposeView extends Component {
                                                                   ref={c => this.dns = c}
                                                                   onChange={e => {
                                                                       validate.handleInputChangeDNSString(e);
-                                                                      this.setState({dns_valid: undefined}); //@todo check with crank
+                                                                      this.setState({dns_valid: undefined});
                                                                       clearTimeout(this.checkDNSHandler);
                                                                       this.checkDNSHandler = setTimeout(() => this.verifyDNS(), 800);
                                                                   }}/>
@@ -311,16 +311,12 @@ class MessageComposeView extends Component {
                                                     <div>{this.state.address_base}{this.state.address_version}{this.state.address_key_identifier}</div>
                                                     {text.get_confirmation_modal_question()}
                                                 </div>}/>
-                                            {/* todo check with crank check text - send confirmation*/}
-
                                             <ModalView
                                                 show={this.state.modal_show_send_result}
                                                 size={'lg'}
                                                 on_close={() => this.changeModalShowSendResult(false)}
-                                                heading={'payment has been sent'}
+                                                heading={'message has been sent'}
                                                 body={this.state.modal_body_send_result}/>
-                                            {/* todo check with crank check text - payment has been sent*/}
-
                                             <Form.Group as={Row}>
                                                 <Button
                                                     variant="outline-primary"
