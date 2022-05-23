@@ -116,8 +116,8 @@ class API {
     }
 
     listAdsLedgerDetails(from_unix_date) {
-        return this.fetchApiTangled('/B1Gg7nMljx0yX9z9',{
-            p0: from_unix_date,
+        return this.fetchApiTangled('/B1Gg7nMljx0yX9z9', {
+            p0: from_unix_date
         });
     }
 
@@ -163,33 +163,25 @@ class API {
     }
 
     sendTransactionWithData(transactionOutputPayload) {
-        try {
-            return fetch(this.getAuthenticatedMillixApiURL() + `/XQmpDjEVF691r2gX?p0=${encodeURIComponent(JSON.stringify(transactionOutputPayload))}`)
-                .then(response => response.ok ? response.json() : Promise.reject());
-        }
-        catch (e) {
-            return Promise.reject(e);
-        }
+        return this.fetchApiMillix(`/XQmpDjEVF691r2gX`, {
+            p0: JSON.stringify(transactionOutputPayload)
+        });
     }
 
     listTransactionWithDataSent(addressKeyIdentifier) {
-        try {
-            return fetch(this.getAuthenticatedMillixApiURL() + `/F7APEv5JfCY1siyz?p9=${addressKeyIdentifier.startsWith('1') ? '0a30' : 'la3l'}&p10=${addressKeyIdentifier}&p11=Adl87cz8kC190Nqc`)
-                .then(response => response.ok ? response.json() : Promise.reject());
-        }
-        catch (e) {
-            return Promise.reject(e);
-        }
+        return this.fetchApiMillix(`/F7APEv5JfCY1siyz`, {
+            p9 : addressKeyIdentifier.startsWith('1') ? '0a30' : 'la3l',
+            p10: addressKeyIdentifier,
+            p11: 'Adl87cz8kC190Nqc'
+        });
     }
 
     listTransactionWithDataReceived(addressKeyIdentifier) {
-        try {
-            return fetch(this.getAuthenticatedMillixApiURL() + `/Mu7VpxzfYyQimf3V?p9=${addressKeyIdentifier.startsWith('1') ? '0a30' : 'la3l'}&p10=${addressKeyIdentifier}&p11=Adl87cz8kC190Nqc`)
-                .then(response => response.ok ? response.json() : Promise.reject());
-        }
-        catch (e) {
-            return Promise.reject(e);
-        }
+        return this.fetchApiMillix(`/Mu7VpxzfYyQimf3V`, {
+            p9 : addressKeyIdentifier.startsWith('1') ? '0a30' : 'la3l',
+            p10: addressKeyIdentifier,
+            p11: 'Adl87cz8kC190Nqc'
+        });
     }
 
     sendAggregationTransaction() {

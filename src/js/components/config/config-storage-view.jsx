@@ -10,7 +10,7 @@ import {connect} from 'react-redux';
 import {walletUpdateConfig} from '../../redux/actions';
 
 
-class ConfigGeneralView extends Component {
+class ConfigStorageView extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -27,7 +27,7 @@ class ConfigGeneralView extends Component {
 
     populateForm() {
         this.mode_node_sync_full.value = !!JSON.parse(this.props.config.MODE_NODE_SYNC_FULL) ? 1 : 0;
-        this.mode_storage_sync.value   = !!JSON.parse(this.props.config.MODE_STORAGE_SYNC) ? 1 : 0;
+        this.mode_storage_sync.value   = 0;
     }
 
     changeModalShowSaveResult(value = true) {
@@ -86,7 +86,7 @@ class ConfigGeneralView extends Component {
                             </div>
                         }/>
                     <div className={'panel panel-filled'}>
-                        <div className={'panel-heading bordered'}>general</div>
+                        <div className={'panel-heading bordered'}>storage</div>
                         <div className={'panel-body'}>
                             <Form>
                                 <ErrorList
@@ -145,4 +145,4 @@ export default connect(
     }),
     {
         walletUpdateConfig
-    })(withRouter(ConfigGeneralView));
+    })(withRouter(ConfigStorageView));

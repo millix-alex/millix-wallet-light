@@ -26,7 +26,7 @@ class MessageInboxView extends Component {
     }
 
     componentWillUnmount() {
-        clearTimeout(this.datatable_reload_interval);
+        clearInterval(this.datatable_reload_interval);
     }
 
     reloadDatatable() {
@@ -35,54 +35,49 @@ class MessageInboxView extends Component {
         });
 
         return API.listTransactionWithDataReceived(this.props.wallet.address_key_identifier).then(data => {
-            const rows = [];
-            data.forEach((transaction, idx) => {
+            const message_list = [];
+            data.forEach((transaction) => {
                 transaction?.transaction_output_attribute.forEach(attribute => {
                     if (attribute?.value) {
                         const outputAttributeValue = attribute.value;
                         if (!outputAttributeValue.file_data) {
                             return;
                         }
-                        for (const fileHash of _.keys(outputAttributeValue.file_data)) {
-                            const message    = outputAttributeValue.file_data[fileHash];
-                            let empty_tx = _.isNil(message.subject)
-                            message.subject  = empty_tx ? this.getPendingTxMessage() : message.subject;
-                            message.message  = empty_tx ? this.getPendingTxMessage() : message.message;
-                            const newRow     = {
-                                idx        : idx,
-                                date       : format.date(transaction.transaction_date),
-                                txid       : transaction.transaction_id,
-                                txid_parent: outputAttributeValue.parent_transaction_id,
-                                dns        : outputAttributeValue.dns,
-                                amount     : format.number(transaction.amount),
-                                subject    : message.subject,
-                                address    : transaction.address_from,
-                                message    : message.message,
-                                sent       : false
-                            };
-                            newRow['action'] = <>
-                                <DatatableActionButtonView
-                                    disabled={empty_tx}
-                                    history_path={'/message-view/' + encodeURIComponent(transaction.transaction_id)}
-                                    history_state={{...newRow}}
-                                    icon={'eye'}/>
-                                <DatatableActionButtonView
-                                    disabled={empty_tx}
-                                    history_path={'/message-compose/' + encodeURIComponent(transaction.transaction_id)}
-                                    history_state={{...newRow}}
-                                    icon={'reply'}/>
-                            </>;
-                            rows.push(newRow);
-                            idx++;
-                            break;
-
-                        }
+                        const fileHash   = _.keys(outputAttributeValue.file_data)[0];
+                        const message    = !_.isNil(outputAttributeValue.file_data[fileHash]) ? outputAttributeValue.file_data[fileHash] : {};
+                        let empty_tx     = _.isNil(message?.subject);
+                        message.subject  = empty_tx ? this.getPendingTxMessage() : message.subject;
+                        message.message  = empty_tx ? this.getPendingTxMessage() : message.message;
+                        const newRow     = {
+                            date       : format.date(transaction.transaction_date),
+                            txid       : transaction.transaction_id,
+                            txid_parent: outputAttributeValue.parent_transaction_id,
+                            dns        : outputAttributeValue.dns,
+                            amount     : format.number(transaction.amount),
+                            subject    : message.subject,
+                            address    : transaction.address_from,
+                            message    : message.message,
+                            sent       : false
+                        };
+                        newRow['action'] = <>
+                            <DatatableActionButtonView
+                                disabled={empty_tx}
+                                history_path={'/message-view/' + encodeURIComponent(transaction.transaction_id)}
+                                history_state={{...newRow}}
+                                icon={'eye'}/>
+                            <DatatableActionButtonView
+                                disabled={empty_tx}
+                                history_path={'/message-compose/' + encodeURIComponent(transaction.transaction_id)}
+                                history_state={{...newRow}}
+                                icon={'reply'}/>
+                        </>;
+                        message_list.push(newRow);
                     }
                 });
             });
 
             this.setState({
-                message_list              : rows,
+                message_list              : message_list,
                 datatable_reload_timestamp: new Date(),
                 datatable_loading         : false
             });
@@ -91,7 +86,7 @@ class MessageInboxView extends Component {
 
     getPendingTxMessage() {
         return <>
-            <Spinner size={"sm"} animation="border" role="status">
+            <Spinner size={'sm'} animation="border" role="status">
                 <span className="visually-hidden">Loading...</span>
             </Spinner>
             <span className="ms-2">waiting for message transaction to validate</span>
@@ -120,9 +115,9 @@ class MessageInboxView extends Component {
                         <Row>
                             <DatatableView
                                 action_button={{
-                                    label   : 'compose message',
+                                    label   : 'compose',
                                     on_click: () => this.props.history.push('/message-compose'),
-                                    icon: 'envelope'
+                                    icon    : 'envelope'
                                 }}
                                 loading={this.state.datatable_loading}
                                 reload_datatable={() => this.reloadDatatable()}
