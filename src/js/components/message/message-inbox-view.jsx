@@ -71,10 +71,6 @@ class MessageInboxView extends Component {
                                     history_path={'/message-compose/' + encodeURIComponent(transaction.transaction_id)}
                                     history_state={{...newRow}}
                                     icon={'reply'}/>
-                                <DatatableActionButtonView
-                                    history_path={'/message-compose'}
-                                    history_state={{}}
-                                    icon={'envelope'}/>
                             </>;
                             rows.push(newRow);
                             idx++;
@@ -123,6 +119,12 @@ class MessageInboxView extends Component {
                     <div className={'panel-body'}>
                         <Row>
                             <DatatableView
+                                action_button={{
+                                    label   : 'compose message',
+                                    on_click: () => this.props.history.push('/message-compose'),
+                                    icon: 'envelope'
+                                }}
+                                loading={this.state.datatable_loading}
                                 reload_datatable={() => this.reloadDatatable()}
                                 datatable_reload_timestamp={this.state.datatable_reload_timestamp}
                                 value={this.state.message_list}
