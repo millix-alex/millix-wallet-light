@@ -10,7 +10,7 @@ import {connect} from 'react-redux';
 import {walletUpdateConfig} from '../../redux/actions';
 
 
-class ConfigGeneralView extends Component {
+class ConfigStorageView extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -86,7 +86,7 @@ class ConfigGeneralView extends Component {
                             </div>
                         }/>
                     <div className={'panel panel-filled'}>
-                        <div className={'panel-heading bordered'}>general</div>
+                        <div className={'panel-heading bordered'}>storage</div>
                         <div className={'panel-body'}>
                             <Form>
                                 <ErrorList
@@ -145,4 +145,4 @@ export default connect(
     }),
     {
         walletUpdateConfig
-    })(withRouter(ConfigGeneralView));
+    })(withRouter(ConfigStorageView));
