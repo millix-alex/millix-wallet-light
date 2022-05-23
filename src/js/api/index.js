@@ -28,13 +28,9 @@ class API {
     }
 
     fetchApiMillix(url, result_param = {}, method = 'GET') {
-        try {
-            const absolute_url = this.getAuthenticatedMillixApiURL() + url;
-            return this.fetchApi(absolute_url, result_param, method);
-        }
-        catch (e) {
-            return Promise.reject(e);
-        }
+        const absolute_url = this.getAuthenticatedMillixApiURL() + url;
+
+        return this.fetchApi(absolute_url, result_param, method);
     }
 
     fetchApi(url, result_param = {}, method = 'GET') {
