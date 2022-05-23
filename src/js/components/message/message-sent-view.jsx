@@ -65,6 +65,11 @@ class MessageSentView extends Component {
                                 history_path={'/message-view/' + encodeURIComponent(transaction.transaction_id)}
                                 history_state={{...newRow}}
                                 icon={'eye'}/>
+                            <DatatableActionButtonView
+                                disabled={empty_tx}
+                                history_path={'/message-compose/' + encodeURIComponent(transaction.transaction_id)}
+                                history_state={{...newRow}}
+                                icon={'reply'}/>
                         </>;
                         message_list.push(newRow);
                     }
