@@ -26,8 +26,8 @@ class ConfigGeneralView extends Component {
     }
 
     populateForm() {
-        this.mode_node_sync_full.value = !!JSON.parse(this.props.config.MODE_NODE_SYNC_FULL) ? 1 : 0;
-        this.mode_storage_sync.value   = !!JSON.parse(this.props.config.MODE_STORAGE_SYNC) ? 1 : 0;
+        this.mode_node_sync_full.value    = !!JSON.parse(this.props.config.MODE_NODE_SYNC_FULL) ? 1 : 0;
+        this.mode_storage_sync_full.value = !!JSON.parse(this.props.config.MODE_STORAGE_SYNC_FULL) ? 1 : 0;
     }
 
     changeModalShowSaveResult(value = true) {
@@ -47,8 +47,8 @@ class ConfigGeneralView extends Component {
 
         const error_list = [];
         let config       = {
-            MODE_NODE_SYNC_FULL: validate.integerPositive('full node', this.mode_node_sync_full.value, error_list, true),
-            MODE_STORAGE_SYNC  : validate.integerPositive('full storage sync', this.mode_storage_sync.value, error_list, true)
+            MODE_NODE_SYNC_FULL   : validate.integerPositive('full node', this.mode_node_sync_full.value, error_list, true),
+            MODE_STORAGE_SYNC_FULL: validate.integerPositive('full storage sync', this.mode_storage_sync_full.value, error_list, true)
         };
         if (error_list.length === 0) {
             this.props.walletUpdateConfig(config).then(() => {
@@ -110,7 +110,7 @@ class ConfigGeneralView extends Component {
                                     <label>full storage sync<HelpIconView help_item_name={'full_storage_sync'}/></label>
                                     <Form.Select
                                         as="select"
-                                        ref={(c) => this.mode_storage_sync = c}
+                                        ref={(c) => this.mode_storage_sync_full = c}
                                     >
                                         <option value={1} key={1}>
                                             {bool_label(1)}
