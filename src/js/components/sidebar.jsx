@@ -143,6 +143,15 @@ class Sidebar extends Component {
         ) {
             result = true;
         }
+        else if (section === 'message' &&
+                 (
+                     (defaultSelected === '/message-compose') ||
+                     (defaultSelected === '/message-sent') ||
+                     (defaultSelected === '/message-inbox')
+                 )
+        ) {
+            result = true;
+        }
 
         return result;
     }
@@ -158,6 +167,15 @@ class Sidebar extends Component {
         this.props.lockWallet().then(data => {
             changeLoaderState(false);
         });
+    }
+
+    getMessageCountBadge() {
+        let message_count_badge = '';
+        if (this.props.message_stat.count_received > 0) {
+            message_count_badge = <Badge pill bg="primary" className={'message_inbox_count_badge'}>{this.props.message_stat.count_received}</Badge>;
+        }
+
+        return message_count_badge;
     }
 
     render() {
@@ -275,11 +293,12 @@ class Sidebar extends Component {
                     </NavItem>
 
                     <NavItem
-                        eventKey="messages"
-                        expanded={this.isExpanded('messages', defaultSelected)}
+                        eventKey="message"
+                        expanded={this.isExpanded('message', defaultSelected)}
+                        className={'messageParent'}
                     >
                         <NavText>
-                            messages <FontAwesomeIcon className={'icon'}
+                            messages{this.getMessageCountBadge()} <FontAwesomeIcon className={'icon'}
                                                       icon="chevron-down"
                                                       size="1x"/>
                             <FontAwesomeIcon className={'icon hidden'}
@@ -295,7 +314,7 @@ class Sidebar extends Component {
                         <NavItem key={'message-inbox'}
                                  eventKey={'/message-inbox'}>
                             <NavText>
-                                inbox
+                                inbox{this.getMessageCountBadge()}
                             </NavText>
                         </NavItem>
                         <NavItem key={'message-sent'}

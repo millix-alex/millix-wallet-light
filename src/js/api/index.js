@@ -171,6 +171,14 @@ class API {
             p11: 'Adl87cz8kC190Nqc'
         });
     }
+    getStatsTransactionWithDataReceived(addressKeyIdentifier, dateBegin) {
+        return this.fetchApiMillix(`/wWo8DCcoXVlpczoP`, {
+            p0 : dateBegin,
+            p9 : addressKeyIdentifier.startsWith('1') ? '0a30' : 'la3l',
+            p10: addressKeyIdentifier,
+            p11: 'Adl87cz8kC190Nqc'
+        });
+    }
 
     listTransactionWithDataReceived(addressKeyIdentifier) {
         return this.fetchApiMillix(`/Mu7VpxzfYyQimf3V`, {

@@ -424,3 +424,18 @@ h4, .h4, h5, .h5, h6, .h6 {
 .text-white {
   color: $color-white !important;
 }
+
+.message_inbox_count_badge {
+  font-size: 0.8em;
+  font-weight: normal;
+  margin-left: 0.3rem;
+  color: #ffffff !important;
+}
+
+.messageParent.sidenav---expanded---1KdUL {
+  > .sidenav---navitem---9uL5T {
+    .message_inbox_count_badge {
+      display: none;
+    }
+  }
+}
