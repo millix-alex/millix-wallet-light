@@ -16,8 +16,16 @@ import HelpIconView from '../utils/help-icon-view';
 class MessageComposeView extends Component {
     constructor(props) {
         super(props);
-        const propsState = props.location.state || {};
-        this.state       = {
+        const propsState    = props.location.state || {};
+        const address_value = propsState.sent ? propsState.address_to : propsState.address_from;
+
+        let message_body = '';
+        if (propsState.message) {
+            let reply_to_message_body = propsState.message;
+            message_body = `\n\n______________________________\nOn ${propsState.date} ${address_value} wrote:\n\n${reply_to_message_body}`;
+        }
+
+        this.state = {
             dns_valid              : false,
             fee_input_locked       : true,
             error_list             : [],
@@ -29,9 +37,9 @@ class MessageComposeView extends Component {
             address_key_identifier : '',
             amount                 : '',
             fee                    : '',
-            destination_address    : propsState.address || '',
+            destination_address    : address_value || '',
             subject                : propsState.subject ? this.getReplySubjectText(propsState.subject) : '',
-            message                : propsState.message ? `\n______________________________\n${propsState.message}` : '',
+            message                : message_body,
             txid                   : propsState.txid
         };
 
@@ -51,19 +59,39 @@ class MessageComposeView extends Component {
         return subject;
     }
 
-    verifyDNS() {
-        const dns = validate.dns('dns', this.dns.value, []);
-        if (dns === null) {
-            this.setState({dns_valid: false});
+    verifySenderDomainName(domain_name, error_list) {
+        if (!domain_name) {
+            return Promise.resolve(true);
+        }
+
+        const error = {
+            name   : 'verified_sender_not_valid',
+            message: `verified sender must be a valid domain name`
+        };
+
+        domain_name = validate.domain_name('domain_name', domain_name, []);
+        if (domain_name === null) {
+            error_list.push(error);
+
+            return Promise.resolve(false);
         }
         else {
-            API.isDNSVerified(dns, this.props.wallet.address_key_identifier)
-               .then(data => {
-                   this.setState({dns_valid: data.is_address_verified});
-               })
-               .catch(() => {
-                   this.setState({dns_valid: false});
-               });
+            return API.isDNSVerified(domain_name, this.props.wallet.address_key_identifier)
+                      .then(data => {
+                          if (!data.is_address_verified) {
+                              error_list.push({
+                                  name   : 'verified_sender_not_valid',
+                                  message: <>domain name verification failed. click<HelpIconView help_item_name={'verified_sender'}/> for instructions</>
+                              });
+                          }
+
+                          return data.is_address_verified;
+                      })
+                      .catch(() => {
+                          error_list.push(error);
+
+                          return false;
+                      });
         }
     }
 
@@ -76,21 +104,25 @@ class MessageComposeView extends Component {
             });
             return;
         }
-        const transaction_params = {
+        const transaction_param = {
             address: validate.required('address', this.destination_address.value, error_list),
             amount : validate.amount('amount', this.amount.value, error_list),
             fee    : validate.amount('fee', this.fee.value, error_list),
-            subject: validate.required('subject', this.subject.value, error_list),
-            message: validate.required('message', this.message.value, error_list),
-            dns    : validate.dns('dns', this.dns.value, error_list)
+            subject: this.subject.value,
+            message: this.message.value,
+            dns    : validate.domain_name('verified sender', this.dns.value, error_list)
         };
 
         if (error_list.length === 0) {
-            Transaction.verifyAddress(transaction_params).then((data) => {
-                this.setState(data);
-                this.changeModalShowConfirmation();
-            }).catch((error) => {
-                error_list.push(error);
+            this.verifySenderDomainName(transaction_param.dns, error_list).then(_ => {
+                if (error_list.length === 0) {
+                    Transaction.verifyAddress(transaction_param).then((data) => {
+                        this.setState(data);
+                        this.changeModalShowConfirmation();
+                    }).catch((error) => {
+                        error_list.push(error);
+                    });
+                }
             });
         }
 
@@ -113,7 +145,6 @@ class MessageComposeView extends Component {
             this.changeModalShowConfirmation(false);
             this.setState(error);
         });
-
     }
 
     clearSendForm() {
@@ -136,7 +167,7 @@ class MessageComposeView extends Component {
         if (!!this.state.txid) {
             transactionOutputAttribute['parent_transaction_id'] = this.state.txid;
         }
-        const amount = this.state.amount;
+
         return {
             transaction_output_attribute: transactionOutputAttribute,
             transaction_data            : {
@@ -148,7 +179,7 @@ class MessageComposeView extends Component {
                     address_base          : this.state.address_base,
                     address_version       : this.state.address_version,
                     address_key_identifier: this.state.address_key_identifier,
-                    amount
+                    amount                : this.state.amount
                 }
             ],
             transaction_output_fee      : {
@@ -188,10 +219,8 @@ class MessageComposeView extends Component {
                             <div className={'panel-body'}>
                                 <p>
                                     compose an encrypted message to any tangled browser user. the message will be stored on your device and the recipients
-                                    device.
-                                    to allow the message to reach the recipient, the message is stored on the millix network for up to 90 days. only you and
-                                    the
-                                    recipient can read your messages.
+                                    device. to transport the message to reach the recipient, the message is stored on the millix network for up to 90 days. only
+                                    you and the recipient can read your messages.
                                 </p>
                                 <ErrorList
                                     error_list={this.state.error_list}/>
@@ -224,16 +253,20 @@ class MessageComposeView extends Component {
                                                               value={this.state.message}
                                                               onChange={c => this.setState({message: c.target.value})}
                                                               placeholder="message"
-                                                              ref={c => this.message = c}/>
+                                                              autoFocus
+                                                              ref={c => {
+                                                                  this.message = c;
+                                                              }}/>
                                             </Form.Group>
                                         </Col>
                                         <Col>
                                             <Form.Group className="form-group">
-                                                <label>payment</label>
+                                                <label>payment<HelpIconView help_item_name={'message_payment'}/></label>
                                                 <Form.Control type="text"
                                                               placeholder="amount"
                                                               pattern="[0-9]+([,][0-9]{1,2})?"
                                                               ref={c => this.amount = c}
+                                                              value={format.millix(10000, false)}
                                                               onChange={validate.handleAmountInputChange.bind(this)}/>
                                             </Form.Group>
                                         </Col>
@@ -268,33 +301,15 @@ class MessageComposeView extends Component {
                                         <Col>
                                             <Form.Group className="form-group"
                                                         as={Row}>
-                                                <label>verified sender<HelpIconView help_item_name={'verified_sender'}/></label>
+                                                <label>verified sender (optional)<HelpIconView help_item_name={'verified_sender'}/></label>
                                                 <Col className={'input-group'}>
                                                     <Form.Control type="text"
-                                                                  placeholder="dns"
+                                                                  placeholder="domain name"
                                                                   pattern="^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$"
                                                                   ref={c => this.dns = c}
                                                                   onChange={e => {
                                                                       validate.handleInputChangeDNSString(e);
-                                                                      this.setState({dns_valid: undefined});
-                                                                      clearTimeout(this.checkDNSHandler);
-                                                                      this.checkDNSHandler = setTimeout(() => this.verifyDNS(), 800);
                                                                   }}/>
-                                                    <button
-                                                        className="btn btn-outline-input-group-addon icon_only"
-                                                        type="button"
-                                                        style={{opacity: '1!important'}}
-                                                        disabled={true}>
-                                                        {this.state.dns_valid === undefined ? <div style={{
-                                                                                                margin: 0,
-                                                                                                width : '0.9rem',
-                                                                                                height: '0.9rem'
-                                                                                            }} className="loader-spin"/> :
-                                                         <FontAwesomeIcon
-                                                             color={this.state.dns_valid ? '#42a5f5' : '#a9a9a9'}
-                                                             icon={this.state.dns_valid ? 'check-circle' : 'question-circle'}
-                                                             size="sm"/>}
-                                                    </button>
                                                 </Col>
                                             </Form.Group>
                                         </Col>
