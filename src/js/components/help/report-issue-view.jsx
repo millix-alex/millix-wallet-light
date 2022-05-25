@@ -2,11 +2,11 @@ import React, {Component} from 'react';
 import {withRouter} from 'react-router-dom';
 import {Col, Row, Table} from 'react-bootstrap';
 import {connect} from 'react-redux';
-import {updateNetworkState} from '../redux/actions';
+import {updateNetworkState} from '../../redux/actions';
 import os from 'os';
-import API from '../api';
-import * as format from '../helper/format';
-import HelpIconView from './utils/help-icon-view';
+import API from '../../api';
+import * as format from '../../helper/format';
+import HelpIconView from './../utils/help-icon-view';
 
 
 class ReportIssueView extends Component {
