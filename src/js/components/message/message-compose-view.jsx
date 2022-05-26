@@ -27,21 +27,21 @@ class MessageComposeView extends Component {
         }
 
         this.state = {
-            dns_valid              : false,
-            fee_input_locked       : true,
-            error_list             : [],
-            modal_show_confirmation: false,
-            modal_show_send_result : false,
-            modal_body_send_result : [],
-            address_base           : '',
-            address_version        : '',
-            address_key_identifier : '',
-            amount                 : '',
-            fee                    : '',
-            destination_address_list  : address_value ? [address_value] : [],
-            subject                : propsState.subject ? this.getReplySubjectText(propsState.subject) : '',
-            message                : message_body,
-            txid                   : propsState.txid
+            dns_valid               : false,
+            fee_input_locked        : true,
+            error_list              : [],
+            modal_show_confirmation : false,
+            modal_show_send_result  : false,
+            modal_body_send_result  : [],
+            address_base            : '',
+            address_version         : '',
+            address_key_identifier  : '',
+            amount                  : '',
+            fee                     : '',
+            destination_address_list: address_value ? [address_value] : [],
+            subject                 : propsState.subject ? this.getReplySubjectText(propsState.subject) : '',
+            message                 : message_body,
+            txid                    : propsState.txid
         };
 
         this.send = this.send.bind(this);
@@ -245,6 +245,10 @@ class MessageComposeView extends Component {
                                                     if (ref && !ref.state.focused && ref.formControlRef.current.value !== '') {
                                                         this.addDestinationAddress(ref.formControlRef.current.value);
                                                         ref.formControlRef.current.value = '';
+                                                    }
+                                                    if (!this.chipInputAddress) {
+                                                        ref.formControlRef.current.placeholder = 'addresses'
+                                                        this.chipInputAddress = ref;
                                                     }
                                                 }}
                                                 classes="message_chip_input"
