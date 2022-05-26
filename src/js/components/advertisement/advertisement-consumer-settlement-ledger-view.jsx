@@ -54,7 +54,7 @@ class AdvertisementConsumerSettlementLedgerView extends Component {
                             history_state={{}}
                             icon={'eye'}/>
                         <DatatableActionButtonView
-                            callback={(callback_args) => this.redirectToAd(callback_args)}
+                            callback={(callback_args) => this.openAdvertisementLink(callback_args)}
                             callback_args={item_ledger.advertisement_url}
                             icon={'link'}/></>
                 });
@@ -69,14 +69,14 @@ class AdvertisementConsumerSettlementLedgerView extends Component {
         });
     }
 
-    redirectToAd (data) {
+    openAdvertisementLink (data) {
         window.open(data.callback_args, '_blank');
     }
 
     advertisementPreview(item_ledger) {
         return (<>
             <AdvertisementPreview
-                disable_redirect={true}
+                disable_link={true}
                 url={item_ledger.advertisement_url}
                 headline={item_ledger.advertisement_headline}
                 deck={item_ledger.advertisement_deck}>
@@ -100,7 +100,7 @@ class AdvertisementConsumerSettlementLedgerView extends Component {
                         </p>
                         <span>you have received {format.millix(this.state.total_paid_amount)} in the past 24 hours.</span>
                     </div>
-                    <Row id={'adlist'} className={'received-advertisements-deposits'}>
+                    <Row id={'adlist'} className={'advertisement_consumer_settlement_ledger_list'}>
                         <DatatableView
                             reload_datatable={() => this.reloadDatatable()}
                             datatable_reload_timestamp={this.state.datatable_reload_timestamp}
@@ -115,15 +115,15 @@ class AdvertisementConsumerSettlementLedgerView extends Component {
                                 },
                                 {
                                     field     : 'advertisement_deck',
-                                    class_name: 'data-search-coll'
+                                    class_name: 'hidden_data_search_column'
                                 },
                                 {
                                     field     : 'advertisement_headline',
-                                    class_name: 'data-search-coll'
+                                    class_name: 'hidden_data_search_column'
                                 },
                                 {
                                     field     : 'advertisement_url',
-                                    class_name: 'data-search-coll'
+                                    class_name: 'hidden_data_search_column'
                                 },
                                 {
                                     field : 'amount',
