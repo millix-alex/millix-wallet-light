@@ -28,3 +28,21 @@
     margin-left: 0.3rem;
   }
 }
+
+.message_chip_input {
+  box-shadow: none;
+  border: 1px solid rgba(205, 207, 214, 0.25) !important;
+  background-color: rgba(205, 207, 214, 0.1);
+
+  .no-gutters{
+    --bs-gutter-x: "1.rem";
+  }
+
+  .styles_chip__i-PT7 {
+    font-size: 0.7rem;
+  }
+
+  input[name="chipInput"] {
+    background-color: transparent;
+  }
+}
