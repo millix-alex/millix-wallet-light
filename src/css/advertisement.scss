@@ -32,3 +32,29 @@
     font-size: 14px;
   }
 }
+
+.data-search-coll {
+  display: none;
+}
+
+.received-advertisements-deposits {
+  td:nth-child(1) {
+    padding: 0 !important;
+  }
+
+  .advertisement-slider {
+    padding: 0;
+    display: contents;
+    background-color: transparent;
+  }
+
+  .advertisement-preview {
+    margin: 0.5rem 1rem;
+    line-height: 1rem;
+    max-width: 600px;
+  }
+
+  a {
+    color: $color-body-font !important;
+  }
+}
