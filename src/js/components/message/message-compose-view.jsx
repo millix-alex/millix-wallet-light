@@ -22,7 +22,7 @@ class MessageComposeView extends Component {
         let message_body = '';
         if (propsState.message) {
             let reply_to_message_body = propsState.message;
-            message_body = `\n\n______________________________\nOn ${propsState.date} ${address_value} wrote:\n\n${reply_to_message_body}`;
+            message_body              = `\n\n______________________________\nOn ${propsState.date} ${address_value} wrote:\n\n${reply_to_message_body}`;
         }
 
         this.state = {
@@ -50,6 +50,26 @@ class MessageComposeView extends Component {
         if (this.state.sending) {
             API.interruptTransaction().then(_ => _);
         }
+    }
+
+    componentWillReceiveProps(nextProps, nextContext) {
+        if (this.props.message && this.state.message === 'loading') {
+            this.populateFormFromProps();
+        }
+    }
+
+    componentDidMount() {
+        if (this.props.message) {
+            this.populateFormFromProps();
+        }
+    }
+
+    populateFormFromProps() {
+        this.setState({
+            message            : this.props.message,
+            subject            : this.props.subject,
+            destination_address: this.props.destination_address
+        });
     }
 
     getReplySubjectText(subject) {
@@ -215,12 +235,14 @@ class MessageComposeView extends Component {
                 <Row>
                     <Col md={12}>
                         <div className={'panel panel-filled'}>
-                            <div className={'panel-heading bordered'}>compose</div>
+                            <div className={'panel-heading bordered'}>{this.props.compose_title ?? 'compose'}</div>
                             <div className={'panel-body'}>
                                 <p>
-                                    compose an encrypted message to any tangled browser user. the message will be stored on your device and the recipients
-                                    device. to transport the message to reach the recipient, the message is stored on the millix network for up to 90 days. only
-                                    you and the recipient can read your messages.
+                                    {this.props.composse_description ??
+                                     'compose an encrypted message to any tangled browser user. the message will be stored on your device and the recipients\n' +
+                                     'device. to transport the message to reach the recipient, the message is stored on the millix network for up to 90 days. only\n' +
+                                     'you and the recipient can read your messages.'
+                                    }
                                 </p>
                                 <ErrorList
                                     error_list={this.state.error_list}/>
