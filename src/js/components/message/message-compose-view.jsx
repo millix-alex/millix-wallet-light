@@ -11,6 +11,7 @@ import API from '../../api';
 import ErrorList from './../utils/error-list-view';
 import Transaction from '../../common/transaction';
 import HelpIconView from '../utils/help-icon-view';
+import {changeLoaderState} from '../loader';
 
 
 class MessageComposeView extends Component {
@@ -22,7 +23,7 @@ class MessageComposeView extends Component {
         let message_body = '';
         if (propsState.message) {
             let reply_to_message_body = propsState.message;
-            message_body = `\n\n______________________________\nOn ${propsState.date} ${address_value} wrote:\n\n${reply_to_message_body}`;
+            message_body              = `\n\n______________________________\nOn ${propsState.date} ${address_value} wrote:\n\n${reply_to_message_body}`;
         }
 
         this.state = {
@@ -47,6 +48,7 @@ class MessageComposeView extends Component {
     }
 
     componentWillUnmount() {
+        clearTimeout(this.checkDNSHandler);
         if (this.state.sending) {
             API.interruptTransaction().then(_ => _);
         }
@@ -59,8 +61,9 @@ class MessageComposeView extends Component {
         return subject;
     }
 
-    verifySenderDomainName(domain_name, error_list) {
+    verifySenderDomainName(domain_name, error_list = []) {
         if (!domain_name) {
+            this.setState({dnsValid: true});
             return Promise.resolve(true);
         }
 
@@ -89,7 +92,6 @@ class MessageComposeView extends Component {
                       })
                       .catch(() => {
                           error_list.push(error);
-
                           return false;
                       });
         }
@@ -131,7 +133,25 @@ class MessageComposeView extends Component {
         });
     }
 
+    validateDns(e) {
+        const error_list = [];
+        validate.handleInputChangeDNSString(e);
+        this.setState({dnsValid: false});
+        clearTimeout(this.checkDNSHandler);
+        this.checkDNSHandler = setTimeout(() => {
+            this.verifySenderDomainName(e.target.value, error_list).then((result) => {
+                this.setState({
+                    error_list: error_list,
+                    dnsValid  : result
+                });
+            }).catch(() => {
+                this.setState({error_list: error_list});
+            });
+        }, 100);
+    }
+
     sendTransaction() {
+        changeLoaderState(true);
         this.setState({
             sending: true
         });
@@ -141,9 +161,11 @@ class MessageComposeView extends Component {
             this.changeModalShowConfirmation(false);
             this.changeModalShowSendResult();
             this.setState(data);
+            changeLoaderState(false);
         }).catch((error) => {
             this.changeModalShowConfirmation(false);
             this.setState(error);
+            changeLoaderState(false);
         });
     }
 
@@ -307,10 +329,17 @@ class MessageComposeView extends Component {
                                                                   placeholder="domain name"
                                                                   pattern="^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$"
                                                                   ref={c => this.dns = c}
-                                                                  onChange={e => {
-                                                                      validate.handleInputChangeDNSString(e);
-                                                                  }}/>
+                                                                  onChange={e => this.validateDns(e)}/>
                                                 </Col>
+                                                {this.state.dnsValid && this.dns?.value !== '' &&
+                                                 <div className={'text-success labeled form-group'}>
+                                                     <FontAwesomeIcon
+                                                         icon={'check-circle'}
+                                                         size="1x"/>
+                                                     <span>{this.dns.value}</span>
+                                                 </div>
+                                                }
+
                                             </Form.Group>
                                         </Col>
                                         <Col
