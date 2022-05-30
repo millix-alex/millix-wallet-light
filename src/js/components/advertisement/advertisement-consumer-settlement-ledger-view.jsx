@@ -52,7 +52,7 @@ class AdvertisementConsumerSettlementLedgerView extends Component {
                         <DatatableActionButtonView
                             history_path={'/transaction/' + encodeURIComponent(item_ledger.protocol_transaction_id)}
                             history_state={{}}
-                            icon={'eye'}/>
+                            icon={'th-list'}/>
                         <DatatableActionButtonView
                             callback={(callback_args) => this.openAdvertisementLink(callback_args)}
                             callback_args={item_ledger.advertisement_url}
