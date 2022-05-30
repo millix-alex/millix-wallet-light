@@ -287,7 +287,6 @@ function rootReducer(state = initialState, action) {
         });
     }
     else if (action.type === UPDATE_MESSAGE_STAT) {
-        console.log('message_stat assign');
         return Object.assign({}, state, {
             message_stat: {
                 ...action.payload
