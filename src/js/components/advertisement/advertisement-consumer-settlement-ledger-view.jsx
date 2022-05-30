@@ -69,7 +69,7 @@ class AdvertisementConsumerSettlementLedgerView extends Component {
         });
     }
 
-    openAdvertisementLink (data) {
+    openAdvertisementLink(data) {
         window.open(data.callback_args, '_blank');
     }
 
