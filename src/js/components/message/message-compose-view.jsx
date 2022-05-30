@@ -265,7 +265,7 @@ class MessageComposeView extends Component {
                                                         this.chipInputAddress = ref;
                                                     }
                                                 }}
-                                                classes="message_chip_input"
+                                                classes="chip_input form-control"
                                                 chips={this.state.destination_address_list}
                                                 onSubmit={value => this.addDestinationAddress(value)}
                                                 onRemove={index => this.removeDestinationAddress(index)}
