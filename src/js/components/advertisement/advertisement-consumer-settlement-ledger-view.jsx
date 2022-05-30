@@ -111,7 +111,8 @@ class AdvertisementConsumerSettlementLedgerView extends Component {
                             showActionColumn={true}
                             resultColumn={[
                                 {
-                                    field: 'preview'
+                                    field: 'preview',
+                                    class_name: 'advertisement_preview_datatable_column'
                                 },
                                 {
                                     field     : 'advertisement_deck',

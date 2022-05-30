@@ -38,12 +38,9 @@
 }
 
 .advertisement_consumer_settlement_ledger_list {
-  td:nth-child(1) {
-    padding: 0 !important;
-  }
-
-  .p-datatable-emptymessage > td {
-    padding: 0.5rem 1rem !important;
+  .p-datatable .p-datatable-tbody > tr > td.advertisement_preview_datatable_column {
+    padding: 1rem;
+    max-width: 50rem;
   }
 
   .advertisement-slider {
@@ -53,9 +50,10 @@
   }
 
   .advertisement-preview {
-    margin: 0.5rem 1rem;
+    overflow: hidden;
+    margin: 0;
     line-height: 1rem;
-    max-width: 600px;
+    max-width: none;
   }
 
   a {
