@@ -47,6 +47,10 @@ class MessageComposeView extends Component {
         this.send = this.send.bind(this);
     }
 
+    componentDidMount() {
+        this.amount.value = format.millix(10000, false);
+    }
+
     componentWillUnmount() {
         if (this.state.sending) {
             API.interruptTransaction().then(_ => _);
@@ -210,8 +214,18 @@ class MessageComposeView extends Component {
     addDestinationAddress(value) {
         const chips = this.state.destination_address_list.slice();
         value.split(/\n| /).forEach(address => {
+            if(chips.includes(address.trim())){
+                this.setState({error_list: [
+                        {
+                            name   : 'recipient_already_exist',
+                            message: `recipients must contain only unique addresses. multiple entries of address ${address.trim()}`
+                        }
+                    ]})
+                return;
+            }
             chips.push(address.trim());
         });
+
         this.setState({destination_address_list: chips});
     };
 
@@ -289,7 +303,6 @@ class MessageComposeView extends Component {
                                                               placeholder="amount"
                                                               pattern="[0-9]+([,][0-9]{1,2})?"
                                                               ref={c => this.amount = c}
-                                                              value={format.millix(10000, false)}
                                                               onChange={validate.handleAmountInputChange.bind(this)}/>
                                             </Form.Group>
                                         </Col>
