@@ -3,9 +3,10 @@ import {withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
 import os from 'os';
 import API from '../../api';
-import MessageComposeView from '../message/message-compose-view';
 import {updateNetworkState} from '../../redux/actions';
 import * as format from '../../helper/format';
+import {Col, Row} from 'react-bootstrap';
+import MessageComposeForm from '../message/message-compose-form';
 
 
 class ReportIssueView extends Component {
@@ -45,15 +46,31 @@ hardware:
     }
 
     render() {
-        return (<>
-            <MessageComposeView
-                message={this.state.message}
-                subject={'issue report:'}
-                composse_description={'send error report to our address'}
-                compose_title={'report issue'}
-                destination_address={this.props.config.REPORT_ISSUE_ADDRESS}
-            />
-        </>);
+        return (
+
+            <div>
+                <Row>
+                    <Col md={12}>
+                        <div className={'panel panel-filled'}>
+                            <div className={'panel-heading bordered'}>report issue</div>
+                            <div className={'panel-body'}>
+                                <p>
+                                    to report about an issue please describe it in the message below.
+                                    it already contain your system info for your convenience.
+                                    if you can't send us a message for any reason please send it to us on
+                                    <a href={'https://discord.gg/HgZqav7v66'} target={'_blank'}>discord</a>
+                                </p>
+                                <MessageComposeForm
+                                    message={this.state.message}
+                                    subject={'issue report:'}
+                                    destination_address={this.props.config.REPORT_ISSUE_ADDRESS}
+                                />
+                            </div>
+                        </div>
+                    </Col>
+                </Row>
+            </div>
+        );
     }
 }
 
