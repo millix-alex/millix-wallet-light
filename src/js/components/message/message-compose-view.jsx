@@ -239,7 +239,7 @@ class MessageComposeView extends Component {
                                 <Row>
                                     <Col>
                                         <Form.Group className="form-group" role="form">
-                                            <label>to</label>
+                                            <label>recipients</label>
                                             <ReactChipInput
                                                 ref={ref => {
                                                     if (ref && !ref.state.focused && ref.formControlRef.current.value !== '') {
@@ -247,7 +247,7 @@ class MessageComposeView extends Component {
                                                         ref.formControlRef.current.value = '';
                                                     }
                                                     if (!this.chipInputAddress) {
-                                                        ref.formControlRef.current.placeholder = 'addresses'
+                                                        ref.formControlRef.current.placeholder = 'recipients'
                                                         this.chipInputAddress = ref;
                                                     }
                                                 }}
