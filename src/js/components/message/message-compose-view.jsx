@@ -21,7 +21,6 @@ class MessageComposeView extends Component {
                                     compose an encrypted message to any tangled browser user. the message will be stored on your device and the recipients
                                     device. to transport the message to reach the recipient, the message is stored on the millix network for up to 90 days. only
                                     you and the recipient can read your messages.
-
                                 </p>
                                 <MessageComposeForm/>
                             </div>

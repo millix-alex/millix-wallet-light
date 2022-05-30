@@ -57,8 +57,7 @@ hardware:
                                 <p>
                                     to report about an issue please describe it in the message below.
                                     it already contain your system info for your convenience.
-                                    if you can't send us a message for any reason please send it to us on
-                                    <a href={'https://discord.gg/HgZqav7v66'} target={'_blank'}>discord</a>
+                                    if you can't send us a message for any reason please send it to us on <a href={'https://discord.gg/HgZqav7v66'} target={'_blank'}>discord</a>
                                 </p>
                                 <MessageComposeForm
                                     message={this.state.message}
