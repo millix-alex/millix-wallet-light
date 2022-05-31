@@ -7,6 +7,7 @@ import {updateNetworkState} from '../../redux/actions';
 import * as format from '../../helper/format';
 import {Col, Row} from 'react-bootstrap';
 import MessageComposeForm from '../message/message-compose-form';
+import {DISCORD_URL} from '../../../config.js';
 
 
 class ReportIssueView extends Component {
@@ -57,7 +58,7 @@ hardware:
                                 <p>
                                     to report about an issue please describe it in the message below.
                                     it already contain your system info for your convenience.
-                                    if you can't send us a message for any reason please send it to us on <a href={'https://discord.gg/HgZqav7v66'} target={'_blank'}>discord</a>
+                                    if you can't send us a message for any reason please send it to us on <a href={DISCORD_URL} target={'_blank'}>discord</a>
                                 </p>
                                 <MessageComposeForm
                                     message={this.state.message}
