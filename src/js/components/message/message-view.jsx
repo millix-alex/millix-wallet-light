@@ -34,6 +34,10 @@ class MessageView extends Component {
         this.props.history.push('/message-compose/', this.props.location.state);
     }
 
+    viewTx() {
+        this.props.history.push('/transaction/' + encodeURIComponent(this.props.location.state.txid), this.props.location.state);
+    }
+
     _getAddressKeyIdentifier(address) {
         if (!address) {
             return null;
@@ -112,6 +116,15 @@ class MessageView extends Component {
                                             icon={'reply'}
                                             size="1x"/>
                                         reply
+                                    </Button>
+                                    <Button
+                                        variant="outline-primary"
+                                        className={'btn-xs icon_only labeled'}
+                                        onClick={() => this.viewTx()}>
+                                        <FontAwesomeIcon
+                                            icon={'th-list'}
+                                            size="1x"/>
+                                        view tx
                                     </Button>
                                 </div>
                             </div>
