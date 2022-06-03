@@ -11,6 +11,7 @@ import API from '../../api';
 import ErrorList from './../utils/error-list-view';
 import Transaction from '../../common/transaction';
 import HelpIconView from '../utils/help-icon-view';
+import {changeLoaderState} from '../loader';
 import ReactChipInput from 'react-chip-input';
 
 
@@ -48,6 +49,7 @@ class MessageComposeForm extends Component {
     }
 
     componentWillUnmount() {
+        clearTimeout(this.checkDNSHandler);
         if (this.state.sending) {
             API.interruptTransaction().then(_ => _);
         }
@@ -81,8 +83,9 @@ class MessageComposeForm extends Component {
         return subject;
     }
 
-    verifySenderDomainName(domain_name, error_list) {
+    verifySenderDomainName(domain_name, error_list = []) {
         if (!domain_name) {
+            this.setState({dnsValid: true});
             return Promise.resolve(true);
         }
 
@@ -153,7 +156,25 @@ class MessageComposeForm extends Component {
         });
     }
 
+    validateDns(e) {
+        const error_list = [];
+        validate.handleInputChangeDNSString(e);
+        this.setState({dnsValid: false});
+        clearTimeout(this.checkDNSHandler);
+        this.checkDNSHandler = setTimeout(() => {
+            this.verifySenderDomainName(e.target.value, error_list).then((result) => {
+                this.setState({
+                    error_list: error_list,
+                    dnsValid  : result
+                });
+            }).catch(() => {
+                this.setState({error_list: error_list});
+            });
+        }, 100);
+    }
+
     sendTransaction() {
+        changeLoaderState(true);
         this.setState({
             sending: true
         });
@@ -163,17 +184,19 @@ class MessageComposeForm extends Component {
             this.changeModalShowConfirmation(false);
             this.changeModalShowSendResult();
             this.setState(data);
+            changeLoaderState(false);
         }).catch((error) => {
             this.changeModalShowConfirmation(false);
             this.setState(error);
+            changeLoaderState(false);
         });
     }
 
     clearSendForm() {
         this.destination_address_list = [];
-        this.amount.value              = '';
-        this.subject.value             = '';
-        this.message.value             = '';
+        this.amount.value             = '';
+        this.subject.value            = '';
+        this.message.value            = '';
 
         if (this.props.config.TRANSACTION_FEE_DEFAULT !== undefined) {
             this.fee.value = format.millix(this.props.config.TRANSACTION_FEE_DEFAULT, false);
@@ -228,32 +251,6 @@ class MessageComposeForm extends Component {
             modal_show_send_result: value
         });
     }
-
-    addDestinationAddress(value) {
-        const chips = this.state.destination_address_list.slice();
-        value.split(/\n| /).forEach(address => {
-            if (chips.includes(address.trim())) {
-                this.setState({
-                    error_list: [
-                        {
-                            name   : 'recipient_already_exist',
-                            message: `recipients must contain only unique addresses. multiple entries of address ${address.trim()}`
-                        }
-                    ]
-                });
-                return;
-            }
-            chips.push(address.trim());
-        });
-
-        this.setState({destination_address_list: chips});
-    };
-
-    removeDestinationAddress(index) {
-        const chips = this.state.destination_address_list.slice();
-        chips.splice(index, 1);
-        this.setState({destination_address_list: chips});
-    };
 
     render() {
         return (
@@ -353,10 +350,17 @@ class MessageComposeForm extends Component {
                                                   placeholder="domain name"
                                                   pattern="^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$"
                                                   ref={c => this.dns = c}
-                                                  onChange={e => {
-                                                      validate.handleInputChangeDNSString(e);
-                                                  }}/>
+                                                  onChange={e => this.validateDns(e)}/>
                                 </Col>
+                                {this.state.dnsValid && this.dns?.value !== '' &&
+                                 <div className={'text-success labeled form-group'}>
+                                     <FontAwesomeIcon
+                                         icon={'check-circle'}
+                                         size="1x"/>
+                                     <span>{this.dns.value}</span>
+                                 </div>
+                                }
+
                             </Form.Group>
                         </Col>
                         <Col
