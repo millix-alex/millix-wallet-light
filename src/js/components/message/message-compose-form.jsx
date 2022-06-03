@@ -29,6 +29,7 @@ class MessageComposeForm extends Component {
 
         this.state = {
             dns_valid               : false,
+            dns_validating          : false,
             fee_input_locked        : true,
             error_list              : [],
             modal_show_confirmation : false,
@@ -85,7 +86,7 @@ class MessageComposeForm extends Component {
 
     verifySenderDomainName(domain_name, error_list = []) {
         if (!domain_name) {
-            this.setState({dnsValid: true});
+            this.setState({dns_valid: true});
             return Promise.resolve(true);
         }
 
@@ -159,18 +160,27 @@ class MessageComposeForm extends Component {
     validateDns(e) {
         const error_list = [];
         validate.handleInputChangeDNSString(e);
-        this.setState({dnsValid: false});
+        this.setState({
+            dns_valid     : false,
+            dns_validating: true,
+            error_list    : error_list
+        });
         clearTimeout(this.checkDNSHandler);
         this.checkDNSHandler = setTimeout(() => {
             this.verifySenderDomainName(e.target.value, error_list).then((result) => {
                 this.setState({
-                    error_list: error_list,
-                    dnsValid  : result
+                    error_list    : error_list,
+                    dns_valid     : result,
+                    dns_validating: false
                 });
             }).catch(() => {
-                this.setState({error_list: error_list});
+                this.setState({
+                    error_list    : error_list,
+                    dns_validating: false,
+                    dns_valid     : false
+                });
             });
-        }, 100);
+        }, 500);
     }
 
     sendTransaction() {
@@ -351,15 +361,24 @@ class MessageComposeForm extends Component {
                                                   pattern="^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$"
                                                   ref={c => this.dns = c}
                                                   onChange={e => this.validateDns(e)}/>
+                                    {this.state.dns_validating ?
+                                     <button
+                                         className="btn btn-outline-input-group-addon icon_only"
+                                         type="button"
+                                         style={{opacity: '1!important'}}
+                                         disabled={true}>
+                                         <div className="loader-spin"/>
+                                     </button>
+                                                               : ''}
                                 </Col>
-                                {this.state.dnsValid && this.dns?.value !== '' &&
+                                {this.state.dns_valid && this.dns?.value !== '' ?
                                  <div className={'text-success labeled form-group'}>
                                      <FontAwesomeIcon
                                          icon={'check-circle'}
                                          size="1x"/>
                                      <span>{this.dns.value}</span>
                                  </div>
-                                }
+                                                                                : ''}
 
                             </Form.Group>
                         </Col>
@@ -386,7 +405,7 @@ class MessageComposeForm extends Component {
                                 <Button
                                     variant="outline-primary"
                                     onClick={() => this.send()}
-                                    disabled={this.state.canceling}>
+                                    disabled={this.state.canceling || this.state.dns_validating}>
                                     {this.state.sending ?
                                      <>
                                          <div style={{
