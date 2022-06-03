@@ -5,9 +5,6 @@ import {Col, Row} from 'react-bootstrap';
 import MessageComposeForm from './message-compose-form';
 
 class MessageComposeView extends Component {
-    constructor(props) {
-        super(props);
-    }
 
     render() {
         return (
