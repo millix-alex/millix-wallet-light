@@ -101,7 +101,7 @@ class Sidebar extends Component {
         ) {
             result = true;
         }
-        if (section === 'status' &&
+        else if (section === 'status' &&
                  (
                      (defaultSelected === '/status-summary') ||
                      (defaultSelected === '/peers') ||
@@ -110,7 +110,7 @@ class Sidebar extends Component {
         ) {
             result = true;
         }
-        if (section === 'advertisement' &&
+        else if (section === 'advertisement' &&
                  (
                      (defaultSelected === '/advertisement-list') ||
                      (defaultSelected === '/advertisement-received-list')
@@ -118,7 +118,7 @@ class Sidebar extends Component {
         ) {
             result = true;
         }
-        if (section === 'config' &&
+        else if (section === 'config' &&
                  (
                      (defaultSelected === '/config/general') ||
                      (defaultSelected === '/config/network') ||
@@ -130,7 +130,7 @@ class Sidebar extends Component {
         ) {
             result = true;
         }
-        if (section === 'ads' &&
+        else if (section === 'ads' &&
                  (
                      (defaultSelected === '/ad-create') ||
                      (defaultSelected === '/ad-list')
@@ -138,7 +138,7 @@ class Sidebar extends Component {
         ) {
             result = true;
         }
-        if (section === 'help' &&
+        else if (section === 'help' &&
                  (
                      (defaultSelected === '/faq') ||
                      (defaultSelected === '/report-issue')
@@ -146,7 +146,7 @@ class Sidebar extends Component {
         ) {
             result = true;
         }
-        if (section === 'message' &&
+        else if (section === 'message' &&
                  (
                      (defaultSelected === '/message-compose') ||
                      (defaultSelected === '/message-sent') ||
