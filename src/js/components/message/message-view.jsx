@@ -34,7 +34,7 @@ class MessageView extends Component {
         this.props.history.push('/message-compose/', this.props.location.state);
     }
 
-    viewTx() {
+    viewTransaction() {
         this.props.history.push('/transaction/' + encodeURIComponent(this.props.location.state.txid), this.props.location.state);
     }
 
@@ -120,7 +120,7 @@ class MessageView extends Component {
                                     <Button
                                         variant='outline-default'
                                         className={'btn-xs icon_only'}
-                                        onClick={() => this.viewTx()}>
+                                        onClick={() => this.viewTransaction()}>
                                         <FontAwesomeIcon
                                             icon={'th-list'}
                                             size="1x"/>
