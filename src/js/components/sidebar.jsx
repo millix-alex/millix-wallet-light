@@ -27,6 +27,9 @@ class Sidebar extends Component {
         this.setVersion = this.setVersion.bind(this);
     }
 
+    shouldComponentUpdate(props, nextProps) {
+        return false;
+    }
     componentDidMount() {
         this.setVersion();
         setInterval(this.setVersion, 5 * 60 * 1000);
@@ -86,6 +89,74 @@ class Sidebar extends Component {
                 });
             }
         });
+    }
+
+    isExpanded(section, defaultSelected) {
+        let result = false;
+        if (section === 'transaction' &&
+            (
+                (defaultSelected === '/unspent-transaction-output-list/pending') ||
+                (defaultSelected === '/unspent-transaction-output-list/stable')
+            )
+        ) {
+            result = true;
+        }
+        if (section === 'status' &&
+                 (
+                     (defaultSelected === '/status-summary') ||
+                     (defaultSelected === '/peers') ||
+                     (defaultSelected === '/backlog')
+                 )
+        ) {
+            result = true;
+        }
+        if (section === 'advertisement' &&
+                 (
+                     (defaultSelected === '/advertisement-list') ||
+                     (defaultSelected === '/advertisement-received-list')
+                 )
+        ) {
+            result = true;
+        }
+        if (section === 'config' &&
+                 (
+                     (defaultSelected === '/config/general') ||
+                     (defaultSelected === '/config/network') ||
+                     (defaultSelected === '/config/connection') ||
+                     (defaultSelected === '/config/consensus') ||
+                     (defaultSelected === '/config/address-version') ||
+                     (defaultSelected === '/config/config-storage')
+                 )
+        ) {
+            result = true;
+        }
+        if (section === 'ads' &&
+                 (
+                     (defaultSelected === '/ad-create') ||
+                     (defaultSelected === '/ad-list')
+                 )
+        ) {
+            result = true;
+        }
+        if (section === 'help' &&
+                 (
+                     (defaultSelected === '/faq') ||
+                     (defaultSelected === '/report-issue')
+                 )
+        ) {
+            result = true;
+        }
+        if (section === 'message' &&
+                 (
+                     (defaultSelected === '/message-compose') ||
+                     (defaultSelected === '/message-sent') ||
+                     (defaultSelected === '/message-inbox')
+                 )
+        ) {
+            result = true;
+        }
+
+        return result;
     }
 
     changeModalShow(value = true) {
@@ -168,6 +239,7 @@ class Sidebar extends Component {
 
                     <NavItem
                         eventKey="transaction"
+                        expanded={this.isExpanded('transaction', defaultSelected)}
                     >
                         <NavText>
                             transactions <FontAwesomeIcon className={'icon'}
@@ -198,6 +270,7 @@ class Sidebar extends Component {
                     </NavItem>
 
                     <NavItem
+                        expanded={this.isExpanded('advertisement', defaultSelected)}
                         eventKey="advertisement"
                     >
                         <NavText>
@@ -224,6 +297,7 @@ class Sidebar extends Component {
 
                     <NavItem
                         eventKey="message"
+                        expanded={this.isExpanded('message', defaultSelected)}
                         className={'messageParent'}
                     >
                         <NavText>
@@ -261,6 +335,7 @@ class Sidebar extends Component {
 
                     <NavItem
                         eventKey="status"
+                        expanded={this.isExpanded('status', defaultSelected)}
                     >
                         <NavText>
                             status <FontAwesomeIcon className={'icon'}
@@ -295,6 +370,7 @@ class Sidebar extends Component {
 
                     <NavItem
                         eventKey="config"
+                        expanded={this.isExpanded('config', defaultSelected)}
                     >
                         <NavText>
                             settings <FontAwesomeIcon className={'icon'}
