@@ -110,7 +110,7 @@ class MessageView extends Component {
                                     </div>
                                     <Button
                                         variant="outline-primary"
-                                        className={'btn-xs icon_only labeled'}
+                                        className={'btn-xs'}
                                         onClick={() => this.reply()}>
                                         <FontAwesomeIcon
                                             icon={'reply'}
@@ -118,13 +118,12 @@ class MessageView extends Component {
                                         reply
                                     </Button>
                                     <Button
-                                        variant="outline-primary"
-                                        className={'btn-xs icon_only labeled'}
+                                        variant='outline-default'
+                                        className={'btn-xs icon_only'}
                                         onClick={() => this.viewTx()}>
                                         <FontAwesomeIcon
                                             icon={'th-list'}
                                             size="1x"/>
-                                        view tx
                                     </Button>
                                 </div>
                             </div>
