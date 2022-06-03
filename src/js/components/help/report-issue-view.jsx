@@ -7,7 +7,7 @@ import {updateNetworkState} from '../../redux/actions';
 import * as format from '../../helper/format';
 import {Col, Row} from 'react-bootstrap';
 import MessageComposeForm from '../message/message-compose-form';
-import {DISCORD_URL} from '../../../config.js';
+import {DISCORD_URL, REPORT_ISSUE_ADDRESS} from '../../../config.js';
 
 
 class ReportIssueView extends Component {
@@ -63,7 +63,7 @@ hardware:
                                 <MessageComposeForm
                                     message={this.state.message}
                                     subject={'issue report:'}
-                                    destination_address={this.props.config.REPORT_ISSUE_ADDRESS}
+                                    destination_address={REPORT_ISSUE_ADDRESS}
                                 />
                             </div>
                         </div>
