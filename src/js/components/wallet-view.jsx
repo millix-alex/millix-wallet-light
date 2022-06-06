@@ -190,8 +190,7 @@ class WalletView extends Component {
                                                         type="button"
                                                         onClick={() => this.setState({fee_input_locked: !this.state.fee_input_locked})}>
                                                         <FontAwesomeIcon
-                                                            icon={this.state.fee_input_locked ? 'lock' : 'lock-open'}
-                                                            size="sm"/>
+                                                            icon={this.state.fee_input_locked ? 'lock' : 'lock-open'}/>
                                                     </button>
                                                 </Col>
                                             </Form.Group>

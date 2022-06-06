@@ -10,9 +10,13 @@
   width: 1.8rem;
 }
 
-.btn {
+.btn-outline-input-group-addon.loader {
+  opacity: 1;
+  padding: 0.5em 0.8em;
+}
+
+.btn.loader {
   .loader-spin {
-    margin-right: 0.3em;
     height: 1.25rem;
     width: 1.25rem;
   }
@@ -20,13 +24,6 @@
 
 .loader-spin {
   @include loader;
-}
-
-.loader-spin-xs {
-  @include loader;
-  border-width: 1px;
-  height: 1rem;
-  width: 1rem;
 }
 
 .loader-container {
