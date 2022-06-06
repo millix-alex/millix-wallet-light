@@ -267,7 +267,7 @@ class MessageComposeForm extends Component {
             <>
                 <ErrorList
                     error_list={this.state.error_list}/>
-                <Row>
+                <Row className={'message_compose'}>
                     <Col>
                         <Form.Group className="form-group" role="form">
                             <label>recipients</label>
@@ -345,8 +345,7 @@ class MessageComposeForm extends Component {
                                         type="button"
                                         onClick={() => this.setState({fee_input_locked: !this.state.fee_input_locked})}>
                                         <FontAwesomeIcon
-                                            icon={this.state.fee_input_locked ? 'lock' : 'lock-open'}
-                                            size="sm"/>
+                                            icon={this.state.fee_input_locked ? 'lock' : 'lock-open'}/>
                                     </button>
                                 </Col>
                             </Form.Group>
@@ -363,16 +362,15 @@ class MessageComposeForm extends Component {
                                                   onChange={e => this.validateDns(e)}/>
                                     {this.state.dns_validating ?
                                      <button
-                                         className="btn btn-outline-input-group-addon icon_only"
+                                         className="btn btn-outline-input-group-addon loader icon_only"
                                          type="button"
-                                         style={{opacity: '1!important'}}
                                          disabled={true}>
                                          <div className="loader-spin"/>
                                      </button>
                                                                : ''}
                                 </Col>
                                 {this.state.dns_valid && this.dns?.value !== '' ?
-                                 <div className={'text-success labeled form-group'}>
+                                 <div className={'text-success labeled verified_sender_mark'}>
                                      <FontAwesomeIcon
                                          icon={'check-circle'}
                                          size="1x"/>
