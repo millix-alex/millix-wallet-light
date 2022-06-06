@@ -222,11 +222,7 @@ class WalletView extends Component {
                                                     disabled={this.state.canceling}>
                                                     {this.state.sending ?
                                                      <>
-                                                         <div style={{
-                                                             float      : 'left',
-                                                             marginRight: 10
-                                                         }}
-                                                              className="loader-spin"/>
+                                                         <div className="loader-spin"/>
                                                          {this.state.canceling ? 'canceling' : 'cancel transaction'}
                                                      </> : <>send</>}
                                                 </Button>

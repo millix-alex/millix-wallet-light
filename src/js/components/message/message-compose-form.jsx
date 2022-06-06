@@ -439,15 +439,14 @@ class MessageComposeForm extends Component {
                             <Form.Group as={Row}>
                                 <Button
                                     variant="outline-primary"
+                                    style={{
+                                        zIndex: 99999
+                                    }}
                                     onClick={() => this.send()}
                                     disabled={this.state.canceling || this.state.dns_validating}>
                                     {this.state.sending ?
                                      <>
-                                         <div style={{
-                                             float      : 'left',
-                                             marginRight: 10
-                                         }}
-                                              className="loader-spin"/>
+                                         <div className="loader-spin"/>
                                          {this.state.canceling ? 'canceling' : 'cancel transaction'}
                                      </> : <>send</>}
                                 </Button>
