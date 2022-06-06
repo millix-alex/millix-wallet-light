@@ -27,9 +27,6 @@ class Sidebar extends Component {
         this.setVersion = this.setVersion.bind(this);
     }
 
-    shouldComponentUpdate(props, nextProps) {
-        return false;
-    }
     componentDidMount() {
         this.setVersion();
         setInterval(this.setVersion, 5 * 60 * 1000);
