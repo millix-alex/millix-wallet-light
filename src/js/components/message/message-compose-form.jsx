@@ -63,7 +63,12 @@ class MessageComposeForm extends Component {
     }
 
     componentDidMount() {
-        this.amount.value = format.millix(10000, false);
+        let amount_default = 10000;
+        if (this.props.amount) {
+            amount_default = this.props.amount;
+        }
+        this.amount.value = format.millix(amount_default, false);
+
         if (this.props.message) {
             this.populateFormFromProps();
         }
@@ -86,7 +91,9 @@ class MessageComposeForm extends Component {
 
     verifySenderDomainName(domain_name, error_list = []) {
         if (!domain_name) {
-            this.setState({dns_valid: true});
+            this.setState({
+                dns_valid: true
+            });
             return Promise.resolve(true);
         }
 
@@ -262,13 +269,43 @@ class MessageComposeForm extends Component {
         });
     }
 
+    addDestinationAddress(value) {
+        const chips = this.state.destination_address_list.slice();
+        value.split(/\n| /).forEach(address => {
+            if (chips.includes(address.trim())) {
+                this.setState({
+                    error_list: [
+                        {
+                            name   : 'recipient_already_exist',
+                            message: `recipients must contain only unique addresses. multiple entries of address ${address.trim()}`
+                        }
+                    ]
+                });
+                return;
+            }
+            chips.push(address.trim());
+        });
+
+        this.setState({destination_address_list: chips});
+    };
+
+    removeDestinationAddress(index) {
+        const chips = this.state.destination_address_list.slice();
+        chips.splice(index, 1);
+        this.setState({destination_address_list: chips});
+    };
+
+    getFieldClassname(field) {
+        return this.props.hidden_field_list?.includes(field) ? 'd-none' : '';
+    }
+
     render() {
         return (
             <>
                 <ErrorList
                     error_list={this.state.error_list}/>
                 <Row className={'message_compose'}>
-                    <Col>
+                    <Col className={this.getFieldClassname('address')}>
                         <Form.Group className="form-group" role="form">
                             <label>recipients</label>
                             <ReactChipInput
@@ -290,7 +327,7 @@ class MessageComposeForm extends Component {
                         </Form.Group>
                     </Col>
                     <Form>
-                        <Col>
+                        <Col className={this.getFieldClassname('subject')}>
                             <Form.Group className="form-group">
                                 <label>subject</label>
                                 <Form.Control type="text"
@@ -302,7 +339,7 @@ class MessageComposeForm extends Component {
                         </Col>
                         <Col>
                             <Form.Group className="form-group">
-                                <label>message</label>
+                                <label>{this.props.input_label_message ? this.props.input_label_message : 'message'}</label>
                                 <Form.Control as="textarea" rows={10}
                                               value={this.state.message}
                                               onChange={c => this.setState({message: c.target.value})}
@@ -313,7 +350,7 @@ class MessageComposeForm extends Component {
                                               }}/>
                             </Form.Group>
                         </Col>
-                        <Col>
+                        <Col className={this.getFieldClassname('amount')}>
                             <Form.Group className="form-group">
                                 <label>payment<HelpIconView help_item_name={'message_payment'}/></label>
                                 <Form.Control type="text"
@@ -323,7 +360,7 @@ class MessageComposeForm extends Component {
                                               onChange={validate.handleAmountInputChange.bind(this)}/>
                             </Form.Group>
                         </Col>
-                        <Col>
+                        <Col className={this.getFieldClassname('fee')}>
                             <Form.Group className="form-group"
                                         as={Row}>
                                 <label>fee</label>
@@ -350,7 +387,7 @@ class MessageComposeForm extends Component {
                                 </Col>
                             </Form.Group>
                         </Col>
-                        <Col>
+                        <Col className={this.getFieldClassname('verified_sender')}>
                             <Form.Group className="form-group"
                                         as={Row}>
                                 <label>verified sender (optional)<HelpIconView help_item_name={'verified_sender'}/></label>
