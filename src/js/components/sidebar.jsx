@@ -24,7 +24,8 @@ class Sidebar extends Component {
             application                  : ''
         };
 
-        this.setVersion = this.setVersion.bind(this);
+        this.expanded_nav = '';
+        this.setVersion        = this.setVersion.bind(this);
     }
 
     componentDidMount() {
@@ -90,32 +91,35 @@ class Sidebar extends Component {
 
     isExpanded(section, defaultSelected) {
         let result = false;
-        if (section === 'transaction' &&
+        if ((section === 'transaction' &&
             (
                 (defaultSelected === '/unspent-transaction-output-list/pending') ||
                 (defaultSelected === '/unspent-transaction-output-list/stable')
-            )
+            )) && this.expanded_nav !== 'transaction'
         ) {
+            this.expanded_nav = 'transaction';
             result = true;
         }
-        else if (section === 'status' &&
+        else if ((section === 'status' &&
                  (
                      (defaultSelected === '/status-summary') ||
                      (defaultSelected === '/peers') ||
                      (defaultSelected === '/backlog')
-                 )
+                 )) && this.expanded_nav !== 'status'
         ) {
+            this.expanded_nav = 'status';
             result = true;
         }
-        else if (section === 'advertisement' &&
+        else if ((section === 'advertisement' &&
                  (
                      (defaultSelected === '/advertisement-list') ||
                      (defaultSelected === '/advertisement-received-list')
-                 )
+                 )) && this.expanded_nav !== 'advertisement'
         ) {
+            this.expanded_nav = 'advertisement';
             result = true;
         }
-        else if (section === 'config' &&
+        else if ((section === 'config' &&
                  (
                      (defaultSelected === '/config/general') ||
                      (defaultSelected === '/config/network') ||
@@ -123,34 +127,38 @@ class Sidebar extends Component {
                      (defaultSelected === '/config/consensus') ||
                      (defaultSelected === '/config/address-version') ||
                      (defaultSelected === '/config/config-storage')
-                 )
+                 )) && this.expanded_nav !== 'config'
         ) {
+            this.expanded_nav = 'config';
             result = true;
         }
-        else if (section === 'ads' &&
+        else if ((section === 'ads' &&
                  (
                      (defaultSelected === '/ad-create') ||
                      (defaultSelected === '/ad-list')
-                 )
+                 )) && this.expanded_nav !== 'ads'
         ) {
+            this.expanded_nav = 'ads';
             result = true;
         }
-        else if (section === 'help' &&
+        else if ((section === 'help' &&
                  (
                      (defaultSelected === '/faq') ||
                      (defaultSelected === '/report-issue') ||
                      (defaultSelected === '/system-info')
-                 )
+                 )) && this.expanded_nav !== 'help'
         ) {
+            this.expanded_nav = 'help';
             result = true;
         }
-        else if (section === 'message' &&
+        else if ((section === 'message' &&
                  (
                      (defaultSelected === '/message-compose') ||
                      (defaultSelected === '/message-sent') ||
                      (defaultSelected === '/message-inbox')
-                 )
+                 )) && this.expanded_nav !== 'message'
         ) {
+            this.expanded_nav = 'message';
             result = true;
         }
 
@@ -238,6 +246,7 @@ class Sidebar extends Component {
                     <NavItem
                         eventKey="transaction"
                         expanded={this.isExpanded('transaction', defaultSelected)}
+                        onClick={() => this.expanded_nav = ''}
                     >
                         <NavText>
                             transactions <FontAwesomeIcon className={'icon'}
@@ -270,6 +279,7 @@ class Sidebar extends Component {
                     <NavItem
                         expanded={this.isExpanded('advertisement', defaultSelected)}
                         eventKey="advertisement"
+                        onClick={() => this.expanded_nav = ''}
                     >
                         <NavText>
                             advertisements <FontAwesomeIcon className={'icon'}
@@ -296,6 +306,7 @@ class Sidebar extends Component {
                     <NavItem
                         eventKey="message"
                         expanded={this.isExpanded('message', defaultSelected)}
+                        onClick={() => this.expanded_nav = ''}
                         className={'messageParent'}
                     >
                         <NavText>
@@ -334,6 +345,7 @@ class Sidebar extends Component {
                     <NavItem
                         eventKey="status"
                         expanded={this.isExpanded('status', defaultSelected)}
+                        onClick={() => this.expanded_nav = ''}
                     >
                         <NavText>
                             status <FontAwesomeIcon className={'icon'}
@@ -369,6 +381,7 @@ class Sidebar extends Component {
                     <NavItem
                         eventKey="config"
                         expanded={this.isExpanded('config', defaultSelected)}
+                        onClick={() => this.expanded_nav = ''}
                     >
                         <NavText>
                             settings <FontAwesomeIcon className={'icon'}
