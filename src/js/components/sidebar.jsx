@@ -24,8 +24,7 @@ class Sidebar extends Component {
             application                  : ''
         };
 
-        this.expanded_nav = '';
-        this.setVersion        = this.setVersion.bind(this);
+        this.setVersion = this.setVersion.bind(this);
     }
 
     componentDidMount() {
@@ -91,35 +90,33 @@ class Sidebar extends Component {
 
     isExpanded(section, defaultSelected) {
         let result = false;
-        if ((section === 'transaction' &&
+        if (section === 'transaction' &&
             (
+                (defaultSelected === '/transaction-list') ||
                 (defaultSelected === '/unspent-transaction-output-list/pending') ||
                 (defaultSelected === '/unspent-transaction-output-list/stable')
-            )) && this.expanded_nav !== 'transaction'
+            )
         ) {
-            this.expanded_nav = 'transaction';
             result = true;
         }
-        else if ((section === 'status' &&
+        else if (section === 'status' &&
                  (
                      (defaultSelected === '/status-summary') ||
                      (defaultSelected === '/peers') ||
                      (defaultSelected === '/backlog')
-                 )) && this.expanded_nav !== 'status'
+                 )
         ) {
-            this.expanded_nav = 'status';
             result = true;
         }
-        else if ((section === 'advertisement' &&
+        else if (section === 'advertisement' &&
                  (
                      (defaultSelected === '/advertisement-list') ||
                      (defaultSelected === '/advertisement-received-list')
-                 )) && this.expanded_nav !== 'advertisement'
+                 )
         ) {
-            this.expanded_nav = 'advertisement';
             result = true;
         }
-        else if ((section === 'config' &&
+        else if (section === 'config' &&
                  (
                      (defaultSelected === '/config/general') ||
                      (defaultSelected === '/config/network') ||
@@ -127,38 +124,34 @@ class Sidebar extends Component {
                      (defaultSelected === '/config/consensus') ||
                      (defaultSelected === '/config/address-version') ||
                      (defaultSelected === '/config/config-storage')
-                 )) && this.expanded_nav !== 'config'
+                 )
         ) {
-            this.expanded_nav = 'config';
             result = true;
         }
-        else if ((section === 'ads' &&
+        else if (section === 'ads' &&
                  (
                      (defaultSelected === '/ad-create') ||
                      (defaultSelected === '/ad-list')
-                 )) && this.expanded_nav !== 'ads'
+                 )
         ) {
-            this.expanded_nav = 'ads';
             result = true;
         }
-        else if ((section === 'help' &&
+        else if (section === 'help' &&
                  (
                      (defaultSelected === '/faq') ||
                      (defaultSelected === '/report-issue') ||
                      (defaultSelected === '/system-info')
-                 )) && this.expanded_nav !== 'help'
+                 )
         ) {
-            this.expanded_nav = 'help';
             result = true;
         }
-        else if ((section === 'message' &&
+        else if (section === 'message' &&
                  (
                      (defaultSelected === '/message-compose') ||
                      (defaultSelected === '/message-sent') ||
                      (defaultSelected === '/message-inbox')
-                 )) && this.expanded_nav !== 'message'
+                 )
         ) {
-            this.expanded_nav = 'message';
             result = true;
         }
 
@@ -185,6 +178,15 @@ class Sidebar extends Component {
         }
 
         return message_count_badge;
+    }
+
+    toggleCurrentNavigation(navigation_id){
+        let nav_class_list = document.getElementById(navigation_id).parentNode.classList;
+        if(nav_class_list.contains('sidenav---expanded---1KdUL')) {
+            nav_class_list.remove(['sidenav---expanded---1KdUL']);
+        } else {
+            nav_class_list.add(['sidenav---expanded---1KdUL']);
+        }
     }
 
     render() {
@@ -246,7 +248,8 @@ class Sidebar extends Component {
                     <NavItem
                         eventKey="transaction"
                         expanded={this.isExpanded('transaction', defaultSelected)}
-                        onClick={() => this.expanded_nav = ''}
+                        id='transaction'
+                        onClick={() => this.toggleCurrentNavigation('transaction')}
                     >
                         <NavText>
                             transactions <FontAwesomeIcon className={'icon'}
@@ -279,7 +282,9 @@ class Sidebar extends Component {
                     <NavItem
                         expanded={this.isExpanded('advertisement', defaultSelected)}
                         eventKey="advertisement"
-                        onClick={() => this.expanded_nav = ''}
+                        id='advertisement'
+                        onClick={() => this.toggleCurrentNavigation('advertisement')}
+
                     >
                         <NavText>
                             advertisements <FontAwesomeIcon className={'icon'}
@@ -306,13 +311,15 @@ class Sidebar extends Component {
                     <NavItem
                         eventKey="message"
                         expanded={this.isExpanded('message', defaultSelected)}
-                        onClick={() => this.expanded_nav = ''}
                         className={'messageParent'}
+                        id='message'
+                        onClick={() => this.toggleCurrentNavigation('message')}
+
                     >
                         <NavText>
                             messages{this.getMessageCountBadge()} <FontAwesomeIcon className={'icon'}
-                                                                                   icon="chevron-down"
-                                                                                   size="1x"/>
+                                                      icon="chevron-down"
+                                                      size="1x"/>
                             <FontAwesomeIcon className={'icon hidden'}
                                              icon="chevron-up"
                                              size="1x"/>
@@ -345,7 +352,8 @@ class Sidebar extends Component {
                     <NavItem
                         eventKey="status"
                         expanded={this.isExpanded('status', defaultSelected)}
-                        onClick={() => this.expanded_nav = ''}
+                        id='status'
+                        onClick={() => this.toggleCurrentNavigation('status')}
                     >
                         <NavText>
                             status <FontAwesomeIcon className={'icon'}
@@ -381,7 +389,8 @@ class Sidebar extends Component {
                     <NavItem
                         eventKey="config"
                         expanded={this.isExpanded('config', defaultSelected)}
-                        onClick={() => this.expanded_nav = ''}
+                        id='config'
+                        onClick={() => this.toggleCurrentNavigation('config')}
                     >
                         <NavText>
                             settings <FontAwesomeIcon className={'icon'}
