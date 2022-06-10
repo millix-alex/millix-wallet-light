@@ -4,7 +4,7 @@ import store from '../redux/store';
 
 class Translation {
     constructor() {
-        this.language_name_list       = new Intl.DisplayNames(['en'], {//remove multiples
+        this.language_name_list       = new Intl.DisplayNames(['en'], {
             type: 'language'
         });
         this.language_list            = require('../../ui_language.json');
@@ -41,7 +41,7 @@ class Translation {
                 this.current_language_guid = store.getState().config.ACTIVE_LANGUAGE_GUID;
             }
             else {
-                let language_short_code    = navigator.language.split('-')[0];//remove lang code
+                let language_short_code    = navigator.language.split('-')[0];
                 this.current_language_guid = this.language_list.find(element => element.language_name === this.language_name_list.of(language_short_code).toLowerCase()).language_guid;
             }
         }
