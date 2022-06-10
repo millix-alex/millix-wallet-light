@@ -48,9 +48,6 @@ class UnspentTransactionOutputView extends Component {
 
     componentWillUnmount() {
         clearInterval(this.updaterHandler);
-        if (this.state.datatable_loading) {
-            API.interruptTransaction().then(_ => _);
-        }
     }
 
     getStableFromUrl() {
