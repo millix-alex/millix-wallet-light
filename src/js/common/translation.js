@@ -1,9 +1,10 @@
 import _ from 'lodash';
+import store from '../redux/store';
 
 
 class Translation {
     constructor() {
-        this.language_names           = new Intl.DisplayNames(['en'], {//remove multiples
+        this.language_name_list       = new Intl.DisplayNames(['en'], {//remove multiples
             type: 'language'
         });
         this.language_list            = require('../../ui_language.json');
@@ -17,7 +18,7 @@ class Translation {
 
         if (!_.isEmpty(replace_data)) {
             _(replace_data).forEach((key, value) => {
-                let replace_key = key === 0 ? '%key%' : `%key${value}%`;
+                let replace_key = key === 0 ? '[key]' : `[key${value}]`;
                 phrase.replace(replace_key, key);
             });
         }
@@ -26,9 +27,8 @@ class Translation {
     }
 
     getCurrentTranslationList() {
-        //there also should be condition for language switcher
-        if (this.current_translation_data.length === 0) {
-            let translation_list          = require('../../ui_phrase.json');
+        if (this.current_translation_data.length === 0 || this.current_language_guid !== store.getState().config.ACTIVE_LANGUAGE_GUID) {
+            let translation_list          = require('../../ui_phrase.json');//todo: there should be name of corresponding lang file, not added to avoid error
             this.current_translation_data = translation_list.filter(element => element.language_guid === this.getCurrentLanguageGuid());
         }
 
@@ -37,12 +37,16 @@ class Translation {
 
     getCurrentLanguageGuid() {
         if (this.current_language_guid === '') {
-            let language_short_code    = navigator.language.split('-')[0];//remove lang code
-            this.current_language_guid = this.language_list.find(element => element.language_name === this.language_names.of(language_short_code).toLowerCase()).language_guid;
+            if (store.getState().config.ACTIVE_LANGUAGE_GUID) {
+                this.current_language_guid = store.getState().config.ACTIVE_LANGUAGE_GUID;
+            }
+            else {
+                let language_short_code    = navigator.language.split('-')[0];//remove lang code
+                this.current_language_guid = this.language_list.find(element => element.language_name === this.language_name_list.of(language_short_code).toLowerCase()).language_guid;
+            }
         }
 
         return this.current_language_guid;
-
     }
 }
 
