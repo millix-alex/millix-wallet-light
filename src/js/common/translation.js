@@ -12,14 +12,14 @@ class Translation {
         this.current_translation_data = [];
     }
 
-    getPhrase(phrase_guid, replace_data = []) {
+    getPhrase(phrase_guid, replace_data = {}) {
         const phrase_data = this.getCurrentTranslationList().find(element => element.phrase_guid === phrase_guid && element.language_guid === this.getCurrentLanguageGuid());
         let phrase        = phrase_data?.phrase;
 
         if (!_.isEmpty(replace_data)) {
-            _(replace_data).forEach((key, value) => {
-                let replace_key = key === 0 ? '[key]' : `[key${value}]`;
-                phrase.replace(replace_key, key);
+            _.forOwn(replace_data, function(value, key) {
+                let replace_key = `[${key}]`;
+                phrase          = phrase.replace(replace_key, value).replace('***', '');
             });
         }
 
@@ -27,8 +27,8 @@ class Translation {
     }
 
     getCurrentTranslationList() {
-        if (this.current_translation_data.length === 0 || this.current_language_guid !== store.getState().config.ACTIVE_LANGUAGE_GUID) {
-            let translation_list          = require('../../ui_phrase.json');//todo: there should be name of corresponding lang file, not added to avoid error
+        if (this.current_translation_data.length === 0 || this.getCurrentLanguageGuid() !== store.getState().config.ACTIVE_LANGUAGE_GUID) {
+            let translation_list          = require('../../wallet_ui_page_phrase_list.json');
             this.current_translation_data = translation_list.filter(element => element.language_guid === this.getCurrentLanguageGuid());
         }
 

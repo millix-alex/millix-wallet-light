@@ -11,7 +11,6 @@ import {connect} from 'react-redux';
 import {walletUpdateConfig} from '../../redux/actions';
 import {Dropdown} from 'primereact/dropdown';
 import Translation from '../../common/translation';
-import DatatableView from '../utils/datatable-view';
 
 
 class ConfigGeneralView extends Component {
@@ -65,8 +64,8 @@ class ConfigGeneralView extends Component {
 
         const error_list = [];
         let config       = {
-            TRANSACTION_FEE_PROXY  : validate.amount('transaction fee proxy', this.transaction_fee_proxy_input.value, error_list),
-            TRANSACTION_FEE_DEFAULT: validate.amount('transaction fee default', this.transaction_fee_default_input.value, error_list),
+            TRANSACTION_FEE_PROXY  : validate.amount(Translation.getPhrase('9b54da23c'), this.transaction_fee_proxy_input.value, error_list),
+            TRANSACTION_FEE_DEFAULT: validate.amount(Translation.getPhrase('6614812f0'), this.transaction_fee_default_input.value, error_list),
             ACTIVE_LANGUAGE_GUID   : this.state.language
         };
         console.log(config);
@@ -79,7 +78,7 @@ class ConfigGeneralView extends Component {
             }).catch(() => {
                 error_list.push({
                     name   : 'save_error',
-                    message: 'error while saving occurred, please try again later'
+                    message: Translation.getPhrase('6d0d08601')
                 });
             });
         }
@@ -99,14 +98,14 @@ class ConfigGeneralView extends Component {
                         show={this.state.modal_show_save_result}
                         size={'lg'}
                         on_close={() => this.changeModalShowSaveResult(false)}
-                        heading={'success'}
+                        heading={Translation.getPhrase('7ce94c08c')}
                         body={
                             <div>
-                                successfully saved
+                                {Translation.getPhrase('363b5379a')}
                             </div>
                         }/>
                     <div className={'panel panel-filled'}>
-                        <div className={'panel-heading bordered'}>general</div>
+                        <div className={'panel-heading bordered'}>{Translation.getPhrase('6e907b11d')}</div>
                         <div className={'panel-body'}>
                             <Form>
                                 <ErrorList
@@ -120,7 +119,7 @@ class ConfigGeneralView extends Component {
                                 </Form.Group>
 
                                 <Form.Group className="form-group">
-                                    <label>minimum proxy fee<HelpIconView help_item_name={'transaction_fee_proxy'}/></label>
+                                    <label>{Translation.getPhrase('d99efcbbe')}<HelpIconView help_item_name={'transaction_fee_proxy'}/></label>
                                     <Form.Control
                                         type="text"
                                         ref={(c) => this.transaction_fee_proxy_input = c}
@@ -131,7 +130,7 @@ class ConfigGeneralView extends Component {
                                 </Form.Group>
 
                                 <Form.Group className="form-group">
-                                    <label>default fee<HelpIconView help_item_name={'transaction_fee_default'}/></label>
+                                    <label>{Translation.getPhrase('161f55520')}<HelpIconView help_item_name={'transaction_fee_default'}/></label>
                                     <Form.Control
                                         type="text"
                                         ref={(c) => this.transaction_fee_default_input = c}
@@ -147,37 +146,10 @@ class ConfigGeneralView extends Component {
                                         variant="outline-primary"
                                         onClick={() => this.save()}
                                         disabled={this.state.sending}>
-                                        {this.state.sending ? <>{'saving'}</> : <>continue</>}
+                                        {this.state.sending ? <>{Translation.getPhrase('a23d9a84b')}</> : <>{Translation.getPhrase('0e3e60d83')}</>}
                                     </Button>
                                 </Form.Group>
                             </Form>
-
-                            <DatatableView
-                                value={require('../../../ui_phrase.json').map((e, index) => e = {
-                                    phrase       : e.phrase,
-                                    language_name: require('../../../ui_language.json').find(e => e.language_guid === e.language_guid).language_name,
-                                    filepath     : 'ui_phrase.json',
-                                    line_number  : (index*12)-index+2
-
-                                })}
-                                allow_export={true}
-                                sortOrder={1}
-                                showActionColumn={false}
-                                s
-                                resultColumn={[
-                                    {
-                                        field: 'phrase'
-                                    },
-                                    {
-                                        field: 'language_name'
-                                    },
-                                    {
-                                        field: 'filepath'
-                                    },
-                                    {
-                                        field: 'line_number'
-                                    }
-                                ]}/>
                         </div>
                     </div>
                 </div>

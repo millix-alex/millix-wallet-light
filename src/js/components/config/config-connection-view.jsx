@@ -8,6 +8,7 @@ import ErrorList from '../utils/error-list-view';
 import * as validate from '../../helper/validate';
 import API from '../../api';
 import DatatableActionButtonView from '../utils/datatable-action-button-view';
+import Translation from '../../common/translation';
 
 
 class ConfigConnectionView extends Component {
@@ -190,7 +191,7 @@ class ConfigConnectionView extends Component {
                         </Form>
                     }/>
                 <div className={'panel-heading bordered'}>
-                    {connection_name} whitelist
+                    {Translation.getPhrase('d53e5838a', {connection_name: connection_name})}
                 </div>
                 <div className={'panel-body'}>
                     <Col>
@@ -221,9 +222,9 @@ class ConfigConnectionView extends Component {
 
     render() {
         return <div>
-            {this.getConnectionDatatable('inbound connection', 'NODE_CONNECTION_INBOUND_WHITELIST')}
-            {this.getConnectionDatatable('outbound connection', 'NODE_CONNECTION_OUTBOUND_WHITELIST')}
-            {this.getConnectionDatatable('static connection', 'NODE_CONNECTION_STATIC')}
+            {this.getConnectionDatatable(Translation.getPhrase('bd92fdceb'), 'NODE_CONNECTION_INBOUND_WHITELIST')}
+            {this.getConnectionDatatable(Translation.getPhrase('cae4027ec'), 'NODE_CONNECTION_OUTBOUND_WHITELIST')}
+            {this.getConnectionDatatable(Translation.getPhrase('483306b8a'), 'NODE_CONNECTION_STATIC')}
         </div>;
     }
 }
