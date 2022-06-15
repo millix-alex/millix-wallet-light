@@ -1,13 +1,14 @@
 import React from 'react';
 import HelpIconView from '../components/utils/help-icon-view';
 import * as format from './format';
+import Translation from '../common/translation';
 
 export function get_confirmation_modal_question() {
-    return <div>are you sure you want to proceed?</div>;
+    return <div>{Translation.getPhrase('7f91be78d')}</div>;
 }
 
 export function get_ui_error(api_message) {
-    let error          = '';
+    let error = '';
     let api_error_name = 'unknown';
 
     if (typeof (api_message) === 'object') {
@@ -22,37 +23,39 @@ export function get_ui_error(api_message) {
         switch (api_error_name) {
             case 'transaction_input_max_error':
                 error = <>
-                    your transaction tried to use too many outputs<HelpIconView help_item_name={'transaction_max_input_number'}/> please try to send a smaller
-                    amount or click <a className={''} onClick={() => this.props.history.push('/actions')}>here</a> to use the balance aggregation tool to
-                    optimize your balance. the max amount you can send is {format.millix(api_message.data.amount_max)}.</>;
+                    {Translation.getPhrase('2bc667914', {
+                        help_icon        : <HelpIconView help_item_name={'transaction_max_input_number'}/>,
+                        action_link      : <a className={''} onClick={() => this.props.history.push('/actions')}>here</a>,
+                        millix_amount_max: format.millix(api_message.data.amount_max)
+                    })}
+                </>;
                 break;
             case 'insufficient_balance':
-                error = <>your balance is lower than the amount you are trying to send. the max amount you can send
-                    is {format.millix(api_message.data.balance_stable)}.</>;
+                error = <>{Translation.getPhrase('0a97488e4', {balance_stable: format.millix(api_message.data.balance_stable)})}</>;
                 break;
             case 'transaction_send_interrupt':
-                error = <>transaction has been canceled.</>;
+                error = <>{Translation.getPhrase('a8e96f47c')}</>;
                 break;
             case 'proxy_not_found':
-                error = <>proxy not found. please try again.</>;
+                error = <>{Translation.getPhrase('279141684')}</>;
                 break;
             case 'transaction_proxy_rejected':
-                error = <>transaction rejected by a proxy. please try again.</>;
+                error = <>{Translation.getPhrase('2ecd6cff3')}</>;
                 break;
             case 'aggregation_not_required':
-                error = <>cannot process the request. the aggregation will generate on the same number of unspent deposits.</>;
+                error = <>{Translation.getPhrase('9b335fb11')}</>;
                 break;
             case 'aggregation_not_possible':
-                error = <>cannot aggregate the unspent deposits. the transaction value is too small</>;
+                error = <>{Translation.getPhrase('61b3e2502')}</>;
                 break;
             default:
-                error = <>your transaction could not be sent: ({api_message?.error?.error || api_message?.error || api_message || 'undefined behaviour'})</>;
+                error = <>{Translation.getPhrase('8db383be9')} ({api_message?.error?.error || api_message?.error || api_message || Translation.getPhrase('77f7e59cd')})</>;
                 break;
         }
     }
     else if (typeof (api_message) === 'string') {
         const match = /unexpected generic api error: \((?<message>.*)\)/.exec(api_message);
-        error       = `your transaction could not be sent: (${match.groups.message})`;
+        error       = `${Translation.getPhrase('e408955c6')} (${match.groups.message})`;
     }
 
     return error;

@@ -5,6 +5,7 @@ import {Route, withRouter} from 'react-router-dom';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import moment from 'moment';
 import HelpIconView from './help-icon-view';
+import Translation from '../../common/translation';
 
 
 class DatatableHeaderView extends Component {
@@ -87,7 +88,7 @@ class DatatableHeaderView extends Component {
                             <FontAwesomeIcon
                                 icon={'sync'}
                                 size="1x"/>
-                            refresh
+                            {Translation.getPhrase('2d059a956')}
                         </Button>
                     )}
                 </Col>
@@ -95,7 +96,7 @@ class DatatableHeaderView extends Component {
                 <Col xs={12} md={4} className={'datatable_refresh_ago'}>
                     {this.props.datatable_reload_timestamp && (
                         <span>
-                                refreshed {this.props.datatable_reload_timestamp && moment(this.props.datatable_reload_timestamp).fromNow()}
+                                {Translation.getPhrase('06d814962')} {this.props.datatable_reload_timestamp && moment(this.props.datatable_reload_timestamp).fromNow()}
                             </span>
                     )}
                 </Col>

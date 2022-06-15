@@ -154,8 +154,8 @@ class WalletView extends Component {
                                         <Col>
                                             <Form.Group className="form-group">
                                                 <label>{Translation.getPhrase('c9861d7c2')}</label>
-                                                <Form.Control type={Translation.getPhrase('c9861d7c2')}
-                                                              placeholder="address"
+                                                <Form.Control type="text"
+                                                              placeholder={Translation.getPhrase('c9861d7c2')}
                                                               ref={c => this.destinationAddress = c}/>
                                             </Form.Group>
                                         </Col>
@@ -172,10 +172,10 @@ class WalletView extends Component {
                                         <Col>
                                             <Form.Group className="form-group"
                                                         as={Row}>
-                                                <label>fee</label>
+                                                <label>{Translation.getPhrase('5d5997bf3')}</label>
                                                 <Col className={'input-group'}>
                                                     <Form.Control type="text"
-                                                                  placeholder="fee"
+                                                                  placeholder={Translation.getPhrase('5d5997bf3')}
                                                                   pattern="[0-9]+([,][0-9]{1,2})?"
                                                                   ref={c => {
                                                                       this.fee = c;

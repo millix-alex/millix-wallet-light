@@ -186,7 +186,7 @@ class AdvertisementListView extends Component {
                             reload_datatable={() => this.reloadDatatable()}
                             datatable_reload_timestamp={this.state.datatable_reload_timestamp}
                             action_button={{
-                                label   : 'create advertisement',
+                                label   : Translation.getPhrase('e7115e611'),
                                 on_click: () => this.props.history.push('/advertisement-form/')
                             }}
                             value={this.state.advertisement_list}

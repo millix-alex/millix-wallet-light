@@ -23,6 +23,7 @@ class Translation {
                 phrase          = phrase.replace(replace_key, value).replace('***', '');
             });
         }
+        phrase = phrase.split('***').join('').replace(/&quot;/g, '\\"').replace(/\\/g, '');
 
         return phrase;
     }
@@ -53,8 +54,18 @@ class Translation {
 
     setCurrentLanguageGuid(language_guid) {
         this.new_language_list_loaded = false;
-        this.current_language_guid = language_guid;
+        this.current_language_guid    = language_guid;
     }
+
+    replaceJSX = function(str, find, replace) {
+        let parts  = str.split(find);
+        let result = [];
+        for (let i = 0, result; i < parts.length; i++) {
+            result.push(parts[i]);
+            result.push(replace);
+        }
+        return result;
+    };
 }
 
 
