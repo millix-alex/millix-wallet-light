@@ -10,6 +10,7 @@ class Translation {
         this.language_list            = require('../../ui_language.json');
         this.current_language_guid    = '';
         this.current_translation_data = [];
+        this.new_language_list_loaded = false;
     }
 
     getPhrase(phrase_guid, replace_data = {}) {
@@ -27,7 +28,8 @@ class Translation {
     }
 
     getCurrentTranslationList() {
-        if (this.current_translation_data.length === 0 || this.getCurrentLanguageGuid() !== store.getState().config.ACTIVE_LANGUAGE_GUID) {
+        if (this.current_translation_data.length === 0 || !this.new_language_list_loaded) {
+            this.new_language_list_loaded = true;
             let translation_list          = require('../../wallet_ui_page_phrase_list.json');
             this.current_translation_data = translation_list.filter(element => element.language_guid === this.getCurrentLanguageGuid());
         }
@@ -47,6 +49,11 @@ class Translation {
         }
 
         return this.current_language_guid;
+    }
+
+    setCurrentLanguageGuid(language_guid) {
+        this.new_language_list_loaded = false;
+        this.current_language_guid = language_guid;
     }
 }
 

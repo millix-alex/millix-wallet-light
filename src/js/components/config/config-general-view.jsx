@@ -22,20 +22,23 @@ class ConfigGeneralView extends Component {
             modal_show_save_result: false,
             reload                : false,
             language_list         : [],
-            language              : '49015ffef'
+            language              : 'BEpDwgG53'
         };
     }
 
     componentDidMount() {
         this.populateForm();
         this.setState({
-            language_list: Translation.language_list.map(({
-                                                              language_name,
-                                                              language_guid
-                                                          }) => ({
-                label: language_name,
-                value: language_guid
-            })),
+            language_list: Translation.language_list
+                                      .filter(language => language.language_guid !== 'BEpDwgG53')
+                                      .map(({
+                                                language_name,
+                                                language_guid
+                                            }) => ({
+                                          label: language_name,
+                                          value: language_guid
+                                      }))
+                                      .sort((a, b) => a.label.localeCompare(b.label)),
             language     : Translation.getCurrentLanguageGuid()
         });
 
@@ -68,12 +71,12 @@ class ConfigGeneralView extends Component {
             TRANSACTION_FEE_DEFAULT: validate.amount(Translation.getPhrase('6614812f0'), this.transaction_fee_default_input.value, error_list),
             ACTIVE_LANGUAGE_GUID   : this.state.language
         };
-        console.log(config);
         if (error_list.length === 0) {
             this.props.walletUpdateConfig(config).then(() => {
                 this.setState({
                     sending: false
                 });
+                Translation.setCurrentLanguageGuid(this.state.language);
                 this.changeModalShowSaveResult();
             }).catch(() => {
                 error_list.push({
