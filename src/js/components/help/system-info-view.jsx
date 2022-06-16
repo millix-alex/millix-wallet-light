@@ -7,6 +7,7 @@ import os from 'os';
 import API from '../../api';
 import * as format from '../../helper/format';
 import HelpIconView from './../utils/help-icon-view';
+import Translation from '../../common/translation';
 
 
 class SystemInfoView extends Component {
@@ -50,7 +51,7 @@ class SystemInfoView extends Component {
         return (<Col md="12">
             <div className={'panel panel-filled'}>
                 <div className={'panel-heading bordered'}>
-                    system info
+                    {Translation.getPhrase('8f9df8a04')}
                 </div>
                 <div className={'panel-body'}>
                     <Row>
@@ -58,13 +59,13 @@ class SystemInfoView extends Component {
                             <Row>
                                 <Col>
                                     <div className={'section_subtitle'}>
-                                        node
+                                        {Translation.getPhrase('5afb36415')}
                                     </div>
                                     <Table striped bordered hover>
                                         <tbody>
                                         <tr>
                                             <td className={'w-20'}>
-                                                node id
+                                                {Translation.getPhrase('a84b519b0')}
                                             </td>
                                             <td>
                                                 {props.network.node_id}
@@ -72,7 +73,7 @@ class SystemInfoView extends Component {
                                         </tr>
                                         <tr>
                                             <td className={'w-20'}>
-                                                key identifier<HelpIconView
+                                                {Translation.getPhrase('e2fd99059')}<HelpIconView
                                                 help_item_name={'key_identifier'}/>
                                             </td>
                                             <td>
@@ -87,7 +88,7 @@ class SystemInfoView extends Component {
                             <Row>
                                 <Col>
                                     <div className={'section_subtitle'}>
-                                        version
+                                        {Translation.getPhrase('5fa8b6429')}
                                     </div>
                                     <Table striped bordered hover>
                                         <tbody>
@@ -137,7 +138,7 @@ class SystemInfoView extends Component {
                                         </tr>
                                         <tr>
                                             <td className={'w-20'}>
-                                                type
+                                                {Translation.getPhrase('607744dc0')}
                                             </td>
                                             <td>
                                                 {this.state.node_os_info.type}

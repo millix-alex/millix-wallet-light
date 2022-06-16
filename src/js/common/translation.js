@@ -16,18 +16,14 @@ class Translation {
     getPhrase(phrase_guid, replace_data = {}) {
         const phrase_data = this.getCurrentTranslationList().find(element => element.phrase_guid === phrase_guid && element.language_guid === this.getCurrentLanguageGuid());
         let phrase        = phrase_data?.phrase;
-        phrase            = phrase.split('***').join('').replace(/&quot;/g, '\\"').replace(/\\/g, '');
+        phrase            = this.htmlSpecialCharsDecode(phrase);
 
         if (!_.isEmpty(replace_data)) {
             _.forOwn(replace_data, function(value, key) {
                 let replace_key = `[${key}]`;
-
                 let result_phrase = phrase.split(replace_key);
                 phrase            = <>{result_phrase.shift()}{value}{result_phrase.join('')}</>;
             });
-        }
-        else {
-            phrase = <>{phrase}</>;
         }
 
         return phrase;
@@ -66,15 +62,20 @@ class Translation {
         sessionStorage.setItem('current_language_guid', language_guid);
     }
 
-    replaceJSX = function(str, find, replace) {
-        let parts  = str.split(find);
-        let result = [];
-        for (let i = 0, result; i < parts.length; i++) {
-            result.push(parts[i]);
-            result.push(replace);
-        }
-        return result;
-    };
+    htmlSpecialCharsDecode(text) {
+        text      = text.split('***').join('');
+        const map = {
+            '&amp;' : '&',
+            '&lt;'  : '<',
+            '&gt;'  : '>',
+            '&quot;': '"',
+            '&#039;': '\''
+        };
+
+        return text.replace(/(&quot;)|(&#039;)|(&amp;)|(&gt;)|(&lt;)/g, function(m) {
+            return map[m];
+        });
+    }
 }
 
 
