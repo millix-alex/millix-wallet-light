@@ -44,7 +44,10 @@ class Translation {
     }
 
     getCurrentLanguageGuid() {
-        if (this.current_language_guid === '') {
+        if (sessionStorage.getItem('current_language_guid')) {
+            this.current_language_guid = sessionStorage.getItem('current_language_guid');
+        }
+        else if (this.current_language_guid === '') {
             if (store.getState().config.ACTIVE_LANGUAGE_GUID) {
                 this.current_language_guid = store.getState().config.ACTIVE_LANGUAGE_GUID;
             }
@@ -60,6 +63,7 @@ class Translation {
     setCurrentLanguageGuid(language_guid) {
         this.new_language_list_loaded = false;
         this.current_language_guid    = language_guid;
+        sessionStorage.setItem('current_language_guid', language_guid);
     }
 
     replaceJSX = function(str, find, replace) {
