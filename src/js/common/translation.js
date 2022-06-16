@@ -16,14 +16,19 @@ class Translation {
     getPhrase(phrase_guid, replace_data = {}) {
         const phrase_data = this.getCurrentTranslationList().find(element => element.phrase_guid === phrase_guid && element.language_guid === this.getCurrentLanguageGuid());
         let phrase        = phrase_data?.phrase;
+        phrase            = phrase.split('***').join('').replace(/&quot;/g, '\\"').replace(/\\/g, '');
 
         if (!_.isEmpty(replace_data)) {
             _.forOwn(replace_data, function(value, key) {
                 let replace_key = `[${key}]`;
-                phrase          = phrase.replace(replace_key, value).replace('***', '');
+
+                let result_phrase = phrase.split(replace_key);
+                phrase            = <>{result_phrase.shift()}{value}{result_phrase.join('')}</>;
             });
         }
-        phrase = phrase.split('***').join('').replace(/&quot;/g, '\\"').replace(/\\/g, '');
+        else {
+            phrase = <>{phrase}</>;
+        }
 
         return phrase;
     }
