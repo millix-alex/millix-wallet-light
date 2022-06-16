@@ -20,7 +20,7 @@ class Translation {
 
         if (!_.isEmpty(replace_data)) {
             _.forOwn(replace_data, function(value, key) {
-                let replace_key = `[${key}]`;
+                let replace_key   = `[${key}]`;
                 let result_phrase = phrase.split(replace_key);
                 phrase            = <>{result_phrase.shift()}{value}{result_phrase.join('')}</>;
             });
@@ -69,10 +69,11 @@ class Translation {
             '&lt;'  : '<',
             '&gt;'  : '>',
             '&quot;': '"',
-            '&#039;': '\''
+            '&#039;': '\'',
+            '&#39;' : '\''
         };
 
-        return text.replace(/(&quot;)|(&#039;)|(&amp;)|(&gt;)|(&lt;)/g, function(m) {
+        return text.replace(/(&quot;)|(&#039;)|(&amp;)|(&gt;)|(&lt;)|(&#39;)/g, function(m) {
             return map[m];
         });
     }

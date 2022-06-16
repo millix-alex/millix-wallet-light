@@ -186,7 +186,7 @@ class ConfigAddressVersionView extends Component {
                                 loading={this.state.datatable_loading}
                                 action_button_label={Translation.getPhrase('d0db52233')}
                                 action_button={{
-                                    label   : 'add address version',
+                                    label   : Translation.getPhrase('f62c48427'),
                                     on_click: () => this.changeModalAddAddressVersion()
                                 }}
                                 value={this.state.address_version_list}

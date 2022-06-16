@@ -115,7 +115,7 @@ class ConfigGeneralView extends Component {
                                     error_list={this.state.error_list}/>
 
                                 <Form.Group className="form-group">
-                                    <label>language</label>
+                                    <label>{Translation.getPhrase('33a2a68f2')}</label>
                                     <Dropdown
                                         value={this.state.language} options={this.state.language_list}
                                         onChange={(e) => this.setState({language: e.value})} className={'form-control p-0 language-dropdown'}/>

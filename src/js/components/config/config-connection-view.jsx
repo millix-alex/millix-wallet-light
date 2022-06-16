@@ -175,7 +175,7 @@ class ConfigConnectionView extends Component {
                     prevent_close_after_accept={true}
                     on_close={() => this.showModal(config_name, false)}
                     on_accept={() => this.saveConfig(config_name)}
-                    heading={`add ${connection_name}`}
+                    heading={Translation.getPhrase('33237b160') + ` ${connection_name}`}
                     body={
                         <Form>
                             <ErrorList
@@ -202,7 +202,7 @@ class ConfigConnectionView extends Component {
                             loading={this.state.connection_data['loading_' + config_name]}
                             datatable_reload_timestamp={this.state.connection_data['reload_timestamp_' + config_name]}
                             action_button={{
-                                label   : `add ${connection_name}`,
+                                label   : Translation.getPhrase('33237b160') + ` ${connection_name}`,
                                 on_click: () => this.showModal(config_name)
                             }}
                             value={this.state.connection_data[config_name]}

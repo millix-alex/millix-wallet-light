@@ -81,7 +81,7 @@ class DatatableView extends Component {
                 key={'action'}
                 className={'datatable_action_column'}
                 field={'action'}
-                header={'action'}
+                header={Translation.getPhrase('012bb6684')}
                 sortable={false}/>);
         }
 

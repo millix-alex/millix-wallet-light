@@ -1,10 +1,9 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {Button, Col, Form, Row} from 'react-bootstrap';
-import {Route, withRouter} from 'react-router-dom';
+import {Button, Col, Form} from 'react-bootstrap';
+import {withRouter} from 'react-router-dom';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import moment from 'moment';
-import HelpIconView from './help-icon-view';
 import Translation from '../../common/translation';
 
 
@@ -107,7 +106,7 @@ class DatatableHeaderView extends Component {
                             type="text"
                             className={'datatable_search_input'}
                             onChange={this.props.on_global_search_change.bind(this)}
-                            placeholder="search"/>
+                            placeholder={Translation.getPhrase('03cb395c8')}/>
                     )}
                 </Col>
             </div>

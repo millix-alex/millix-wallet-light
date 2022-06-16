@@ -205,7 +205,7 @@ class AdvertisementFormView extends Component {
                 <ModalView show={this.state.modalShow}
                            size={'lg'}
                            on_close={() => this.changeModalShow(false)}
-                           heading={'add funds'}
+                           heading={Translation.getPhrase('4644d1e82')}
                            body={<div>
                                <div>{Translation.getPhrase('b84771088')}</div>
                                <span>{this.props.wallet.address}</span>
