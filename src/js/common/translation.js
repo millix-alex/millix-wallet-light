@@ -22,11 +22,13 @@ class Translation {
             _.forOwn(replace_data, function(value, key) {
                 let replace_key   = `[${key}]`;
                 let result_phrase = phrase.split(replace_key);
-                phrase            = <>{result_phrase.shift()}{value}{result_phrase.join('')}</>;
+                if (result_phrase.length > 1) {
+                    phrase = <>{result_phrase.shift()}{value}{result_phrase.join('')}</>;
+                }
             });
         }
 
-        return phrase;
+        return '';
     }
 
     getCurrentTranslationList() {

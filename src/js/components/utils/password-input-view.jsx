@@ -20,7 +20,7 @@ const PasswordInputView = (props) => {
                         <FormControl
                             ref={c => passphraseRef = c}
                             type="password"
-                            placeholder="wallet password"
+                            placeholder={Translation.getPhrase('98043c8bd')}
                             aria-label="wallet password"
                             aria-describedby="basic-addon"
                             onKeyPress={(e) => {

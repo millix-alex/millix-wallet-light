@@ -53,7 +53,7 @@ class TransactionHistoryView extends Component {
                         icon={'eye'}/>
                     <DatatableActionButtonView
                         icon={'rotate-left'}
-                        title={'reset validation'}
+                        title={Translation.getPhrase('620cf43e3')}
                         callback={() => this.resetTransactionValidationRef.toggleConfirmationModal(transaction.transaction_id)}
                         callback_args={transaction.transaction_id}
                     />

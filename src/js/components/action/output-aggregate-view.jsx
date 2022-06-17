@@ -172,7 +172,7 @@ class OutputAggregateView extends Component {
                             force_disabled={this.state.submitButtonForceDisabled}
                             icon={'code-merge'}
                             label={Translation.getPhrase('dacb0dfc9')}
-                            confirmation_modal_heading={'unspent aggregation'}
+                            confirmation_modal_heading={Translation.getPhrase('5d9c2c672')}
                             confirmation_modal_body={<>
                                 <div>{Translation.getPhrase('867dd91da', {output_count: format.number(this.state.aggregationTransactionOutputCount)})}</div>
                                 {text.get_confirmation_modal_question()}

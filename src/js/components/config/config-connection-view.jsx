@@ -182,7 +182,7 @@ class ConfigConnectionView extends Component {
                                 error_list={this.state.error_list}/>
                             <Form.Control
                                 type="text"
-                                placeholder="node id"
+                                placeholder={Translation.getPhrase('6ba360897')}
                                 ref={(c) => this[config_name] = c}
                                 onChange={(e) => {
                                     return validate.handleInputChangeAlphanumericString(e, 34);

@@ -178,7 +178,7 @@ class TransactionDetailsView extends Component {
                                         variant="outline-primary"
                                         size={'sm'}
                                         onClick={() => this.resetTransactionValidationRef.toggleConfirmationModal(transaction.transaction_id)}
-                                        title={'reset validation'}
+                                        title={Translation.getPhrase('6e1917558')}
                                     >
                                         <FontAwesomeIcon
                                             icon="rotate-left"

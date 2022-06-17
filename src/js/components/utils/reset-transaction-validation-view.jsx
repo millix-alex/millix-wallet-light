@@ -74,7 +74,7 @@ class ResetTransactionValidationView extends Component {
                 <ModalView show={this.state.result_modal_show}
                            size={'lg'}
                            on_close={() => this.toggleResultModal(this.state.reset_transaction_id, false)}
-                           heading={'reset transaction validation'}
+                           heading={Translation.getPhrase('e9bc5c56e')}
                            body={(typeof (this.state.reset_transaction_id) === 'string') ? (
                                <div>
                                    {Translation.getPhrase('af3042810')} {this.state.reset_transaction_id}
