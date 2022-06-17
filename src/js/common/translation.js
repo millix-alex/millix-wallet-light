@@ -34,7 +34,7 @@ class Translation {
     getCurrentTranslationList() {
         if (this.current_translation_data.length === 0 || !this.new_language_list_loaded) {
             this.new_language_list_loaded = true;
-            let translation_list          = require('../../wallet_ui_page_phrase_list.json');
+            let translation_list          = require('../../ui_phrase.json');
             this.current_translation_data = translation_list.filter(element => element.language_guid === this.getCurrentLanguageGuid());
         }
 
