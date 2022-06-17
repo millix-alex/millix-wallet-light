@@ -28,7 +28,7 @@ class Translation {
             });
         }
 
-        return '';
+        return phrase;
     }
 
     getCurrentTranslationList() {
