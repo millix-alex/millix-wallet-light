@@ -79,7 +79,7 @@ class ConfigConnectionView extends Component {
     }
 
     updateData(connection_data, element) {
-        if(!_.isArray(element.value)){
+        if (!_.isArray(element.value)) {
             element.value = JSON.parse(element.value);
         }
         element.value.forEach(el => {
@@ -132,8 +132,8 @@ class ConfigConnectionView extends Component {
     saveConfig(config_name) {
         this.clearErrorList();
         let error_list = [];
-        validate.required('node id', this[config_name].value, error_list);
-        const node_id = validate.string_alphanumeric('node id', this[config_name].value, error_list, 34);
+        validate.required(Translation.getPhrase('6ba360897'), this[config_name].value, error_list);
+        const node_id = validate.string_alphanumeric(Translation.getPhrase('6ba360897'), this[config_name].value, error_list, 34);
 
         if (error_list.length > 0) {
             this.setState({
@@ -214,7 +214,8 @@ class ConfigConnectionView extends Component {
                             showActionColumn={true}
                             resultColumn={[
                                 {
-                                    field: 'node_id'
+                                    field : 'node_id',
+                                    header: Translation.getPhrase('6ba360897')
                                 }
                             ]}
                         />
