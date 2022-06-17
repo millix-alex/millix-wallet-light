@@ -62,7 +62,7 @@ class FaqView extends Component {
                                 <div>
                                     {Translation.getPhrase('0da6f70e0', {
                                         tangled_link: <a
-                                            href={'https://tangled.com/browser-overview.html'}
+                                            href={'https://tangled.com/browser'}
                                             target={'_blank'}>{Translation.getPhrase('d690cecdb')}</a>
                                     })}
                                 </div>

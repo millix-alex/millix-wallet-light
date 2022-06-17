@@ -219,6 +219,7 @@ class WalletView extends Component {
                                             <Form.Group as={Row}>
                                                 <Button
                                                     variant="outline-primary"
+                                                    className={'btn_loader'}
                                                     onClick={() => this.send()}
                                                     disabled={this.state.canceling}>
                                                     {this.state.sending ?

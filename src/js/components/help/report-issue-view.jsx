@@ -49,7 +49,6 @@ hardware:
 
     render() {
         return (
-
             <div>
                 <Row>
                     <Col md={12}>

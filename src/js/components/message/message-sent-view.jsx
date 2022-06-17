@@ -80,6 +80,10 @@ class MessageSentView extends Component {
                                     header: Translation.getPhrase('d17a15dc6')
                                 },
                                 {
+                                    field: 'raw_date',
+                                    class_name: 'hidden_data_search_column'
+                                },
+                                {
                                     field: 'subject',
                                     header: Translation.getPhrase('3a22fb4b4')
                                 },

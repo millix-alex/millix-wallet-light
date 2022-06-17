@@ -24,6 +24,8 @@ class UnspentTransactionOutputView extends Component {
             result_modal_show         : false,
             reset_transaction_id      : ''
         };
+
+        this.reloadDatatable = this.reloadDatatable.bind(this);
     }
 
     componentDidMount() {
@@ -94,7 +96,7 @@ class UnspentTransactionOutputView extends Component {
     }
 
     render() {
-        let title = '';
+        let title;
         if (this.state.stable) {
             title = Translation.getPhrase('164dc0ea9');
         }
@@ -104,7 +106,7 @@ class UnspentTransactionOutputView extends Component {
 
         return (
             <div>
-                <ResetTransactionValidationView onRef={instance => this.resetTransactionValidationRef = instance}/>
+                <ResetTransactionValidationView onRef={instance => this.resetTransactionValidationRef = instance} reloadDatatable={this.reloadDatatable}/>
                 <div className={'panel panel-filled'}>
                     <div
                         className={'panel-heading bordered'}>
