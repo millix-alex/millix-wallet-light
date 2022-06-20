@@ -46,7 +46,7 @@ class ValidationResetView extends Component {
         return <>
             <ModalView show={this.state.modalShowResetValidation}
                        size={'lg'}
-                       heading={'reset validation'}
+                       heading={Translation.getPhrase('9de297694')}
                        on_close={() => this.changeModalShowResetValidation(false)}
                        on_accept={() => this.resetTransactionValidation()}
                        body={<div>
@@ -56,7 +56,7 @@ class ValidationResetView extends Component {
             <ModalView show={this.state.modalShowResult}
                        size={'lg'}
                        on_close={() => this.toggleResultModal(false)}
-                       heading={'reset transaction validation'}
+                       heading={Translation.getPhrase('2a0e88ec9')}
                        body={
                            <div>
                                {Translation.getPhrase('9d0b858a7')}

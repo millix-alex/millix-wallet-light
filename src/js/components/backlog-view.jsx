@@ -65,7 +65,7 @@ class BacklogView extends Component {
             <div className={'panel panel-filled'}>
                 <ModalView show={this.state.modal_show}
                            size={'lg'}
-                           heading={'reset backlog'}
+                           heading={Translation.getPhrase('7f29a26ec')}
                            on_close={() => this.showModal(false)}
                            on_accept={() => this.backlogReset()}
                            body={<div>

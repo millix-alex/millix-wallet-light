@@ -53,14 +53,14 @@ class MnemonicPhraseView extends Component {
         return <>
             <ModalView show={this.state.modalShowMnemonic}
                        size={'xl'}
-                       heading={'mnemonic phrase'}
+                       heading={Translation.getPhrase('ee9c80bf2')}
                        on_close={() => this.changeModalShowMnemonic(false)}
                        body={
                            <MnemonicView mnemonic={this.state.mnemonic}/>
                        }/>
 
             <div className={'panel panel-filled'}>
-                <div className={'panel-heading bordered'}>backup</div>
+                <div className={'panel-heading bordered'}>{Translation.getPhrase('d436cb960')}</div>
                 <div className={'panel-body'}>
                     <p>{Translation.getPhrase('5e6660d19')}</p>
                     <div className={'text-center form-group'}>

@@ -29,6 +29,7 @@ class MessageComposeForm extends Component {
         }
 
         this.state = {
+            sending                 : false,
             dns_valid               : false,
             dns_validating          : false,
             fee_input_locked        : true,
@@ -443,6 +444,7 @@ class MessageComposeForm extends Component {
                                     style={{
                                         zIndex: 99999
                                     }}
+                                    className={'btn_loader'}
                                     onClick={() => this.send()}
                                     disabled={this.state.canceling || this.state.dns_validating}>
                                     {this.state.sending ?

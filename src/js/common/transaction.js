@@ -1,6 +1,7 @@
 import API from '../api';
-import * as text from '../helper/text';
 import async from 'async';
+import UserInterfaceError from '../components/utils/user-interface-error';
+import Translation from './translation';
 
 
 class Transaction {
@@ -14,7 +15,7 @@ class Transaction {
                        if (!data.is_valid) {
                            callback({
                                name   : 'address_invalid',
-                               message: 'valid address is required'
+                               message: Translation.getPhrase('d1cb37b00')
                            });
                        }
                        else {
@@ -58,7 +59,7 @@ class Transaction {
     getModalBodySuccessResult(transaction_id) {
         return <div>
             <div>
-                transaction id
+                {Translation.getPhrase('5f1b2091b')}
             </div>
             <div>
                 {transaction_id}
@@ -71,10 +72,10 @@ class Transaction {
         let error_list = [];
         if (e !== 'validation_error') {
             if (e && e.api_message) {
-                sendTransactionErrorMessage = text.get_ui_error(e.api_message);
+                sendTransactionErrorMessage = <UserInterfaceError api_message={e.api_message}/>;
             }
             else {
-                sendTransactionErrorMessage = `your transaction could not be sent: (${e?.api_message?.error.error || e?.api_message?.error || e?.message || e?.api_message || e || 'undefined behaviour'})`;
+                sendTransactionErrorMessage = `${Translation.getPhrase('49f49cb18')}: (${e?.api_message?.error.error || e?.api_message?.error || e?.message || e?.api_message || e || Translation.getPhrase('b4067b95d')})`;
             }
 
             error_list.push({

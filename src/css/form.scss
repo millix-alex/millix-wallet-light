@@ -30,7 +30,7 @@ body .section_subtitle > .fab {
 
 .btn,
 .btn-xs {
-  display: inline-flex;
+  display: inline-block;
 }
 
 .input-group-btn {
@@ -96,6 +96,7 @@ label {
   }
 }
 
+.btn-xs:not(.icon_only),
 .btn:not(.icon_only) {
   > .svg-inline--fa {
     margin-right: 0.3em;

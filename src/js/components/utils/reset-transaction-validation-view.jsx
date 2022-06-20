@@ -20,6 +20,15 @@ class ResetTransactionValidationView extends Component {
         };
     }
 
+    reloadAndClose() {
+        this.setState({
+            result_modal_show: false
+        });
+        if(this.props.reloadDatatable){
+            this.props.reloadDatatable();
+        }
+    }
+
     componentDidMount() {
         this.props.onRef(this);
     }
@@ -74,14 +83,14 @@ class ResetTransactionValidationView extends Component {
                 <ModalView show={this.state.result_modal_show}
                            size={'lg'}
                            on_close={() => this.toggleResultModal(this.state.reset_transaction_id, false)}
-                           heading={'reset transaction validation'}
+                           heading={Translation.getPhrase('e9bc5c56e')}
                            body={(typeof (this.state.reset_transaction_id) === 'string') ? (
                                <div>
                                    {Translation.getPhrase('af3042810')} {this.state.reset_transaction_id}
                                    <div>
                                        {Translation.getPhrase('b6f821b21', {
                                            unspent_transaction_link: <Link
-                                               to={'/unspent-transaction-output-list/pending'}>{Translation.getPhrase('a1fa680b7')}</Link>
+                                               to={'/unspent-transaction-output-list/pending'} onClick={() => this.reloadAndClose()}>{Translation.getPhrase('a1fa680b7')}</Link>
                                        })}
                                    </div>
                                </div>

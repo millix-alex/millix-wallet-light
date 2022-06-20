@@ -49,7 +49,6 @@ hardware:
 
     render() {
         return (
-
             <div>
                 <Row>
                     <Col md={12}>
@@ -67,7 +66,7 @@ hardware:
                                     subject={`${this.props.wallet.address_key_identifier} issue report`}
                                     destination_address={REPORT_ISSUE_ADDRESS}
                                     amount={1000}
-                                    input_label_message={'describe your issue'}
+                                    input_label_message={Translation.getPhrase('414d5b031')}
                                     hidden_field_list={[
                                         'address',
                                         'subject',

@@ -92,7 +92,7 @@ class ConfigConsensusView extends Component {
                 show={this.state.modal_show_save_result}
                 size={'lg'}
                 on_close={() => this.changeModalShowSaveResult(false)}
-                heading={'success'}
+                heading={Translation.getPhrase('e03c5a207')}
                 body={
                     <div>
                         {Translation.getPhrase('743463336')}

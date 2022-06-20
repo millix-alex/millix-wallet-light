@@ -9,6 +9,7 @@ import * as text from '../../helper/text';
 import API from '../../api';
 import HelpIconView from '../utils/help-icon-view';
 import SubmitButtonView from '../utils/submit-button-view';
+import UserInterfaceError from '../utils/user-interface-error';
 import Translation from '../../common/translation';
 
 
@@ -94,7 +95,7 @@ class OutputAggregateView extends Component {
                   })
                   .catch((e) => {
                       if (e && e.api_message) {
-                          const error_message = text.get_ui_error(e.api_message);
+                          const error_message = <UserInterfaceError api_message={e.api_message}/>;
 
                           errorList.push({
                               name   : 'sendTransactionError',
@@ -172,7 +173,7 @@ class OutputAggregateView extends Component {
                             force_disabled={this.state.submitButtonForceDisabled}
                             icon={'code-merge'}
                             label={Translation.getPhrase('dacb0dfc9')}
-                            confirmation_modal_heading={'unspent aggregation'}
+                            confirmation_modal_heading={Translation.getPhrase('5d9c2c672')}
                             confirmation_modal_body={<>
                                 <div>{Translation.getPhrase('867dd91da', {output_count: format.number(this.state.aggregationTransactionOutputCount)})}</div>
                                 {text.get_confirmation_modal_question()}

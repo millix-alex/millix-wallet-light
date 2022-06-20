@@ -83,6 +83,10 @@ class MessageInboxView extends Component {
                                         class_name: 'w-10'
                                     },
                                     {
+                                        field     : 'raw_date',
+                                        class_name: 'hidden_data_search_column'
+                                    },
+                                    {
                                         field : 'subject',
                                         header: Translation.getPhrase('d334c1e6d')
                                     },

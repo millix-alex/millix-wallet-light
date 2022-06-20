@@ -18,7 +18,7 @@ class DatatableHeaderView extends Component {
     render() {
         let action_button = {
             icon    : 'plus-circle',
-            label   : 'create',
+            label   : Translation.getPhrase('caad1adc6'),
             on_click: false,
             args    : []
         };
