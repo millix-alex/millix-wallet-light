@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import store from '../redux/store';
+import * as ReactDOMServer from 'react-dom/server';
 
 
 class Translation {
@@ -21,6 +22,9 @@ class Translation {
         if (!_.isEmpty(replace_data)) {
             _.forOwn(replace_data, function(value, key) {
                 let replace_key   = `[${key}]`;
+                if(!phrase.hasOwnProperty('split')) {
+                    phrase = ReactDOMServer.renderToStaticMarkup(phrase);
+                }
                 let result_phrase = phrase.split(replace_key);
                 if (result_phrase.length > 1) {
                     phrase = <>{result_phrase.shift()}{value}{result_phrase.join('')}</>;
