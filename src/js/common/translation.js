@@ -1,6 +1,5 @@
 import _ from 'lodash';
 import store from '../redux/store';
-import * as ReactDOMServer from 'react-dom/server';
 
 
 class Translation {
