@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, useEffect} from 'react';
 import SideNav, {NavItem, NavText} from '@trendmicro/react-sidenav';
 import {connect} from 'react-redux';
 import {lockWallet} from '../redux/actions/index';
@@ -434,7 +434,7 @@ class Sidebar extends Component {
                         </NavItem>
                         <NavItem key={'system-info'} eventKey="/system-info">
                             <NavText>
-                                system info
+                                {Translation.getPhrase('8f9df8a04')}
                             </NavText>
                         </NavItem>
                     </NavItem>
