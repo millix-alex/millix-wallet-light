@@ -30,9 +30,6 @@ class Translation {
             let result = [];
             _.forOwn(replace_data, function(value, key) {
                 let replace_key   = `[${key}]`;
-                if(!phrase.hasOwnProperty('split')) {
-                    phrase = ReactDOMServer.renderToStaticMarkup(phrase);
-                }
                 let result_phrase = phrase.split(replace_key);
                 if (result_phrase.length > 1) {
                     result.push(result_phrase.shift());
