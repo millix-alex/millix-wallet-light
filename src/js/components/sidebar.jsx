@@ -131,8 +131,12 @@ class Sidebar extends Component {
                     '/message-sent',
                     '/message-inbox',
                 ],
+                asset: [
+                    '/asset-view'
+                ],
                 nft: [
-                    '/nft-create'
+                    '/nft-create',
+                    '/nft-collection'
                 ],
             };
 
@@ -288,6 +292,28 @@ class Sidebar extends Component {
                                  eventKey="/advertisement-received-list">
                             <NavText>
                                 {Translation.getPhrase('4c1eaa743')}
+                            </NavText>
+                        </NavItem>
+                    </NavItem>
+                    <NavItem
+                        eventKey="asset"
+                        expanded={this.isExpanded('asset', defaultSelected)}
+                        className={'assetParent'}
+                        id="asset"
+                        onClick={() => this.toggleParentNavigationItem('asset')}
+                    >
+                        <NavText>
+                            asset <FontAwesomeIcon className={'icon'}
+                                                 icon="chevron-down"
+                                                 size="1x"/>
+                            <FontAwesomeIcon className={'icon hidden'}
+                                             icon="chevron-up"
+                                             size="1x"/>
+                        </NavText>
+                        <NavItem key={'nft-create'}
+                                 eventKey="/asset-view">
+                            <NavText>
+                                view
                             </NavText>
                         </NavItem>
                     </NavItem>
