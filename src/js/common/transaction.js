@@ -47,7 +47,7 @@ class Transaction {
                 }
                 return data;
             }).then(data => {
-                resolve(this.handleSuccessResponse(data));
+                resolve(this.handleSuccessResponse(data, transactionOutputPayload.transaction_output_list[0].address_base.startsWith('1')));
             }).catch((e) => {
                 reject(this.handleErrorResponse(e));
             });
@@ -89,9 +89,9 @@ class Transaction {
         };
     }
 
-    handleSuccessResponse(data) {
+    handleSuccessResponse(data, isMainNet = true) {
         const transaction = data.transaction.find(item => {
-            return item.version.indexOf('0a') !== -1;
+            return item.version.indexOf(isMainNet ? '0a' : 'la') !== -1;
         });
 
         return {
