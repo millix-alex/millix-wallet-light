@@ -202,10 +202,10 @@ class MessageComposeForm extends Component {
     }
 
     sendTransaction() {
+        changeLoaderState(true);
         this.setState({
             sending: true
         });
-        changeLoaderState(true);
         let transaction_output_payload = this.prepareTransactionOutputPayload();
         Transaction.sendTransaction(transaction_output_payload, true).then((data) => {
             this.clearSendForm();
