@@ -141,9 +141,6 @@ class MessageComposeForm extends Component {
             });
             return;
         }
-        this.setState({
-            sending: true
-        });
 
         const transaction_param = {
             addresses: validate.required(Translation.getPhrase('34e691203'), this.state.destination_address_list, error_list),
@@ -157,11 +154,17 @@ class MessageComposeForm extends Component {
         if (error_list.length === 0) {
             this.verifySenderDomainName(transaction_param.dns, error_list).then(_ => {
                 if (error_list.length === 0) {
+                    changeLoaderState(true);
                     Transaction.verifyAddress(transaction_param).then((data) => {
+                        changeLoaderState(false);
                         this.setState(data);
                         this.changeModalShowConfirmation();
                     }).catch((error) => {
                         error_list.push(error);
+                        this.setState({
+                            error_list: error_list
+                        });
+                        changeLoaderState(false);
                     });
                 }
             });
@@ -170,12 +173,6 @@ class MessageComposeForm extends Component {
         this.setState({
             error_list: error_list
         });
-
-        if (error_list.length > 0) {
-            this.setState({
-                sending: false
-            });
-        }
     }
 
     validateDns(e) {
@@ -205,6 +202,9 @@ class MessageComposeForm extends Component {
     }
 
     sendTransaction() {
+        this.setState({
+            sending: true
+        });
         changeLoaderState(true);
         let transaction_output_payload = this.prepareTransactionOutputPayload();
         Transaction.sendTransaction(transaction_output_payload, true).then((data) => {
