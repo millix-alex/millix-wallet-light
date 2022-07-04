@@ -12,6 +12,8 @@ import * as validate from '../helper/validate';
 import * as text from '../helper/text';
 import Transaction from '../common/transaction';
 import Translation from '../common/translation';
+import * as convert from '../helper/convert';
+import * as svg from '../helper/svg';
 
 
 class WalletView extends Component {
@@ -51,7 +53,7 @@ class WalletView extends Component {
 
         const transaction_params = {
             addresses: [validate.required(Translation.getPhrase('c9861d7c2'), this.destinationAddress.value, error_list)],
-            amount   : validate.amount(Translation.getPhrase('cdfa46e99'), this.amount.value, error_list),
+            amount   : validate.amount(Translation.getPhrase('cdfa46e99'), this.amount, error_list),
             fee      : validate.amount(Translation.getPhrase('3ae48ceb8'), this.fee.value, error_list)
         };
 
@@ -89,7 +91,8 @@ class WalletView extends Component {
 
     clearSendForm() {
         this.destinationAddress.value = '';
-        this.amount.value             = '';
+        this.amount                   = '';
+        this.amount_usd               = '';
 
         if (this.props.config.TRANSACTION_FEE_DEFAULT !== undefined) {
             this.fee.value = format.millix(this.props.config.TRANSACTION_FEE_DEFAULT, false);
@@ -160,18 +163,49 @@ class WalletView extends Component {
                                             </Form.Group>
                                         </Col>
                                         <Col>
-                                            <Form.Group className="form-group">
+                                            <Form.Group className={'form-group'} as={Row}>
                                                 <label>{Translation.getPhrase('cdfa46e99')}</label>
-                                                <Form.Control type="text"
-                                                              placeholder={Translation.getPhrase('cdfa46e99')}
-                                                              pattern="[0-9]+([,][0-9]{1,2})?"
-                                                              ref={c => this.amount = c}
-                                                              onChange={validate.handleAmountInputChange.bind(this)}/>
+                                                <Col className={'input-group'}>
+                                                    <button
+                                                        className="btn btn-outline-input-group-addon icon_only"
+                                                        type="button">
+                                                        <div className={'amount-millix-icon'}>
+                                                            {svg.millix_logo('#9400ce')}
+                                                        </div>
+                                                    </button>
+                                                    <Form.Control type="text"
+                                                                  placeholder={'millix ' + Translation.getPhrase('cdfa46e99')}
+                                                                  pattern="[0-9]+([,][0-9]{1,2})?"
+                                                                  value={this.amount}
+                                                                  onChange={(value) => {
+                                                                      validate.handleAmountInputChange(value);
+                                                                      this.amount_usd = convert.fiat(value.target.value.replaceAll(',', ''), false);
+                                                                      this.amount     = value.target.value;
+                                                                  }}
+                                                    />
+                                                </Col>
+                                                <Col className={'input-group'}>
+                                                    <button
+                                                        className="btn btn-outline-input-group-addon icon_only"
+                                                        type="button">
+                                                        <FontAwesomeIcon
+                                                            icon={'fa-money-bill'}/>
+                                                    </button>
+                                                    <Form.Control type="text"
+                                                                  placeholder={'usd ' + Translation.getPhrase('cdfa46e99')}
+                                                                  pattern="[0-9]+([,][0-9]{1,2})?"
+                                                                  value={this.amount_usd}
+                                                                  onChange={(value) => {
+                                                                      validate.handleAmountInputChangeUsd(value);
+                                                                      this.amount     = convert.usd(value.target.value);
+                                                                      this.amount_usd = value.target.value;
+                                                                  }}
+                                                    />
+                                                </Col>
                                             </Form.Group>
                                         </Col>
                                         <Col>
-                                            <Form.Group className="form-group"
-                                                        as={Row}>
+                                            <Form.Group className="form-group" as={Row}>
                                                 <label>{Translation.getPhrase('5d5997bf3')}</label>
                                                 <Col className={'input-group'}>
                                                     <Form.Control type="text"

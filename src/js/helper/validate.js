@@ -187,6 +187,10 @@ export function handleAmountInputChange(e) {
     handleInputChangeInteger(e, false, 'millix');
 }
 
+export function handleAmountInputChangeUsd(e) {
+    handleInputChangeInteger(e, false);
+}
+
 export function handleInputChangeDNSString(e) {
     if (e.target.value.length === 0) {
         return;
