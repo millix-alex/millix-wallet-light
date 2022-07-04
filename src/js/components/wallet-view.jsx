@@ -170,7 +170,7 @@ class WalletView extends Component {
                                                         className="btn btn-outline-input-group-addon icon_only"
                                                         type="button">
                                                         <div className={'amount-millix-icon'}>
-                                                            {svg.millix_logo('#9400ce')}
+                                                            {svg.millix_logo('#a9a9a9')}
                                                         </div>
                                                     </button>
                                                     <Form.Control type="text"
