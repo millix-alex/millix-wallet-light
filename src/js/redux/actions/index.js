@@ -6,7 +6,6 @@ import {
     SET_BACKLOG_SIZE,
     SET_LOG_SIZE,
     UNLOCK_WALLET,
-    UPDATE_CLOCK,
     UPDATE_MESSAGE_STAT,
     UPDATE_NETWORK_CONNECTIONS,
     UPDATE_NETWORK_STATE,
@@ -206,13 +205,6 @@ export function walletUpdateAddresses(walletID) {
 
 export function addNewAddress(walletID) {
     return {};
-}
-
-export function updateClock(clock) {
-    return {
-        type   : UPDATE_CLOCK,
-        payload: {clock}
-    };
 }
 
 export function getNodeAttribute(nodeID) {//removeWalletAddressVersion(payload) {

@@ -1,6 +1,6 @@
 import {
     ADD_LOG_EVENT, ADD_NEW_ADDRESS, ADD_WALLET_CONFIG, CLEAR_TRANSACTION_DETAILS,
-    LOCK_WALLET, SET_BACKLOG_SIZE, SET_LOG_SIZE, UNLOCK_WALLET, UPDATE_CLOCK, UPDATE_NETWORK_CONNECTIONS,
+    LOCK_WALLET, SET_BACKLOG_SIZE, SET_LOG_SIZE, UNLOCK_WALLET, UPDATE_NETWORK_CONNECTIONS,
     UPDATE_NETWORK_NODE_LIST, UPDATE_NETWORK_STATE, UPDATE_TRANSACTION_DETAILS,
     UPDATE_WALLET_ADDRESS, UPDATE_WALLET_CONFIG, UPDATE_WALLET_MAINTENANCE,
     UPDATE_WALLET_TRANSACTIONS, WALLET_READY, UPDATE_WALLET_ADDRESS_VERSION,
@@ -49,7 +49,6 @@ const initialState = {
         symbol      : ''
     },
     config               : {},
-    clock                : 'not available...',
     log                  : {
         events: [],
         size  : 0
@@ -103,12 +102,14 @@ function rootReducer(state = initialState, action) {
         });
     }
     else if (action.type === UPDATE_NETWORK_STATE) {
-        return Object.assign({}, state, {
-            network: {
-                ...state.network,
-                ...action.payload
-            }
-        });
+        if (reduxStoreShouldUpdate(state.network, action.payload)) {
+            return Object.assign({}, state, {
+                network: {
+                    ...state.network,
+                    ...action.payload
+                }
+            });
+        }
     }
     else if (action.type === UPDATE_NETWORK_NODE_LIST) {
         let nodeListOnline = state.network.node_online_list.map(item => item.node);
@@ -207,20 +208,19 @@ function rootReducer(state = initialState, action) {
             config: {...state.config, ...action.payload}
         });
     }
-    else if (action.type === UPDATE_CLOCK) {
-        return Object.assign({}, state, {
-            clock: action.payload.clock
-        });
-    }
     else if (action.type === SET_BACKLOG_SIZE) {
-        return Object.assign({}, state, {
-            backlog: {size: action.payload}
-        });
+        if (this.state.backlog.size !== action.payload) {
+            return Object.assign({}, state, {
+                backlog: {size: action.payload}
+            });
+        }
     }
     else if (action.type === SET_LOG_SIZE) {
-        return Object.assign({}, state, {
-            log: {size: action.payload}
-        });
+        if (this.state.log.size !== action.payload) {
+            return Object.assign({}, state, {
+                log: {size: action.payload}
+            });
+        }
     }
     else if (action.type === UPDATE_WALLET_ADDRESS_VERSION) {
         return Object.assign({}, state, {
@@ -238,12 +238,14 @@ function rootReducer(state = initialState, action) {
         });
     }
     else if (action.type === UPDATE_WALLET_BALANCE) {
-        return Object.assign({}, state, {
-            wallet: {
-                ...state.wallet,
-                ...action.payload
-            }
-        });
+        if (reduxStoreShouldUpdate(state.wallet, action.payload)) {
+            return Object.assign({}, state, {
+                wallet: {
+                    ...state.wallet,
+                    ...action.payload
+                }
+            });
+        }
     }
     else if (action.type === UPDATE_CURRENCY_PAIR_SUMMARY) {
         let date_updated = new Date();
@@ -294,6 +296,19 @@ function rootReducer(state = initialState, action) {
     }
 
     return state;
+}
+
+function reduxStoreShouldUpdate(old_value, new_value) {
+    let result = false;
+    new_value  = {
+        ...old_value,
+        ...new_value
+    };
+    if (JSON.stringify(old_value) !== JSON.stringify(new_value)) {
+        result = true;
+    }
+
+    return result;
 }
 
 export default rootReducer;
