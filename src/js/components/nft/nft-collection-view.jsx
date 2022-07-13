@@ -48,7 +48,7 @@ class NftCollectionView extends Component {
 
         return API.listTransactionWithDataReceived(this.props.wallet.address_key_identifier, 'tangled_nft').then(data => {
             async.mapLimit(data, 6, (row, callback) => {
-                utils.getImageFromApi(`${API.getAuthenticatedMillixApiURL()}/Mh9QifTIESw5t1fa?p0=${row.transaction_id}&p1=${row.address_key_identifier_to}&p2=Adl87cz8kC190Nqc&p3=${row.transaction_output_attribute[0].value.file_list[0].hash}`)
+                utils.getImageFromApi(row)
                     .then(imageUrl => callback(null, {
                         src   : imageUrl,
                         width : 4,
@@ -217,7 +217,7 @@ class NftCollectionView extends Component {
                         <Row style={{marginTop: 10}}>
                             <Col>
                                 <PhotoAlbum layout="masonry" renderPhoto={this.renderNftImage.bind(this)} photos={this.state.nft_list}
-                                            onClick={(event, photo, index) => this.props.history.push('/nft-transfer', photo)}/>
+                                            onClick={(event, photo) => this.props.history.push('/nft-transfer', photo)}/>
                                 <ModalView
                                     show={this.state.modal_show_burn_confirmation}
                                     size={'lg'}

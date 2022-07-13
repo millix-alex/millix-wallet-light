@@ -20,7 +20,6 @@ class NftCreateForm extends Component {
     constructor(props) {
         super(props);
         const propsState = props.location.state || {};
-        console.log(propsState);
 
         this.state = {
             sending                 : false,
@@ -47,7 +46,6 @@ class NftCreateForm extends Component {
     }
 
     componentWillUnmount() {
-        clearTimeout(this.checkDNSHandler);
         if (this.state.sending) {
             API.interruptTransaction().then(_ => _);
         }
@@ -59,46 +57,6 @@ class NftCreateForm extends Component {
             amount_default = this.props.location.state.amount;
         }
         this.amount.value = format.millix(amount_default, false);
-    }
-
-
-    verifySenderDomainName(domain_name, error_list = []) {
-        if (!domain_name) {
-            this.setState({
-                dns_valid: true
-            });
-            return Promise.resolve(true);
-        }
-
-        const error = {
-            name   : 'verified_sender_not_valid',
-            message: `verified sender must be a valid domain name`
-        };
-
-        domain_name = validate.domain_name('domain_name', domain_name, []);
-        if (domain_name === null) {
-            error_list.push(error);
-
-            return Promise.resolve(false);
-        }
-        else {
-            return API.isDNSVerified(domain_name, this.props.wallet.address_key_identifier)
-                      .then(data => {
-                          if (!data.is_address_verified) {
-                              error_list.push({
-                                  name   : 'verified_sender_not_valid',
-                                  message: <>domain name verification failed. click<HelpIconView help_item_name={'verified_sender'}/> for instructions</>
-                              });
-                          }
-
-                          return data.is_address_verified;
-                      })
-                      .catch(() => {
-                          error_list.push(error);
-
-                          return false;
-                      });
-        }
     }
 
     send() {
@@ -119,7 +77,7 @@ class NftCreateForm extends Component {
         };
 
         if (error_list.length === 0) {
-            this.verifySenderDomainName(transaction_param.dns, error_list).then(_ => {
+            validate.verifySenderDomainName(transaction_param.dns, error_list).then(_ => {
                 if (error_list.length === 0) {
                     Transaction.verifyAddress(transaction_param).then((data) => {
                         this.setState(data);
@@ -137,29 +95,11 @@ class NftCreateForm extends Component {
     }
 
     validateDns(e) {
-        const error_list = [];
-        validate.handleInputChangeDNSString(e);
         this.setState({
             dns_valid     : false,
-            dns_validating: true,
-            error_list    : error_list
+            dns_validating: true
         });
-        clearTimeout(this.checkDNSHandler);
-        this.checkDNSHandler = setTimeout(() => {
-            this.verifySenderDomainName(e.target.value, error_list).then((result) => {
-                this.setState({
-                    error_list    : error_list,
-                    dns_valid     : result,
-                    dns_validating: false
-                });
-            }).catch(() => {
-                this.setState({
-                    error_list    : error_list,
-                    dns_validating: false,
-                    dns_valid     : false
-                });
-            });
-        }, 500);
+        validate.dns(e, this.props.wallet.address_key_identifier).then(data => this.setState({...data})).catch(data => this.setState({...data}));
     }
 
     sendTransaction() {
@@ -191,17 +131,17 @@ class NftCreateForm extends Component {
     }
 
     prepareTransactionOutputPayload() {
-        const transactionOutputAttribute = {};
+        const transaction_output_attribute = {};
 
         if (!!this.state.dns) {
-            transactionOutputAttribute['dns'] = this.state.dns;
+            transaction_output_attribute['dns'] = this.state.dns;
         }
         if (!!this.state.txid) {
-            transactionOutputAttribute['parent_transaction_id'] = this.state.txid;
+            transaction_output_attribute['parent_transaction_id'] = this.state.txid;
         }
 
         return {
-            transaction_output_attribute: transactionOutputAttribute,
+            transaction_output_attribute: transaction_output_attribute,
             transaction_data            : !this.state.txid ? this.state.image : {
                 file_hash        : this.state.nft_hash,
                 attribute_type_id: 'Adl87cz8kC190Nqc'
@@ -249,19 +189,19 @@ class NftCreateForm extends Component {
         if (chips.length !== 0) {
             return;
         }
-        const address = value.split(/\n| /)[0];
+        const address = value.split(/[\n ]/)[0];
         chips.push(address.trim());
         this.setState({destination_address_list: chips});
-        this.chipInputAddress.formControlRef.current.disabled    = true;
-        this.chipInputAddress.formControlRef.current.placeholder = '';
+        this.chip_input_address.formControlRef.current.disabled    = true;
+        this.chip_input_address.formControlRef.current.placeholder = '';
     };
 
     removeDestinationAddress(index) {
         const chips = this.state.destination_address_list.slice();
         chips.splice(index, 1);
         this.setState({destination_address_list: chips});
-        this.chipInputAddress.formControlRef.current.disabled    = false;
-        this.chipInputAddress.formControlRef.current.placeholder = 'recipient';
+        this.chip_input_address.formControlRef.current.disabled    = false;
+        this.chip_input_address.formControlRef.current.placeholder = 'recipient';
     };
 
     getFieldClassname(field) {
@@ -287,9 +227,9 @@ class NftCreateForm extends Component {
                                         this.addDestinationAddress(ref.formControlRef.current.value);
                                         ref.formControlRef.current.value = '';
                                     }
-                                    if (!this.chipInputAddress) {
+                                    if (!this.chip_input_address) {
                                         ref.formControlRef.current.placeholder = 'recipient';
-                                        this.chipInputAddress                  = ref;
+                                        this.chip_input_address                = ref;
                                     }
                                 }}
                                 classes="chip_input form-control"
@@ -303,8 +243,8 @@ class NftCreateForm extends Component {
                         <Col>
                             <Form.Group>
                                 {this.state.nft_src ? (
-                                    <div style={{textAlign: 'center'}}>
-                                        <img src={this.state.nft_src}/>
+                                    <div>
+                                        <img src={this.state.nft_src} alt={'nft'}/>
                                     </div>) : (
                                      <ImageUploader
                                          withIcon={true}
@@ -415,9 +355,6 @@ class NftCreateForm extends Component {
                             <Form.Group as={Row}>
                                 <Button
                                     variant="outline-primary"
-                                    style={{
-                                        zIndex: 99999
-                                    }}
                                     className={'btn_loader'}
                                     onClick={() => this.send()}
                                     disabled={this.state.canceling || this.state.dns_validating}>

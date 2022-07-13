@@ -27,17 +27,17 @@ class API {
         return this.fetchApi(absolute_url, result_param, method);
     }
 
-    fetchApiMillix(url, result_param = {}, method = 'GET', isMultipart = undefined) {
+    fetchApiMillix(url, result_param = {}, method = 'GET', isMultipart = undefined, isImageResponseType = false) {
         try {
             const absolute_url = this.getAuthenticatedMillixApiURL() + url;
-            return this.fetchApi(absolute_url, result_param, method, isMultipart);
+            return this.fetchApi(absolute_url, result_param, method, isMultipart, isImageResponseType);
         }
         catch (e) {
             return Promise.reject(e);
         }
     }
 
-    fetchApi(url, resultParam = {}, method = 'GET', isMultipart = undefined) {
+    fetchApi(url, resultParam = {}, method = 'GET', isMultipart = undefined, isImageResponseType = false) {
         let data = {};
         if (method === 'POST') {
             if (!isMultipart) {
@@ -84,6 +84,10 @@ class API {
 
         return fetch(url, data)
             .then(response => {
+                if (isImageResponseType) {
+                    return response;
+                }
+
                 return response.ok ? response.json() : Promise.reject(response);
             })
             .catch(error => {
@@ -442,6 +446,15 @@ class API {
             p0: dns,
             p1: addressKeyIdentified
         });
+    }
+
+    getNftImage(data) {
+        return this.fetchApiMillix('/Mh9QifTIESw5t1fa', {
+            p0: data.transaction_id,
+            p1: data.address_key_identifier_to,
+            p2: 'Adl87cz8kC190Nqc',
+            p3: data.transaction_output_attribute[0].value.file_list[0].hash
+        }, 'GET', undefined, true);
     }
 }
 

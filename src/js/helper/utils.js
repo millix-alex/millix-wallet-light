@@ -1,16 +1,20 @@
-export const getImageFromApi = (url) => {
+import API from '../api/index.js';
+
+export const getImageFromApi = (data) => {
     return new Promise((resolve) => {
-        fetch(url)
-            .then(result => result.ok ? result.blob() : undefined)
-            .then(blob => {
-                if (!blob) {
-                    return resolve();
-                }
-                return resolve(URL.createObjectURL(blob));
-            });
+        API.getNftImage(data)
+           .then(result => {
+               return result.ok ? result.blob() : undefined;
+           })
+           .then(blob => {
+               if (!blob) {
+                   return resolve();
+               }
+               return resolve(URL.createObjectURL(blob));
+           });
     });
 };
 
 export default {
     getImageFromApi
-}
+};
