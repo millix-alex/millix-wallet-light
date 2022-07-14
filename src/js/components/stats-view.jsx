@@ -15,7 +15,7 @@ class StatsView extends Component {
     }
 
     render() {
-        let is_public = '';
+        let is_public;
         if (this.props.network.node_is_public === 'unknown') {
             is_public = Translation.getPhrase('b2e9a640f');
         }
@@ -198,7 +198,6 @@ class StatsView extends Component {
 
 export default connect(
     state => ({
-        clock  : state.clock,
         config : state.config,
         log    : state.log,
         network: state.network,
