@@ -29,6 +29,7 @@ class WalletView extends Component {
             address_version                   : '',
             address_key_identifier            : '',
             amount                            : '',
+            amount_usd                        : '',
             fee                               : '',
             is_currency_pair_summary_available: true
         };
@@ -62,7 +63,7 @@ class WalletView extends Component {
 
         const transaction_params = {
             addresses: [validate.required(Translation.getPhrase('c9861d7c2'), this.destinationAddress.value, error_list)],
-            amount   : validate.amount(Translation.getPhrase('cdfa46e99'), this.amount, error_list),
+            amount   : validate.amount(Translation.getPhrase('cdfa46e99'), this.state.amount, error_list),
             fee      : validate.amount(Translation.getPhrase('3ae48ceb8'), this.fee.value, error_list)
         };
 
@@ -100,8 +101,10 @@ class WalletView extends Component {
 
     clearSendForm() {
         this.destinationAddress.value = '';
-        this.amount                   = '';
-        this.amount_usd               = '';
+        this.setState({
+            amount    : '',
+            amount_usd: ''
+        });
 
         if (this.props.config.TRANSACTION_FEE_DEFAULT !== undefined) {
             this.fee.value = format.millix(this.props.config.TRANSACTION_FEE_DEFAULT, false);
@@ -193,13 +196,17 @@ class WalletView extends Component {
                                                     <Form.Control type="text"
                                                                   placeholder={'millix ' + Translation.getPhrase('cdfa46e99')}
                                                                   pattern="[0-9]+([,][0-9]{1,2})?"
-                                                                  value={this.amount}
+                                                                  value={this.state.amount}
                                                                   onChange={(value) => {
                                                                       validate.handleAmountInputChange(value);
                                                                       if (this.state.is_currency_pair_summary_available) {
-                                                                          this.amount_usd = convert.fiat(value.target.value.replaceAll(',', ''), false);
+                                                                          this.setState({
+                                                                              amount_usd: convert.fiat(value.target.value.replaceAll(',', ''), false)
+                                                                          });
                                                                       }
-                                                                      this.amount = value.target.value;
+                                                                      this.setState({
+                                                                          amount: value.target.value
+                                                                      });
                                                                   }}
                                                     />
                                                 </Col>
@@ -215,11 +222,13 @@ class WalletView extends Component {
                                                      <Form.Control type="text"
                                                                    placeholder={'usd ' + Translation.getPhrase('cdfa46e99')}
                                                                    pattern="[0-9]+([,][0-9]{1,2})?"
-                                                                   value={this.amount_usd}
+                                                                   value={this.state.amount_usd}
                                                                    onChange={(value) => {
                                                                        validate.handleAmountInputChangeUsd(value);
-                                                                       this.amount     = convert.usd(value.target.value);
-                                                                       this.amount_usd = value.target.value;
+                                                                       this.setState({
+                                                                           amount    : convert.usd(value.target.value),
+                                                                           amount_usd: value.target.value
+                                                                       });
                                                                    }}
                                                      />
                                                  </Col>
