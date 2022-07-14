@@ -293,8 +293,16 @@ ul {
   }
 }
 
-.amount-millix-icon {
-  width: 20px;
+.usd-icon {
+  padding: 0 11px;
+}
+
+.amount-millix-icon-wrapper {
+  padding: 0 11px;
+
+  .amount-millix-icon {
+    width: 20px;
+  }
 }
 
 .balance_panel {

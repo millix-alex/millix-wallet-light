@@ -52,7 +52,9 @@ import {
     faReply,
     faEnvelope,
     faLink,
-    faMoneyBill
+    faMoneyBill,
+    faQrcode,
+    faBuildingColumns
 } from '@fortawesome/free-solid-svg-icons';
 import './css/bootstrap/bootstrap.scss';
 
@@ -78,7 +80,7 @@ library.add(faArrowCircleLeft, faWallet, faKey, faHome, faFingerprint,
     faLock, faLockOpen, faTimes, faEye, faList, faBars, faSignInAlt, faFileImport,
     faChevronDown, faChevronUp, faPencilAlt, faSync, faPlusCircle, faPlay,
     faPause, faQuestionCircle, faThList, faRedo, faEllipsisV,
-    faRotateLeft, faCodeMerge, faCheckCircle, faReply, faEnvelope, faLink, faMoneyBill);
+    faRotateLeft, faCodeMerge, faCheckCircle, faReply, faEnvelope, faLink, faMoneyBill, faQrcode, faBuildingColumns);
 
 
 let apiInfo = {
