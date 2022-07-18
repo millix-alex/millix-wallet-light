@@ -7,6 +7,7 @@ import {connect} from 'react-redux';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import async from 'async';
 import utils from '../../helper/utils';
+import * as format from '../../helper/format';
 
 
 class AssetView extends Component {
@@ -36,17 +37,9 @@ class AssetView extends Component {
         });
 
         return API.listTransactionWithDataReceived(this.props.wallet.address_key_identifier, 'tangled_asset').then(data => {
-
             async.mapLimit(data, 6, (row, callback) => {
-                utils.getImageFromApi(`${API.getAuthenticatedMillixApiURL()}/Mh9QifTIESw5t1fa?p0=${row.transaction_id}&p1=${row.address_key_identifier_to}&p2=Adl87cz8kC190Nqc&p3=${row.transaction_output_attribute[0].value.file_list[0].hash}`)
-                     .then(imageUrl => callback(null, {
-                         src   : imageUrl,
-                         width : 4,
-                         height: 3,
-                         hash  : row.transaction_output_attribute[0].value.file_list[0].hash,
-                         amount: row.amount,
-                         txid  : row.transaction_id
-                     }));
+                utils.getImageFromApi(row)
+                     .then(image_url => callback(null, format.nftImageData(image_url, row)));
             }, (err, assetList) => {
                 this.setState({
                     asset_list                : assetList,
@@ -117,9 +110,7 @@ class AssetView extends Component {
                         </Row>
                         <Row style={{marginTop: 10}}>
                             <Col>
-                                <PhotoAlbum layout="masonry" renderPhoto={this.renderAsset.bind(this)} photos={this.state.asset_list}
-                                            onClick={(event, photo, index) => {
-                                            }}/>
+                                <PhotoAlbum layout="masonry" renderPhoto={this.renderAsset.bind(this)} photos={this.state.asset_list}/>
                             </Col>
                         </Row>
                     </div>

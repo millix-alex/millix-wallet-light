@@ -95,22 +95,6 @@ export function ip(field_name, value, error_list) {
     return value_escaped.join('.');
 }
 
-export function dns(e, addressIdentifier) {
-    return new Promise((resolve) => {
-        handleInputChangeDNSString(e);
-        clearTimeout(this.checkDNSHandler);
-        this.checkDNSHandler = setTimeout(() => {
-            return this.verifySenderDomainName(e.target.value, addressIdentifier).then(result => {
-                resolve({
-                    error_list    : result.error_list,
-                    dns_valid     : result.valid,
-                    dns_validating: false
-                });
-            });
-        }, 500);
-    });
-}
-
 export async function verifySenderDomainName(domain_name, address_identifier) {
     let error_list = [];
     if (!domain_name) {
@@ -120,40 +104,39 @@ export async function verifySenderDomainName(domain_name, address_identifier) {
         };
     }
 
-    const error = {
-        name   : 'verified_sender_not_valid',
-        message: `verified sender must be a valid domain name`
-    };
-
-    domain_name = this.domain_name('domain_name', domain_name, []);
+    domain_name = this.domain_name('domain_name', domain_name, error_list);
     if (domain_name === null) {
-        error_list.push(error);
         return {
             valid     : false,
             error_list: error_list
         };
     }
     else {
-        return await API.isDNSVerified(domain_name, address_identifier)
-           .then(data => {
-               if (!data.is_address_verified) {
-                   error_list.push({
-                       name   : 'verified_sender_not_valid',
-                       message: <>domain name verification failed. click<HelpIconView help_item_name={'verified_sender'}/> for instructions</>
-                   });
-               }
-               return {
-                   valid     : !!data.is_address_verified,
-                   error_list: error_list
-               };
-           })
-           .catch(() => {
-               error_list.push(error);
-               return {
-                   valid     : false,
-                   error_list: error_list
-               };
-           });
+        return API.isDNSVerified(domain_name, address_identifier)
+                  .then(data => {
+                      if (!data.is_address_verified) {
+                      }
+                      return {
+                          valid     : !!data.is_address_verified,
+                          error_list: [
+                              {
+                                  name   : 'verified_sender_not_valid',
+                                  message: <>domain name verification failed. click<HelpIconView help_item_name={'verified_sender'}/> for instructions</>
+                              }
+                          ]
+                      };
+                  })
+                  .catch(() => {
+                      return {
+                          valid     : false,
+                          error_list: [
+                              {
+                                  name   : 'api error',
+                                  message: 'domain name verification failed. please try again later'
+                              }
+                          ]
+                      };
+                  });
     }
 }
 
@@ -251,7 +234,7 @@ export function handleAmountInputChange(e) {
     handleInputChangeInteger(e, false, 'millix');
 }
 
-export function handleInputChangeDNSString(e) {
+export function handleDomainNameInputChange(e) {
     if (e.target.value.length === 0) {
         return;
     }

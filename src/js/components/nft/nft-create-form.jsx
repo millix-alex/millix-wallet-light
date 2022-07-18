@@ -46,6 +46,7 @@ class NftCreateForm extends Component {
     }
 
     componentWillUnmount() {
+        clearTimeout(this.checkDNSHandler);
         if (this.state.sending) {
             API.interruptTransaction().then(_ => _);
         }
@@ -69,11 +70,11 @@ class NftCreateForm extends Component {
             return;
         }
         const transaction_param = {
-            addresses: validate.required('address', this.state.destination_address_list, error_list),
-            amount   : validate.amount('amount', this.amount.value, error_list),
-            fee      : validate.amount('fee', this.fee.value, error_list),
-            image    : !!this.state.txid || validate.required('image', this.state.image, error_list),
-            dns      : validate.domain_name('verified sender', this.dns.value, error_list)
+            address_list: validate.required('address list', this.state.destination_address_list, error_list),
+            amount      : validate.amount('amount', this.amount.value, error_list),
+            fee         : validate.amount('fee', this.fee.value, error_list),
+            image       : !!this.state.txid || validate.required('image', this.state.image, error_list),
+            dns         : validate.domain_name('verified sender', this.dns.value, error_list)
         };
 
         if (error_list.length === 0) {
@@ -99,7 +100,16 @@ class NftCreateForm extends Component {
             dns_valid     : false,
             dns_validating: true
         });
-        validate.dns(e, this.props.wallet.address_key_identifier).then(data => this.setState({...data})).catch(data => this.setState({...data}));
+        clearTimeout(this.checkDNSHandler);
+        this.checkDNSHandler = setTimeout(() => {
+            validate.verifySenderDomainName(e.target.value, this.props.wallet.address_key_identifier).then(result => {//verified sender domain name
+                this.setState({
+                    error_list    : result.error_list,
+                    dns_valid     : result.valid,
+                    dns_validating: false
+                });
+            });
+        }, 500);
     }
 
     sendTransaction() {
@@ -107,8 +117,8 @@ class NftCreateForm extends Component {
         this.setState({
             sending: true
         });
-        let transactionOutputPayload = this.prepareTransactionOutputPayload();
-        Transaction.sendTransaction(transactionOutputPayload, true, !this.state.txid).then((data) => {
+        const transaction_output_payload = this.prepareTransactionOutputPayload();
+        Transaction.sendTransaction(transaction_output_payload, true, !this.state.txid).then((data) => {
             this.clearSendForm();
             this.changeModalShowConfirmation(false);
             this.changeModalShowSendResult();
@@ -310,7 +320,10 @@ class NftCreateForm extends Component {
                                                   placeholder="domain name"
                                                   pattern="^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$"
                                                   ref={c => this.dns = c}
-                                                  onChange={e => this.validateDns(e)}/>
+                                                  onChange={e => {
+                                                      validate.handleDomainNameInputChange(e);
+                                                      this.validateDns(e);
+                                                  }}/>
                                     {this.state.dns_validating ?
                                      <button
                                          className="btn btn-outline-input-group-addon loader icon_only"
@@ -343,7 +356,7 @@ class NftCreateForm extends Component {
                                     <div>you are about to create an nft locking {format.millix(this.state.amount)} to</div>
                                     {this.state.address_list.length === 1 ?
                                      <div>{this.state.address_list[0].address_base}{this.state.address_list[0].address_version}{this.state.address_list[0].address_key_identifier}</div> :
-                                     <div>{this.state.address_list.length} different addresses</div>}
+                                     <div>{this.state.address_list.length} different address</div>}
                                     {text.get_confirmation_modal_question()}
                                 </div>)}/>
                             <ModalView

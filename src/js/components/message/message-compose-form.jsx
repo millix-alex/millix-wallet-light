@@ -91,47 +91,6 @@ class MessageComposeForm extends Component {
         return subject;
     }
 
-    verifySenderDomainName(domain_name, error_list = []) {
-        if (!domain_name) {
-            this.setState({
-                dns_valid: true
-            });
-            return Promise.resolve(true);
-        }
-
-        const error = {
-            name   : 'verified_sender_not_valid',
-            message: Translation.getPhrase('f4df52d03')
-        };
-
-        domain_name = validate.domain_name('domain_name', domain_name, []);
-        if (domain_name === null) {
-            error_list.push(error);
-
-            return Promise.resolve(false);
-        }
-        else {
-            return API.isDNSVerified(domain_name, this.props.wallet.address_key_identifier)
-                      .then(data => {
-                          if (!data.is_address_verified) {
-                              error_list.push({
-                                  name   : 'verified_sender_not_valid',
-                                  message: <>{Translation.getPhrase('48bcbdd7a', {
-                                      help_icon: <HelpIconView key={'verified-sender'} help_item_name={'verified_sender'}/>
-                                  })}</>
-                              });
-                          }
-
-                          return data.is_address_verified;
-                      })
-                      .catch(() => {
-                          error_list.push(error);
-
-                          return false;
-                      });
-        }
-    }
-
     send() {
         let error_list = [];
         if (this.state.sending) {
@@ -143,7 +102,7 @@ class MessageComposeForm extends Component {
         }
 
         const transaction_param = {
-            addresses: validate.required(Translation.getPhrase('34e691203'), this.state.destination_address_list, error_list),
+            address_list: validate.required(Translation.getPhrase('34e691203'), this.state.destination_address_list, error_list),
             amount   : validate.amount(Translation.getPhrase('908073a53'), this.amount.value, error_list),
             fee      : validate.amount(Translation.getPhrase('5d5997bf3'), this.fee.value, error_list),
             subject  : this.subject.value,
@@ -152,19 +111,13 @@ class MessageComposeForm extends Component {
         };
 
         if (error_list.length === 0) {
-            this.verifySenderDomainName(transaction_param.dns, error_list).then(_ => {
+            validate.verifySenderDomainName(transaction_param.dns, error_list).then(_ => {
                 if (error_list.length === 0) {
-                    changeLoaderState(true);
                     Transaction.verifyAddress(transaction_param).then((data) => {
-                        changeLoaderState(false);
                         this.setState(data);
                         this.changeModalShowConfirmation();
                     }).catch((error) => {
                         error_list.push(error);
-                        this.setState({
-                            error_list: error_list
-                        });
-                        changeLoaderState(false);
                     });
                 }
             });
@@ -176,26 +129,17 @@ class MessageComposeForm extends Component {
     }
 
     validateDns(e) {
-        const error_list = [];
-        validate.handleInputChangeDNSString(e);
         this.setState({
             dns_valid     : false,
-            dns_validating: true,
-            error_list    : error_list
+            dns_validating: true
         });
         clearTimeout(this.checkDNSHandler);
         this.checkDNSHandler = setTimeout(() => {
-            this.verifySenderDomainName(e.target.value, error_list).then((result) => {
+            validate.verifySenderDomainName(e.target.value, this.props.wallet.address_key_identifier).then(result => {//verified sender domain name
                 this.setState({
-                    error_list    : error_list,
-                    dns_valid     : result,
+                    error_list    : result.error_list,
+                    dns_valid     : result.valid,
                     dns_validating: false
-                });
-            }).catch(() => {
-                this.setState({
-                    error_list    : error_list,
-                    dns_validating: false,
-                    dns_valid     : false
                 });
             });
         }, 500);
@@ -283,7 +227,7 @@ class MessageComposeForm extends Component {
 
     addDestinationAddress(value) {
         const chips = this.state.destination_address_list.slice();
-        value.split(/\n| /).forEach(address => {
+        value.split(/[\n ]/).forEach(address => {
             if (chips.includes(address.trim())) {
                 this.setState({
                     error_list: [
@@ -407,7 +351,10 @@ class MessageComposeForm extends Component {
                                               placeholder={Translation.getPhrase('973c2c6a3')}
                                               pattern="^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$"
                                               ref={c => this.dns = c}
-                                              onChange={e => this.validateDns(e)}/>
+                                              onChange={e => {
+                                                  validate.handleDomainNameInputChange(e);
+                                                  this.validateDns(e);
+                                              }}/>
                                 {this.state.dns_validating ? <button
                                     className="btn btn-outline-input-group-addon loader icon_only"
                                     type="button"

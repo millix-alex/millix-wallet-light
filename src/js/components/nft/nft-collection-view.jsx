@@ -13,6 +13,7 @@ import {changeLoaderState} from '../loader';
 import Transaction from '../../common/transaction';
 import async from 'async';
 import utils from '../../helper/utils';
+import {TRANSACTION_DATA_TYPE_ASSET, TRANSACTION_DATA_TYPE_TRANSACTION} from '../../../config';
 
 
 class NftCollectionView extends Component {
@@ -49,14 +50,7 @@ class NftCollectionView extends Component {
         return API.listTransactionWithDataReceived(this.props.wallet.address_key_identifier, 'tangled_nft').then(data => {
             async.mapLimit(data, 6, (row, callback) => {
                 utils.getImageFromApi(row)
-                    .then(imageUrl => callback(null, {
-                        src   : imageUrl,
-                        width : 4,
-                        height: 3,
-                        hash  : row.transaction_output_attribute[0].value.file_list[0].hash,
-                        amount: row.amount,
-                        txid  : row.transaction_id
-                    }));
+                     .then(image_url => callback(null, format.nftImageData(image_url, row)));
             }, (err, nftList) => {
                 this.setState({
                     nft_list                  : nftList,
@@ -75,7 +69,6 @@ class NftCollectionView extends Component {
         });
     }
 
-
     prepareTransactionOutputToBurnNft(nft, keepAsAsset) {
         return {
             transaction_output_attribute: {
@@ -85,7 +78,7 @@ class NftCollectionView extends Component {
                 file_hash        : nft.hash,
                 attribute_type_id: 'Adl87cz8kC190Nqc'
             },
-            transaction_data_type       : keepAsAsset ? 'tangled_asset' : 'transaction',
+            transaction_data_type       : keepAsAsset ? TRANSACTION_DATA_TYPE_ASSET : TRANSACTION_DATA_TYPE_TRANSACTION,
             transaction_data_type_parent: 'tangled_nft',
             transaction_output_list     : [
                 {
@@ -124,7 +117,6 @@ class NftCollectionView extends Component {
             });
             changeLoaderState(false);
         });
-
     }
 
     renderNftImage({

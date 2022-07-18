@@ -74,8 +74,8 @@ const UnlockedWalletRequiredRoute = ({
         let messageStatTimeoutID;
         const getMessageStat = (timeout) => {
             messageStatTimeoutID = setTimeout(() => {
-                const transactionDateBegin = moment().subtract(24, 'hours').unix();
-                API.getStatsTransactionWithDataReceived(rest.wallet.address_key_identifier, transactionDateBegin, 'tangled_messenger')
+                const transaction_date_begin = moment().subtract(24, 'hours').unix();
+                API.getStatsTransactionWithDataReceived(rest.wallet.address_key_identifier, transaction_date_begin, 'tangled_messenger')
                    .then(data => {
                        rest.updateMessageStat({count_received: data.count});
                    })
