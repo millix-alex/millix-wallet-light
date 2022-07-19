@@ -7,10 +7,10 @@ import _ from 'lodash';
 
 class Transaction {
 
-     verifyAddress(transactionParams) {
+    verifyAddress(result_transaction_param) {
         return new Promise((resolve, reject) => {
-            const verifiedAddresses = [];
-            async.eachSeries(transactionParams.address_list, (address, callback) => {
+            const verified_address_list = [];
+            async.eachSeries(result_transaction_param.address_list, (address, callback) => {
                 API.verifyAddress(address)
                    .then(data => {
                        if (!data.is_valid) {
@@ -20,7 +20,7 @@ class Transaction {
                            });
                        }
                        else {
-                           verifiedAddresses.push(data);
+                           verified_address_list.push(data);
                            callback();
                        }
                    });
@@ -29,12 +29,12 @@ class Transaction {
                     return reject(err);
                 }
 
+                delete result_transaction_param['address_list'];
                 const data = {
-                    ...transactionParams,
+                    ...result_transaction_param,
                     error_list  : [],
-                    address_list: verifiedAddresses
+                    address_list: verified_address_list
                 };
-                delete data['addresses'];
                 resolve(data);
             });
         });
