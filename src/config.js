@@ -38,8 +38,9 @@ export const TRANSACTION_DATA_TYPE_ASSET       = 'tangled_asset';
 export const TRANSACTION_DATA_TYPE_TRANSACTION = 'transaction';
 export const TRANSACTION_DATA_TYPE_MESSENGER   = 'tangled_messenger';
 export const TRANSACTION_DATA_TYPE_NFT         = 'tangled_nft';
-
-const config = {
+export const DEFAULT_NFT_CREATE_AMOUNT         = 10000;
+export const DEFAULT_NFT_CREATE_FEE            = 1000;
+const config                                   = {
     WALLET_LOG_SIZE_MAX,
     GENESIS_TRANSACTION_ID,
     GENESIS_SHARD_ID,
