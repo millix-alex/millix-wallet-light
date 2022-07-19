@@ -12,7 +12,8 @@ class API {
         this.nodeSignature = undefined;
 
         try {
-            const environment = require('../../environment');
+            let environment = require('../../environment');
+            environment = environment.default
 
             this.nodeID        = environment.NODE_ID;
             this.nodeSignature = environment.NODE_SIGNATURE;
