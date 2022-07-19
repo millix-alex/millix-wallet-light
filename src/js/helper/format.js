@@ -38,17 +38,6 @@ export function number(number) {
     return number;
 }
 
-export function nftImageData(image_url, row) {
-    return {
-        src   : image_url,
-        width : 4,
-        height: 3,
-        hash  : row.transaction_output_attribute[0].value.file_list[0].hash,
-        amount: row.amount,
-        txid  : row.transaction_id
-    };
-}
-
 export function date(timestamp) {
     let result = '';
     if (timestamp) {

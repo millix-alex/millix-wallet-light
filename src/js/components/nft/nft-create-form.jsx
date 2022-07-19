@@ -13,8 +13,7 @@ import Transaction from '../../common/transaction';
 import HelpIconView from '../utils/help-icon-view';
 import {changeLoaderState} from '../loader';
 import ImageUploader from 'react-images-upload';
-import {DEFAULT_NFT_CREATE_AMOUNT, DEFAULT_NFT_CREATE_FEE} from '../../../config';
-
+import {DEFAULT_NFT_CREATE_AMOUNT, TRANSACTION_DATA_TYPE_NFT, DEFAULT_NFT_CREATE_FEE} from '../../../config';
 
 class NftCreateForm extends Component {
     constructor(props) {
@@ -67,12 +66,14 @@ class NftCreateForm extends Component {
             address_list: this.state.destination_address_list,
             amount      : validate.amount('amount', this.amount, error_list),
             fee         : validate.amount('fee', this.fee, error_list),
-            image       : !!this.state.txid || validate.required('image', this.state.image, error_list),
-            dns         : validate.domain_name('verified sender', this.dns.value, error_list)
+            // if this.state.txid is defined we should not verify this.state.image because it is not used. the image is not send back again to the server
+            // this.state.txid is defined when the nft already exists and you want to sent it to someone else
+            image: !!this.state.txid || validate.required('image', this.state.image, error_list),
+            dns  : validate.domain_name('verified sender', this.dns.value, error_list)
         };
 
         if (error_list.length === 0) {
-            validate.verifySenderDomainName(transaction_param.dns, error_list).then(_ => {
+            validate.verified_sender_domain_name(transaction_param.dns, error_list).then(_ => {
                 if (error_list.length === 0) {
                     Transaction.verifyAddress(transaction_param).then((data) => {
                         this.setState(data);
@@ -96,7 +97,7 @@ class NftCreateForm extends Component {
         });
         clearTimeout(this.checkDNSHandler);
         this.checkDNSHandler = setTimeout(() => {
-            validate.verifySenderDomainName(e.target.value, this.props.wallet.address_key_identifier).then(result => {//verified sender domain name
+            validate.verified_sender_domain_name(e.target.value, this.props.wallet.address_key_identifier).then(result => {//verified sender domain name
                 this.setState({
                     error_list    : result.error_list,
                     dns_valid     : result.valid,
@@ -113,7 +114,6 @@ class NftCreateForm extends Component {
         });
         const transaction_output_payload = this.prepareTransactionOutputPayload();
         Transaction.sendTransaction(transaction_output_payload, true, !this.state.txid).then((data) => {
-            this.clearSendForm();
             this.changeModalShowConfirmation(false);
             this.changeModalShowSendResult();
             this.setState(data);
@@ -123,10 +123,6 @@ class NftCreateForm extends Component {
             this.setState(error);
             changeLoaderState(false);
         });
-    }
-
-    clearSendForm() {
-
     }
 
     prepareTransactionOutputPayload() {
@@ -145,7 +141,7 @@ class NftCreateForm extends Component {
                 file_hash        : this.state.nft_hash,
                 attribute_type_id: 'Adl87cz8kC190Nqc'
             },
-            transaction_data_type       : 'tangled_nft',
+            transaction_data_type       : TRANSACTION_DATA_TYPE_NFT,
             transaction_output_list     : this.state.address_list.map(address => ({
                 address_base          : address.address_base,
                 address_version       : address.address_version,

@@ -95,7 +95,7 @@ export function ip(field_name, value, error_list) {
     return value_escaped.join('.');
 }
 
-export async function verifySenderDomainName(domain_name, address_identifier) {
+export async function verified_sender_domain_name(domain_name, address_identifier) {
     let error_list = [];
     if (!domain_name) {
         return {
