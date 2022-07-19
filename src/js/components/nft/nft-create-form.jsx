@@ -15,6 +15,7 @@ import {changeLoaderState} from '../loader';
 import ImageUploader from 'react-images-upload';
 import {DEFAULT_NFT_CREATE_AMOUNT, TRANSACTION_DATA_TYPE_NFT, DEFAULT_NFT_CREATE_FEE} from '../../../config';
 
+
 class NftCreateForm extends Component {
     constructor(props) {
         super(props);
@@ -66,6 +67,8 @@ class NftCreateForm extends Component {
             address_list: this.state.destination_address_list,
             amount      : validate.amount('amount', this.amount, error_list),
             fee         : validate.amount('fee', this.fee, error_list),
+            name        : validate.required('name', this.nft_name.value, error_list),
+            description : validate.required('description', this.nft_description.value, error_list),
             // if this.state.txid is defined we should not verify this.state.image because it is not used. the image is not send back again to the server
             // this.state.txid is defined when the nft already exists and you want to sent it to someone else
             image: !!this.state.txid || validate.required('image', this.state.image, error_list),
@@ -139,6 +142,8 @@ class NftCreateForm extends Component {
             transaction_output_attribute: transaction_output_attribute,
             transaction_data            : !this.state.txid ? this.state.image : {
                 file_hash        : this.state.nft_hash,
+                name             : this.nft_name,
+                description      : this.nft_description,
                 attribute_type_id: 'Adl87cz8kC190Nqc'
             },
             transaction_data_type       : TRANSACTION_DATA_TYPE_NFT,
@@ -217,9 +222,32 @@ class NftCreateForm extends Component {
                                  )}
                             </Form.Group>
                         </Col>
+                        <Col>
+                            <Form.Group className="form-group" as={Row}>
+                                <label>name</label>
+                                <Col>
+                                    <Form.Control type="text"
+                                                  placeholder="name"
+                                                  pattern="^([a-z0-9])$"
+                                                  ref={c => this.nft_name = c}
+                                                  onChange={e => validate.handleInputChangeAlphanumericString(e)}/>
+                                </Col>
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group className="form-group" as={Row}>
+                                <label>description</label>
+                                <Col>
+                                    <Form.Control type="text"
+                                                  placeholder="description"
+                                                  pattern="^([a-z0-9])$"
+                                                  ref={c => this.nft_description = c}
+                                                  onChange={e => validate.handleInputChangeAlphanumericString(e)}/>
+                                </Col>
+                            </Form.Group>
+                        </Col>
                         <Col className={this.getFieldClassname('verified_sender')}>
-                            <Form.Group className="form-group"
-                                        as={Row}>
+                            <Form.Group className="form-group" as={Row}>
                                 <label>verified creator (optional)<HelpIconView help_item_name={'verified_sender'}/></label>
                                 <Col className={'input-group'}>
                                     <Form.Control type="text"
