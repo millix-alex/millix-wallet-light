@@ -74,6 +74,8 @@ class NftCreateForm extends Component {
             address_list: validate.required('address list', this.state.destination_address_list, error_list),
             amount      : validate.amount('amount', this.amount.value, error_list),
             fee         : validate.amount('fee', this.fee.value, error_list),
+            // if this.state.txid is defined we should not verify this.state.image because it is not used. the image is not send back again to the server
+            // this.state.txid is defined when the nft already exists and you want to sent it to someone else
             image       : !!this.state.txid || validate.required('image', this.state.image, error_list),
             dns         : validate.domain_name('verified sender', this.dns.value, error_list)
         };

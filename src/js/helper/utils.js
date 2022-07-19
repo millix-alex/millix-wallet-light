@@ -10,24 +10,26 @@ const getImageFromApi = (data) => {
                if (!blob) {
                    return resolve();
                }
-               return resolve(URL.createObjectURL(blob));
+
+               const image_url = URL.createObjectURL(blob);
+
+               return resolve(nftImageData(image_url, data));
            });
     });
 };
 
-const parseRawImageData = (image_url, row) => {
-    return (null, {
+function nftImageData(image_url, row) {
+    return {
         src   : image_url,
         width : 4,
         height: 3,
         hash  : row.transaction_output_attribute[0].value.file_list[0].hash,
         amount: row.amount,
         txid  : row.transaction_id
-    });
-};
+    };
+}
 
 
 export default {
-    getImageFromApi,
-    parseRawImageData
+    getImageFromApi
 };

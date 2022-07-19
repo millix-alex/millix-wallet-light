@@ -40,7 +40,7 @@ class AssetView extends Component {
         return API.listTransactionWithDataReceived(this.props.wallet.address_key_identifier, TRANSACTION_DATA_TYPE_ASSET).then(data => {
             async.mapLimit(data, 6, (row, callback) => {
                 utils.getImageFromApi(row)
-                     .then(image_url => callback(null, format.nftImageData(image_url, row)));
+                     .then(image_data => callback(null, image_data));
             }, (err, assetList) => {
                 this.setState({
                     asset_list                : assetList,
