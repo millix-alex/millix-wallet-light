@@ -14,6 +14,7 @@ import HelpIconView from '../utils/help-icon-view';
 import {changeLoaderState} from '../loader';
 import ReactChipInput from 'react-chip-input';
 import ImageUploader from 'react-images-upload';
+import {TRANSACTION_DATA_TYPE_NFT} from '../../../config';
 
 
 class NftCreateForm extends Component {
@@ -156,7 +157,7 @@ class NftCreateForm extends Component {
                 file_hash        : this.state.nft_hash,
                 attribute_type_id: 'Adl87cz8kC190Nqc'
             },
-            transaction_data_type       : 'tangled_nft',
+            transaction_data_type       : TRANSACTION_DATA_TYPE_NFT,
             transaction_output_list     : this.state.address_list.map(address => ({
                 address_base          : address.address_base,
                 address_version       : address.address_version,

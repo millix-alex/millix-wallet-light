@@ -8,6 +8,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import async from 'async';
 import utils from '../../helper/utils';
 import * as format from '../../helper/format';
+import {TRANSACTION_DATA_TYPE_ASSET} from '../../../config';
 
 
 class AssetView extends Component {
@@ -36,7 +37,7 @@ class AssetView extends Component {
             datatable_loading: true
         });
 
-        return API.listTransactionWithDataReceived(this.props.wallet.address_key_identifier, 'tangled_asset').then(data => {
+        return API.listTransactionWithDataReceived(this.props.wallet.address_key_identifier, TRANSACTION_DATA_TYPE_ASSET).then(data => {
             async.mapLimit(data, 6, (row, callback) => {
                 utils.getImageFromApi(row)
                      .then(image_url => callback(null, format.nftImageData(image_url, row)));

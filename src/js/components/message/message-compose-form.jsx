@@ -14,6 +14,7 @@ import HelpIconView from '../utils/help-icon-view';
 import {changeLoaderState} from '../loader';
 import ReactChipInput from 'react-chip-input';
 import Translation from '../../common/translation';
+import {TRANSACTION_DATA_TYPE_MESSENGER} from '../../../config';
 
 
 class MessageComposeForm extends Component {
@@ -103,11 +104,11 @@ class MessageComposeForm extends Component {
 
         const transaction_param = {
             address_list: validate.required(Translation.getPhrase('34e691203'), this.state.destination_address_list, error_list),
-            amount   : validate.amount(Translation.getPhrase('908073a53'), this.amount.value, error_list),
-            fee      : validate.amount(Translation.getPhrase('5d5997bf3'), this.fee.value, error_list),
-            subject  : this.subject.value,
-            message  : this.message.value,
-            dns      : validate.domain_name(Translation.getPhrase('7ea14bda1'), this.dns.value, error_list)
+            amount      : validate.amount(Translation.getPhrase('908073a53'), this.amount.value, error_list),
+            fee         : validate.amount(Translation.getPhrase('5d5997bf3'), this.fee.value, error_list),
+            subject     : this.subject.value,
+            message     : this.message.value,
+            dns         : validate.domain_name(Translation.getPhrase('7ea14bda1'), this.dns.value, error_list)
         };
 
         if (error_list.length === 0) {
@@ -191,7 +192,7 @@ class MessageComposeForm extends Component {
                 subject: this.state.subject,
                 message: this.state.message
             },
-            transaction_data_type       : 'tangled_messenger',
+            transaction_data_type       : TRANSACTION_DATA_TYPE_MESSENGER,
             transaction_output_list     : this.state.address_list.map(address => ({
                 address_base          : address.address_base,
                 address_version       : address.address_version,
