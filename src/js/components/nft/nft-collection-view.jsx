@@ -99,14 +99,14 @@ class NftCollectionView extends Component {
         const keepAsAsset = this.state.modal_burn_create_asset;
 
         changeLoaderState(true);
-        let transactionOutputPayload = this.prepareTransactionOutputToBurnNft(this.state.nft_selected, keepAsAsset);
-        const newState               = {
+        let transaction_output_payload = this.prepareTransactionOutputToBurnNft(this.state.nft_selected, keepAsAsset);
+        const newState                 = {
             modal_show_burn_result      : true,
             modal_show_burn_confirmation: false,
             modal_burn_create_asset     : true
         };
 
-        Transaction.sendTransaction(transactionOutputPayload, true, false).then(() => {
+        Transaction.sendTransaction(transaction_output_payload, true, false).then(() => {
             this.reloadCollection();
             this.setState(newState);
             changeLoaderState(false);
