@@ -76,12 +76,12 @@ class NftCreateForm extends Component {
             fee         : validate.amount('fee', this.fee.value, error_list),
             // if this.state.txid is defined we should not verify this.state.image because it is not used. the image is not send back again to the server
             // this.state.txid is defined when the nft already exists and you want to sent it to someone else
-            image       : !!this.state.txid || validate.required('image', this.state.image, error_list),
-            dns         : validate.domain_name('verified sender', this.dns.value, error_list)
+            image: !!this.state.txid || validate.required('image', this.state.image, error_list),
+            dns  : validate.domain_name('verified sender', this.dns.value, error_list)
         };
 
         if (error_list.length === 0) {
-            validate.verifySenderDomainName(transaction_param.dns, error_list).then(_ => {
+            validate.verified_sender_domain_name(transaction_param.dns, error_list).then(_ => {
                 if (error_list.length === 0) {
                     Transaction.verifyAddress(transaction_param).then((data) => {
                         this.setState(data);
@@ -105,7 +105,7 @@ class NftCreateForm extends Component {
         });
         clearTimeout(this.checkDNSHandler);
         this.checkDNSHandler = setTimeout(() => {
-            validate.verifySenderDomainName(e.target.value, this.props.wallet.address_key_identifier).then(result => {//verified sender domain name
+            validate.verified_sender_domain_name(e.target.value, this.props.wallet.address_key_identifier).then(result => {//verified sender domain name
                 this.setState({
                     error_list    : result.error_list,
                     dns_valid     : result.valid,
