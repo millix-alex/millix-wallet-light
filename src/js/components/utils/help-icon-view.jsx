@@ -6,6 +6,7 @@ import {OverlayTrigger, Popover} from 'react-bootstrap';
 import {connect} from 'react-redux';
 import {updateNetworkState} from '../../redux/actions';
 import Translation from '../../common/translation';
+import {NFT_BACKUP_LINK} from '../../../config';
 
 
 class HelpIconView extends Component {
@@ -306,6 +307,17 @@ class HelpIconView extends Component {
                     </li>
                     <li>
                         {Translation.getPhrase('c99fbcfeb')}
+                    </li>
+                </ul>
+            },
+            'nft_help'                    : {
+                'title': 'NFT',
+                'body' : <ul>
+                    <li>
+                        be sure to protect your NFTs by backing up your millix transaction database: <a href={NFT_BACKUP_LINK}>backup</a>
+                    </li>
+                    <li>
+                        and the NFT file: <a href={NFT_BACKUP_LINK}>backup</a>
                     </li>
                 </ul>
             }

@@ -138,12 +138,13 @@ class NftCreateForm extends Component {
             transaction_output_attribute['parent_transaction_id'] = this.state.txid;
         }
 
+        transaction_output_attribute.name = this.nft_name.value;
+        transaction_output_attribute.nft_description = this.nft_description.value;
+
         return {
             transaction_output_attribute: transaction_output_attribute,
             transaction_data            : !this.state.txid ? this.state.image : {
                 file_hash        : this.state.nft_hash,
-                name             : this.nft_name,
-                description      : this.nft_description,
                 attribute_type_id: 'Adl87cz8kC190Nqc'
             },
             transaction_data_type       : TRANSACTION_DATA_TYPE_NFT,

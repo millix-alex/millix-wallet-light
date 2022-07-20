@@ -14,6 +14,7 @@ import Transaction from '../../common/transaction';
 import async from 'async';
 import utils from '../../helper/utils';
 import {TRANSACTION_DATA_TYPE_ASSET, TRANSACTION_DATA_TYPE_NFT, TRANSACTION_DATA_TYPE_TRANSACTION} from '../../../config';
+import HelpIconView from '../utils/help-icon-view';
 
 
 class NftCollectionView extends Component {
@@ -50,7 +51,10 @@ class NftCollectionView extends Component {
         return API.listTransactionWithDataReceived(this.props.wallet.address_key_identifier, TRANSACTION_DATA_TYPE_NFT).then(data => {
             async.mapLimit(data, 6, (row, callback) => {
                 utils.getImageFromApi(row)
-                     .then(image_data => callback(null, image_data));
+                     .then(image_data => {
+                         image_data.image_details = row.transaction_output_attribute[0];
+                         callback(null, image_data);
+                     });
             }, (err, nftList) => {
                 this.setState({
                     nft_list                  : nftList,
@@ -139,7 +143,8 @@ class NftCollectionView extends Component {
                 <Card.Title style={{
                     width   : `calc(${sizes} - 4vw)`,
                     maxWidth: 720
-                }}>{photo.hash}</Card.Title>
+                }}>{photo.image_details.value.name}</Card.Title>
+                <p>{photo.image_details.value.nft_description}</p>
                 <div className={'nft-value-container card-text'}>
                     {svg.millix_logo()}
                     <div className={'millix-value'}>
@@ -192,6 +197,13 @@ class NftCollectionView extends Component {
                     <div className={'panel-heading bordered'}>collection
                     </div>
                     <div className={'panel-body'}>
+                        <p>
+                            NFT files are different than normal media files. when you create or receive an NFT in a millix transaction,
+                            the funds are not available in your wallet balance. this preserves and protects the provenance and ownership of the NFT asset.
+                            if you burn an NFT you are destroying the provenance and proof of ownership of the NFT and the funds stored in the associated
+                            NFT transaction are added to your wallet balance.
+                            backup your NFT <HelpIconView help_item_name={'nft_help'}/>
+                        </p>
                         <Row>
                             <Col xs={12} md={4}>
                                 <Button variant="outline-primary"
