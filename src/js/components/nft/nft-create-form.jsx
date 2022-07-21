@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import {withRouter} from 'react-router-dom';
+import {Link, withRouter} from 'react-router-dom';
 import {Button, Col, Form, Row} from 'react-bootstrap';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import * as format from '../../helper/format';
@@ -74,13 +74,18 @@ class NftCreateForm extends Component {
         };
 
         if (error_list.length === 0) {
-            validate.verified_sender_domain_name(transaction_param.dns, error_list).then(_ => {
-                if (error_list.length === 0) {
+            validate.verified_sender_domain_name(transaction_param.dns, error_list).then(result => {
+                if (result.valid) {
                     Transaction.verifyAddress(transaction_param).then((data) => {
                         this.setState(data);
                         this.changeModalShowConfirmation();
                     }).catch((error) => {
                         error_list.push(error);
+                    });
+                }
+                else {
+                    this.setState({
+                        error_list: result.error_list
                     });
                 }
             });
@@ -136,7 +141,7 @@ class NftCreateForm extends Component {
             transaction_output_attribute['parent_transaction_id'] = this.state.txid;
         }
 
-        transaction_output_attribute.name = this.name.value;
+        transaction_output_attribute.name        = this.name.value;
         transaction_output_attribute.description = this.description.value;
 
         return {
@@ -177,10 +182,6 @@ class NftCreateForm extends Component {
         this.setState({
             modal_show_send_result: value
         });
-
-        if (!value) {
-            this.props.history.push('/nft-collection');
-        }
     }
 
     getFieldClassname(field) {
@@ -294,8 +295,14 @@ class NftCreateForm extends Component {
                                 show={this.state.modal_show_send_result}
                                 size={'lg'}
                                 on_close={() => this.changeModalShowSendResult(false)}
-                                heading={'the nft was sent'}
-                                body={this.state.modal_body_send_result}/>
+                                heading={'nft created'}
+                                body={<div>
+                                    <div>transaction id {this.state.transaction_id}</div>
+                                    <div>
+                                        you can see your nft collection
+                                        <Link to={'/nft-collection'}> here</Link>
+                                    </div>
+                                </div>}/>
                             <Form.Group as={Row}>
                                 <Button
                                     variant="outline-primary"

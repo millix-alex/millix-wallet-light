@@ -13,8 +13,8 @@ import async from 'async';
 import utils from '../../helper/utils';
 import {TRANSACTION_DATA_TYPE_ASSET, TRANSACTION_DATA_TYPE_NFT, TRANSACTION_DATA_TYPE_TRANSACTION} from '../../../config';
 import HelpIconView from '../utils/help-icon-view';
-import Translation from '../../common/translation';
 import moment from 'moment';
+import ReloadTimeTickerView from '../utils/reload-time-ticker-view';
 
 
 class NftCollectionView extends Component {
@@ -204,7 +204,7 @@ class NftCollectionView extends Component {
                             </Col>
                             <Col md={7}>
                                 <span>
-                                    {Translation.getPhrase('06d814962')} {this.state.nft_list_reload_timestamp && moment(this.state.nft_list_reload_timestamp).fromNow()}
+                                    <ReloadTimeTickerView last_update_time={this.state.nft_list_reload_timestamp}/>
                                 </span>
                             </Col>
                         </Row>
