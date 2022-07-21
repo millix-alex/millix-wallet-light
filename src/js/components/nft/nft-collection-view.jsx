@@ -122,7 +122,7 @@ class NftCollectionView extends Component {
     }
 
     renderNftImage(nft_list) {
-        let nft_list_row = [];
+        let nft_list_formatted = [];
         for (const image_props of nft_list) {
             const {
                       src,
@@ -130,13 +130,13 @@ class NftCollectionView extends Component {
                       image_details
                   } = image_props;
 
-            nft_list_row.push(
+            nft_list_formatted.push(
                 <Col xs={12} md={3} className={'mt-4'} key={image_details.value.name}>
                     <Card className={'nft-card'}>
                         <img src={src} alt={alt} className={'nft-collection-img'}/>
                         <Card.Body>
                             <Card.Title className={'nft-name'}>{image_details.value.name}</Card.Title>
-                            <p className={'nft-description'}>{image_details.value.nft_description}</p>
+                            <p className={'nft-description'}>{image_details.value.description}</p>
                             <div className={'nft-action-section'}>
                                 <Button
                                     className="icon_only"
@@ -154,7 +154,7 @@ class NftCollectionView extends Component {
                 </Col>
             );
         }
-        return <>{nft_list_row}</>;
+        return <>{nft_list_formatted}</>;
     }
 
     render() {
@@ -182,7 +182,7 @@ class NftCollectionView extends Component {
                             the funds are not available in your wallet balance. this preserves and protects the provenance and ownership of the NFT asset.
                             if you burn an NFT you are destroying the provenance and proof of ownership of the NFT and the funds stored in the associated
                             NFT transaction are added to your wallet balance.
-                            backup your NFT <HelpIconView help_item_name={'nft_help'}/>
+                            backup your NFT <HelpIconView help_item_name={'nft'}/>
                         </p>
                         <Row>
                             <Col xs={12} md={4}>

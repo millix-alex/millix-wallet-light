@@ -67,8 +67,7 @@ class NftCreateForm extends Component {
             address_list: this.state.destination_address_list,
             amount      : validate.amount('amount', this.amount, error_list),
             fee         : validate.amount('fee', this.fee, error_list),
-            name        : validate.required('name', this.nft_name.value, error_list),
-            description : validate.required('description', this.nft_description.value, error_list),
+            name        : validate.required('name', this.name.value, error_list),
             // if this.state.txid is defined we should not verify this.state.image because it is not used. the image is not send back again to the server
             // this.state.txid is defined when the nft already exists and you want to sent it to someone else
             image: !!this.state.txid || validate.required('image', this.state.image, error_list),
@@ -138,8 +137,8 @@ class NftCreateForm extends Component {
             transaction_output_attribute['parent_transaction_id'] = this.state.txid;
         }
 
-        transaction_output_attribute.name = this.nft_name.value;
-        transaction_output_attribute.nft_description = this.nft_description.value;
+        transaction_output_attribute.name = this.name.value;
+        transaction_output_attribute.description = this.description.value;
 
         return {
             transaction_output_attribute: transaction_output_attribute,
@@ -230,7 +229,7 @@ class NftCreateForm extends Component {
                                     <Form.Control type="text"
                                                   placeholder="name"
                                                   pattern="^([a-z0-9])$"
-                                                  ref={c => this.nft_name = c}/>
+                                                  ref={c => this.name = c}/>
                                 </Col>
                             </Form.Group>
                         </Col>
@@ -241,7 +240,7 @@ class NftCreateForm extends Component {
                                     <Form.Control type="text"
                                                   placeholder="description"
                                                   pattern="^([a-z0-9])$"
-                                                  ref={c => this.nft_description = c}/>
+                                                  ref={c => this.description = c}/>
                                 </Col>
                             </Form.Group>
                         </Col>

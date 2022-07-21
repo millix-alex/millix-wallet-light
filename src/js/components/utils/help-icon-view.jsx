@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {Route, withRouter} from 'react-router-dom';
+import {withRouter} from 'react-router-dom';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {OverlayTrigger, Popover} from 'react-bootstrap';
 import {connect} from 'react-redux';
@@ -310,7 +310,7 @@ class HelpIconView extends Component {
                     </li>
                 </ul>
             },
-            'nft_help'                    : {
+            'nft'                    : {
                 'title': 'NFT',
                 'body' : <ul>
                     <li>
