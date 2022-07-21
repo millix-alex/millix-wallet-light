@@ -13,6 +13,8 @@ import async from 'async';
 import utils from '../../helper/utils';
 import {TRANSACTION_DATA_TYPE_ASSET, TRANSACTION_DATA_TYPE_NFT, TRANSACTION_DATA_TYPE_TRANSACTION} from '../../../config';
 import HelpIconView from '../utils/help-icon-view';
+import Translation from '../../common/translation';
+import moment from 'moment';
 
 
 class NftCollectionView extends Component {
@@ -27,11 +29,13 @@ class NftCollectionView extends Component {
             modal_show_burn_confirmation: false,
             modal_show_burn_result      : false,
             modal_burn_create_asset     : true,
-            modal_body_burn_result      : []
+            modal_body_burn_result      : [],
+            nft_list_reload_timestamp   : moment.now()
         };
     }
 
     componentDidMount() {
+        moment.relativeTimeThreshold('ss', -1);
         this.reloadCollection();
         this.datatable_reload_interval = setInterval(() => this.reloadCollection(), 60000);
     }
@@ -57,7 +61,8 @@ class NftCollectionView extends Component {
                 this.setState({
                     nft_list                  : nftList,
                     datatable_reload_timestamp: new Date(),
-                    datatable_loading         : false
+                    datatable_loading         : false,
+                    nft_list_reload_timestamp : moment.now()
                 });
             });
         });
@@ -140,14 +145,14 @@ class NftCollectionView extends Component {
                             <div className={'nft-action-section'}>
                                 <Button
                                     className="icon_only"
-                                    variant="outline-secondary"
+                                    variant="outline-default"
                                     onClick={() => this.setState({
                                         modal_show_burn_confirmation: true,
-                                        nft_selected                : nft_list
+                                        nft_selected                : image_props
                                     })}>
                                     <FontAwesomeIcon icon={'chain-slash'}/>
                                 </Button>
-                                <Button variant="primary" onClick={() => this.props.history.push('/nft-transfer', image_props)}>transfer</Button>
+                                <Button variant="outline-primary" onClick={() => this.props.history.push('/nft-transfer', image_props)}>transfer</Button>
                             </div>
                         </Card.Body>
                     </Card>
@@ -184,8 +189,8 @@ class NftCollectionView extends Component {
                             NFT transaction are added to your wallet balance.
                             backup your NFT <HelpIconView help_item_name={'nft'}/>
                         </p>
-                        <Row>
-                            <Col xs={12} md={4}>
+                        <Row className={'align-items-center'}>
+                            <Col md={5}>
                                 <Button variant="outline-primary"
                                         size={'sm'}
                                         className={'refresh_button'}
@@ -196,6 +201,11 @@ class NftCollectionView extends Component {
                                         size="1x"/>
                                     refresh
                                 </Button>
+                            </Col>
+                            <Col md={7}>
+                                <span>
+                                    {Translation.getPhrase('06d814962')} {this.state.nft_list_reload_timestamp && moment(this.state.nft_list_reload_timestamp).fromNow()}
+                                </span>
                             </Col>
                         </Row>
                         <Row style={{marginTop: 10}}>
