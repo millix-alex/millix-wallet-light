@@ -230,8 +230,7 @@ class NftCreateForm extends Component {
                                     <Form.Control type="text"
                                                   placeholder="name"
                                                   pattern="^([a-z0-9])$"
-                                                  ref={c => this.nft_name = c}
-                                                  onChange={e => validate.handleInputChangeAlphanumericString(e)}/>
+                                                  ref={c => this.nft_name = c}/>
                                 </Col>
                             </Form.Group>
                         </Col>
@@ -242,8 +241,7 @@ class NftCreateForm extends Component {
                                     <Form.Control type="text"
                                                   placeholder="description"
                                                   pattern="^([a-z0-9])$"
-                                                  ref={c => this.nft_description = c}
-                                                  onChange={e => validate.handleInputChangeAlphanumericString(e)}/>
+                                                  ref={c => this.nft_description = c}/>
                                 </Col>
                             </Form.Group>
                         </Col>

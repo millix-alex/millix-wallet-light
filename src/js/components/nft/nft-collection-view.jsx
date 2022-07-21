@@ -2,11 +2,9 @@ import React, {Component} from 'react';
 import {withRouter} from 'react-router-dom';
 import {Button, Card, Col, Form, Row} from 'react-bootstrap';
 import API from '../../api';
-import PhotoAlbum from 'react-photo-album';
 import {connect} from 'react-redux';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import * as format from '../../helper/format';
-import * as svg from '../../helper/svg';
 import ModalView from '../utils/modal-view';
 import * as text from '../../helper/text';
 import {changeLoaderState} from '../loader';
@@ -123,62 +121,44 @@ class NftCollectionView extends Component {
         });
     }
 
-    renderNftImage({
-                       imageProps,
-                       photo
-                   }) {
-        const {
-                  src,
-                  alt,
-                  srcSet,
-                  sizes,
-                  ...restImageProps
-              } = imageProps;
-        return (<Card className={'nft-card'}>
-            <Card.Img variant="top" src={src} alt={alt} {...(srcSet ? {
-                srcSet,
-                sizes
-            } : null)} {...restImageProps} style={{maxWidth: 800}}/>
-            <Card.Body>
-                <Card.Title style={{
-                    width   : `calc(${sizes} - 4vw)`,
-                    maxWidth: 720
-                }}>{photo.image_details.value.name}</Card.Title>
-                <p>{photo.image_details.value.nft_description}</p>
-                <div className={'nft-value-container card-text'}>
-                    {svg.millix_logo()}
-                    <div className={'millix-value'}>
-                        <span>{format.millix(photo.amount, false)}</span>
-                    </div>
-                </div>
-                <div style={{
-                    display      : 'flex',
-                    flex         : 1,
-                    flexDirection: 'row'
-                }}>
-                    <Button variant="primary" onClick={restImageProps.onClick}>transfer</Button>
-                    <div style={{
-                        flex         : 1,
-                        display      : 'flex',
-                        flexDirection: 'row-reverse'
-                    }}>
-                        <Button
-                            className="icon_only"
-                            variant="outline-secondary"
-                            onClick={() => this.setState({
-                                modal_show_burn_confirmation: true,
-                                nft_selected                : photo
-                            })}>
-                            <FontAwesomeIcon
-                                icon={'chain-slash'}/>
-                        </Button>
-                    </div>
-                </div>
-            </Card.Body>
-        </Card>);
+    renderNftImage(nft_list) {
+        let nft_list_row = [];
+        for (const image_props of nft_list) {
+            const {
+                      src,
+                      alt,
+                      image_details
+                  } = image_props;
+
+            nft_list_row.push(
+                <Col xs={12} md={3} className={'mt-4'} key={image_details.value.name}>
+                    <Card className={'nft-card'}>
+                        <img src={src} alt={alt} className={'nft-collection-img'}/>
+                        <Card.Body>
+                            <Card.Title className={'nft-name'}>{image_details.value.name}</Card.Title>
+                            <p className={'nft-description'}>{image_details.value.nft_description}</p>
+                            <div className={'nft-action-section'}>
+                                <Button
+                                    className="icon_only"
+                                    variant="outline-secondary"
+                                    onClick={() => this.setState({
+                                        modal_show_burn_confirmation: true,
+                                        nft_selected                : nft_list
+                                    })}>
+                                    <FontAwesomeIcon icon={'chain-slash'}/>
+                                </Button>
+                                <Button variant="primary" onClick={() => this.props.history.push('/nft-transfer', image_props)}>transfer</Button>
+                            </div>
+                        </Card.Body>
+                    </Card>
+                </Col>
+            );
+        }
+        return <>{nft_list_row}</>;
     }
 
     render() {
+        const nft_row_list = this.renderNftImage(this.state.nft_list);
         return (
             <>
                 <div className={'panel panel-filled'}>
@@ -220,8 +200,9 @@ class NftCollectionView extends Component {
                         </Row>
                         <Row style={{marginTop: 10}}>
                             <Col>
-                                <PhotoAlbum layout="masonry" renderPhoto={this.renderNftImage.bind(this)} photos={this.state.nft_list}
-                                            onClick={(event, photo) => this.props.history.push('/nft-transfer', photo)}/>
+                                <Row>
+                                    {nft_row_list}
+                                </Row>
                                 <ModalView
                                     show={this.state.modal_show_burn_confirmation}
                                     size={'lg'}
