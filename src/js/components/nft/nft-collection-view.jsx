@@ -144,15 +144,18 @@ class NftCollectionView extends Component {
                             <p className={'nft-description'}>{image_details.value.description}</p>
                             <div className={'nft-action-section'}>
                                 <Button
-                                    className="icon_only"
-                                    variant="outline-default"
+                                    className='icon_only'
+                                    variant='outline-default'
+                                    size={'sm'}
                                     onClick={() => this.setState({
                                         modal_show_burn_confirmation: true,
                                         nft_selected                : image_props
                                     })}>
                                     <FontAwesomeIcon icon={'chain-slash'}/>
                                 </Button>
-                                <Button variant="outline-primary" onClick={() => this.props.history.push('/nft-transfer', image_props)}>transfer</Button>
+                                <Button variant='outline-primary'
+                                        size={'sm'}
+                                        onClick={() => this.props.history.push('/nft-transfer', image_props)}>transfer</Button>
                             </div>
                         </Card.Body>
                     </Card>
