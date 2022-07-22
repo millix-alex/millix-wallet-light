@@ -46,6 +46,7 @@ class NftCollectionView extends Component {
     }
 
     reloadCollection() {
+        changeLoaderState(true);
         this.setState({
             datatable_loading: true
         });
@@ -56,8 +57,10 @@ class NftCollectionView extends Component {
                      .then(image_data => {
                          image_data.image_details = row.transaction_output_attribute[0];
                          callback(null, image_data);
+                         changeLoaderState(false);
                      });
             }, (err, nftList) => {
+                changeLoaderState(false);
                 this.setState({
                     nft_list                  : nftList,
                     datatable_reload_timestamp: new Date(),
@@ -151,7 +154,7 @@ class NftCollectionView extends Component {
                                         modal_show_burn_confirmation: true,
                                         nft_selected                : image_props
                                     })}>
-                                    <FontAwesomeIcon icon={'chain-slash'}/>
+                                    <FontAwesomeIcon icon={'fa-fire'}/>
                                 </Button>
                                 <Button variant='outline-primary'
                                         size={'sm'}
@@ -235,9 +238,12 @@ class NftCollectionView extends Component {
                                 <ModalView
                                     show={this.state.modal_show_burn_result}
                                     size={'lg'}
-                                    on_close={() => this.setState({modal_show_burn_result: false})}
-                                    heading={'the nft was burned'}
-                                    body={this.state.modal_body_burn_result}/>
+                                    on_close={() => {
+                                        this.setState({modal_show_burn_result: false})
+                                        this.reloadCollection();
+                                    }}
+                                    heading={'burn nft'}
+                                    body={<p>nft burned</p>}/>
                             </Col>
                         </Row>
                     </div>
