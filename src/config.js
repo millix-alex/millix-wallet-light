@@ -40,7 +40,6 @@ export const TRANSACTION_DATA_TYPE_MESSENGER   = 'tangled_messenger';
 export const TRANSACTION_DATA_TYPE_NFT         = 'tangled_nft';
 export const DEFAULT_NFT_CREATE_AMOUNT         = 10000;
 export const DEFAULT_NFT_CREATE_FEE            = 1000;
-export const NFT_BACKUP_LINK                   = 'https://discord.com/invite/nb5uaKq4yX';
 const config                                   = {
     WALLET_LOG_SIZE_MAX,
     GENESIS_TRANSACTION_ID,

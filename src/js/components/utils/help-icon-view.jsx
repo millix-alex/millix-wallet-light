@@ -6,7 +6,6 @@ import {OverlayTrigger, Popover} from 'react-bootstrap';
 import {connect} from 'react-redux';
 import {updateNetworkState} from '../../redux/actions';
 import Translation from '../../common/translation';
-import {NFT_BACKUP_LINK} from '../../../config';
 
 
 class HelpIconView extends Component {
