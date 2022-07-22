@@ -1,6 +1,7 @@
 import {
     ADD_LOG_EVENT,
     ADD_WALLET_CONFIG,
+    ADD_STORE_CONFIG,
     CLEAR_TRANSACTION_DETAILS,
     LOCK_WALLET,
     SET_BACKLOG_SIZE,
@@ -98,6 +99,13 @@ export function lockWallet(payload) {
 export function addWalletConfig(payload) {
     return {
         type: ADD_WALLET_CONFIG,
+        payload
+    };
+}
+
+export function addStoreConfig(payload) {
+    return {
+        type: ADD_STORE_CONFIG,
         payload
     };
 }

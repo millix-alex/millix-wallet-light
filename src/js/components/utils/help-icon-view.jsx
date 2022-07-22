@@ -314,10 +314,10 @@ class HelpIconView extends Component {
                 'title': 'NFT',
                 'body' : <ul>
                     <li>
-                        be sure to protect your NFTs by backing up your millix transaction database: <a href={NFT_BACKUP_LINK}>backup</a>
+                        be sure to protect your NFTs by backing up your millix transaction database: {this.props.config.database_dir}
                     </li>
                     <li>
-                        and the NFT file: <a href={NFT_BACKUP_LINK}>backup</a>
+                        and the NFT file: {this.props.config.file_dir}
                     </li>
                 </ul>
             }
@@ -372,7 +372,8 @@ HelpIconView.propTypes = {
 
 export default connect(
     state => ({
-        wallet: state.wallet
+        wallet: state.wallet,
+        config: state.config
     }), {
         updateNetworkState
     })(withRouter(HelpIconView));
