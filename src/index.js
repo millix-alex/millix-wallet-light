@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import AppContainer from './js/components/app-container';
 import store from './js/redux/store';
-import {unlockWallet, updateClock, addStoreConfig, addWalletConfig, updateNodeAttribute, updateWalletAddressVersion, updateNotificationVolume} from './js/redux/actions';
+import {unlockWallet, updateClock, addStorageConfig, addWalletConfig, updateNodeAttribute, updateWalletAddressVersion, updateNotificationVolume} from './js/redux/actions';
 import reportWebVitals from './reportWebVitals';
 import {config as faConfig, library} from '@fortawesome/fontawesome-svg-core';
 import {
@@ -185,7 +185,7 @@ const getStorageConfig = () => {
                database_dir: database_dir,
                file_dir    : file_dir
            };
-            store.dispatch(addStoreConfig(storage_config));
+            store.dispatch(addStorageConfig(storage_config));
        }).catch(() => setTimeout(getStorageConfig, 20000));
 };
 
