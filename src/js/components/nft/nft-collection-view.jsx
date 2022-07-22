@@ -189,11 +189,11 @@ class NftCollectionView extends Component {
                     </div>
                     <div className={'panel-body'}>
                         <p>
-                            NFT files are different than normal media files. when you create or receive an NFT in a millix transaction,
-                            the funds are not available in your wallet balance. this preserves and protects the provenance and ownership of the NFT asset.
-                            if you burn an NFT you are destroying the provenance and proof of ownership of the NFT and the funds stored in the associated
-                            NFT transaction are added to your wallet balance.
-                            backup your NFT <HelpIconView help_item_name={'nft'}/>
+                            nft files are different than normal media files. when you create or receive an nft in a millix transaction,
+                            the funds are not available in your wallet balance. this preserves and protects the provenance and ownership of the nft asset.
+                            if you burn an nft you are destroying the provenance and proof of ownership of the nft and the funds stored in the associated
+                            nft transaction are added to your wallet balance.
+                            backup your nft <HelpIconView help_item_name={'nft'}/>
                         </p>
                         <Row className={'align-items-center'}>
                             <Col md={5}>

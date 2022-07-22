@@ -310,13 +310,13 @@ class HelpIconView extends Component {
                 </ul>
             },
             'nft'                    : {
-                'title': 'NFT',
+                'title': 'nft',
                 'body' : <ul>
                     <li>
-                        be sure to protect your NFTs by backing up your millix transaction database: {this.props.config.database_dir}
+                        be sure to protect your nfts by backing up your millix transaction database: {this.props.config.database_dir}
                     </li>
                     <li>
-                        and the NFT file: {this.props.config.file_dir}
+                        and the nft files: {this.props.config.file_dir}
                     </li>
                 </ul>
             }
