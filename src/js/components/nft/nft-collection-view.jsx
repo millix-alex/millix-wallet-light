@@ -83,6 +83,8 @@ class NftCollectionView extends Component {
     prepareTransactionOutputToBurnNft(nft, keepAsAsset) {
         return {
             transaction_output_attribute: {
+                name                 : nft.image_details.value.name,
+                description          : nft.image_details.value.description,
                 parent_transaction_id: nft.txid
             },
             transaction_data            : {
@@ -268,7 +270,8 @@ class NftCollectionView extends Component {
                                     }}
                                     heading={'burn nft'}
                                     body={<div>
-                                        your nft {this.getBurnModalNftName()} was burned successfully. {this.state.burned_nft_kept_as_asset && 'the file is now available as an asset.'}
+                                        your nft {this.getBurnModalNftName()} was burned
+                                        successfully. {this.state.burned_nft_kept_as_asset && 'the file is now available as an asset.'}
                                     </div>}/>
                             </Col>
                         </Row>
