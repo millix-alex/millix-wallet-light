@@ -53,8 +53,10 @@ import {
     faEnvelope,
     faLink,
     faChainSlash,
+    faFire,
     faChainBroken,
-    faFire
+    faBomb,
+    faArrowRight
 } from '@fortawesome/free-solid-svg-icons';
 import './css/bootstrap/bootstrap.scss';
 
@@ -81,7 +83,7 @@ library.add(faArrowCircleLeft, faWallet, faKey, faHome, faFingerprint,
     faChevronDown, faChevronUp, faPencilAlt, faSync, faPlusCircle, faPlay,
     faPause, faQuestionCircle, faThList, faRedo, faEllipsisV,
     faChainSlash, faChainBroken,
-    faRotateLeft, faCodeMerge, faCheckCircle, faReply, faEnvelope, faLink, faFire);
+    faRotateLeft, faCodeMerge, faCheckCircle, faReply, faEnvelope, faLink, faFire, faBomb, faArrowRight);
 
 
 let apiInfo = {
@@ -180,12 +182,15 @@ const getNodeConfig = () => {
 
 const getStorageConfig = () => {
     API.getStorageConfig()
-       .then(({database_dir, file_dir}) => {
+       .then(({
+                  database_dir,
+                  file_dir
+              }) => {
            const storage_config = {
                database_dir: database_dir,
                file_dir    : file_dir
            };
-            store.dispatch(addStorageConfig(storage_config));
+           store.dispatch(addStorageConfig(storage_config));
        }).catch(() => setTimeout(getStorageConfig, 20000));
 };
 
