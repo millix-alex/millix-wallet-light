@@ -14,6 +14,7 @@ import HelpIconView from '../utils/help-icon-view';
 import {changeLoaderState} from '../loader';
 import ImageUploader from 'react-images-upload';
 import {DEFAULT_NFT_CREATE_AMOUNT, TRANSACTION_DATA_TYPE_NFT, DEFAULT_NFT_CREATE_FEE} from '../../../config';
+import ReactChipInput from 'react-chip-input';
 
 
 class NftCreateForm extends Component {
@@ -36,7 +37,10 @@ class NftCreateForm extends Component {
             destination_address_list: [`${this.props.wallet.address_public_key}${this.props.wallet.address_key_identifier.startsWith('1') ? '0b0' : 'lb0l'}${this.props.wallet.address_key_identifier}`],
             txid                    : propsState.txid,
             nft_src                 : propsState.src,
-            nft_hash                : propsState.hash
+            nft_hash                : propsState.hash,
+            name                    : propsState.name ?? '',
+            description             : propsState.description ?? '',
+            nft_transaction_type    : this.props.nft_transaction_type ?? 'create'
         };
 
         this.send = this.send.bind(this);
@@ -50,8 +54,10 @@ class NftCreateForm extends Component {
     }
 
     componentDidMount() {
-        this.amount = format.millix(DEFAULT_NFT_CREATE_AMOUNT, false);
-        this.fee    = format.millix(DEFAULT_NFT_CREATE_FEE, false);
+        this.name.value        = this.state.name;
+        this.description.value = this.state.description;
+        this.amount            = format.millix(DEFAULT_NFT_CREATE_AMOUNT, false);
+        this.fee               = format.millix(DEFAULT_NFT_CREATE_FEE, false);
     }
 
     send() {
@@ -164,6 +170,21 @@ class NftCreateForm extends Component {
         };
     }
 
+    getTransferNftModalBody() {
+        return (<div>
+            <div>you are about to transfer the nft with amount of {format.millix(this.amount)} to {this.state.destination_address_list[0]}</div>
+            {text.get_confirmation_modal_question()}
+        </div>);
+    }
+
+    getCreateNftModalBody() {
+        return (<div>
+            <div>you are about to create an nft locking {format.millix(this.amount)} to</div>
+            <div>{this.state.destination_address_list[0]}</div>
+            {text.get_confirmation_modal_question()}
+        </div>);
+    }
+
     cancelSendTransaction() {
         this.setState({
             canceling: false,
@@ -184,6 +205,26 @@ class NftCreateForm extends Component {
         });
     }
 
+    addDestinationAddress(value) {
+        const chips = this.state.destination_address_list.slice();
+        if (chips.length !== 0) {
+            return;
+        }
+        const address = value.split(/[\n ]/)[0];
+        chips.push(address.trim());
+        this.setState({destination_address_list: chips});
+        this.chipInputAddress.formControlRef.current.disabled    = true;
+        this.chipInputAddress.formControlRef.current.placeholder = '';
+    };
+
+    removeDestinationAddress(index) {
+        const chips = this.state.destination_address_list.slice();
+        chips.splice(index, 1);
+        this.setState({destination_address_list: chips});
+        this.chipInputAddress.formControlRef.current.disabled    = false;
+        this.chipInputAddress.formControlRef.current.placeholder = 'recipient';
+    };
+
     getFieldClassname(field) {
         return this.props.hidden_field_list?.includes(field) ? 'd-none' : '';
     }
@@ -195,14 +236,35 @@ class NftCreateForm extends Component {
     render() {
         return (
             <>
-                <ErrorList
-                    error_list={this.state.error_list}/>
+                <ErrorList error_list={this.state.error_list}/>
                 <Row className={'message_compose'}>
+                    {this.state.nft_transaction_type !== 'create' ?
+                     <Col className={this.getFieldClassname('address')}>
+                         <Form.Group className="form-group" role="form">
+                             <label>recipient</label>
+                             <ReactChipInput
+                                 ref={ref => {
+                                     if (ref && !ref.state.focused && ref.formControlRef.current.value !== '') {
+                                         this.addDestinationAddress(ref.formControlRef.current.value);
+                                         ref.formControlRef.current.value = '';
+                                     }
+                                     if (!this.chipInputAddress) {
+                                         ref.formControlRef.current.placeholder = 'recipient';
+                                         this.chipInputAddress                  = ref;
+                                     }
+                                 }}
+                                 classes="chip_input form-control"
+                                 chips={this.state.destination_address_list}
+                                 onSubmit={value => this.addDestinationAddress(value)}
+                                 onRemove={index => this.removeDestinationAddress(index)}
+                             />
+                         </Form.Group>
+                     </Col> : ''}
                     <Form>
                         <Col>
                             <Form.Group>
                                 {this.state.nft_src ? (
-                                    <div>
+                                    <div className={'nft-transfer-img-wrapper'}>
                                         <img src={this.state.nft_src} alt={'nft'}/>
                                     </div>) : (
                                      <ImageUploader
@@ -227,6 +289,7 @@ class NftCreateForm extends Component {
                                 <label>name</label>
                                 <Col>
                                     <Form.Control type="text"
+                                                  disabled={this.state.nft_transaction_type !== 'create'}
                                                   placeholder="name"
                                                   pattern="^([a-z0-9])$"
                                                   ref={c => this.name = c}/>
@@ -237,13 +300,28 @@ class NftCreateForm extends Component {
                             <Form.Group className="form-group" as={Row}>
                                 <label>description</label>
                                 <Col>
-                                    <Form.Control as="textarea" rows={5}
+                                    <Form.Control type="text"
+                                                  disabled={this.state.nft_transaction_type !== 'create'}
+                                                  as="textarea" rows={5}
                                                   placeholder="description"
                                                   pattern="^([a-z0-9])$"
                                                   ref={c => this.description = c}/>
                                 </Col>
                             </Form.Group>
                         </Col>
+                        {this.state.nft_transaction_type !== 'create' ?
+                         <Col>
+                             <Form.Group className="form-group" as={Row}>
+                                 <label>amount</label>
+                                 <Col>
+                                     <Form.Control type="text"
+                                                   disabled={true}
+                                                   placeholder="amount"
+                                                   pattern="^([a-z0-9])$"
+                                                   value={format.millix(this.amount)}/>
+                                 </Col>
+                             </Form.Group>
+                         </Col> : ''}
                         <Col className={this.getFieldClassname('verified_sender')}>
                             <Form.Group className="form-group" as={Row}>
                                 <label>verified creator (optional)<HelpIconView help_item_name={'verified_sender'}/></label>
@@ -281,23 +359,10 @@ class NftCreateForm extends Component {
                             <ModalView
                                 show={this.state.modal_show_confirmation}
                                 size={'lg'}
-                                heading={'create nft'}
+                                heading={this.state.nft_transaction_type + ' nft'}
                                 on_accept={() => this.sendTransaction()}
                                 on_close={() => this.cancelSendTransaction()}
-                                body={this.state.address_list && (<div>
-                                    <div className="mb-3">
-                                        you are about to create an nft in your millix wallet to address:
-                                        {this.state.address_list.length === 1 ?
-                                         <div>{this.state.address_list[0].address_base}{this.state.address_list[0].address_version}{this.state.address_list[0].address_key_identifier}</div> :
-                                         <div>{this.state.address_list.length} different address</div>}
-                                    </div>
-                                    <div className="mb-3">
-                                        this nft will be sent to yourself and requires {format.millix(this.amount)}.
-                                        to preserve the provenance of your nft, this {format.millix(this.amount)} will be locked and unavailable to spend
-                                        unless you burn the nft.
-                                    </div>
-                                    {text.get_confirmation_modal_question()}
-                                </div>)}/>
+                                body={this.state.nft_transaction_type === 'create' ? this.getCreateNftModalBody() : this.getTransferNftModalBody()}/>
                             <ModalView
                                 show={this.state.modal_show_send_result}
                                 size={'lg'}

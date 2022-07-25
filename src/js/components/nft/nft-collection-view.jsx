@@ -139,7 +139,8 @@ class NftCollectionView extends Component {
                       alt,
                       image_details
                   } = image_props;
-
+            image_props.name = image_details.value.name;
+            image_props.description = image_details.value.description;
             nft_list_formatted.push(
                 <Col xs={12} md={3} className={'mt-4'} key={image_details.transaction_id}>
                     <Card className={'nft-card'}>
