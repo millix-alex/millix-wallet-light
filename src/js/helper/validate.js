@@ -252,3 +252,17 @@ export function domain_name(field_name, domain_name, error_list) {
     }
     return domain_name;
 }
+
+export function file(field_name, file, error_list, size = 30) {
+    if (file[0]) {
+        file = file[0];
+    }
+    if (file.size / 1048576 > size) {
+        error_list.push({
+            name   : get_error_name('file_invalid', field_name),
+            message: `file size is too big. max file size is ${size} mb`
+        });
+        return null;
+    }
+    return file;
+}

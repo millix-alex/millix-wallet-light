@@ -36,7 +36,8 @@ class NftCreateForm extends Component {
             destination_address_list: [`${this.props.wallet.address_public_key}${this.props.wallet.address_key_identifier.startsWith('1') ? '0b0' : 'lb0l'}${this.props.wallet.address_key_identifier}`],
             txid                    : propsState.txid,
             nft_src                 : propsState.src,
-            nft_hash                : propsState.hash
+            nft_hash                : propsState.hash,
+            enable_preview          : true
         };
 
         this.send = this.send.bind(this);
@@ -72,6 +73,10 @@ class NftCreateForm extends Component {
             image: !!this.state.txid || validate.required('image', this.state.image, error_list),
             dns  : validate.domain_name('verified sender', this.dns.value, error_list)
         };
+
+        if (this.state.image) {
+            validate.file('nft image', this.state.image, error_list);
+        }
 
         if (error_list.length === 0) {
             validate.verified_sender_domain_name(transaction_param.dns, error_list).then(result => {
@@ -182,6 +187,15 @@ class NftCreateForm extends Component {
         this.setState({
             modal_show_send_result: value
         });
+        if (!value) {
+            this.resetNftForm();
+        }
+    }
+
+    resetNftForm() {
+        document.getElementsByClassName('deleteImage')[0].click();
+        this.name.value = '';
+        this.description.value = '';
     }
 
     getFieldClassname(field) {
@@ -189,7 +203,21 @@ class NftCreateForm extends Component {
     }
 
     onChangeFile(file) {
-        this.setState({image: file[0]});
+        let error_list = [];
+        validate.file('nft image', file, error_list);
+        if (error_list.length === 0) {
+            this.setState({
+                image         : file[0],
+                error_list    : [],
+                enable_preview: true
+            });
+        }
+        else {
+            this.setState({
+                error_list    : error_list,
+                enable_preview: false
+            });
+        }
     }
 
     render() {
@@ -207,12 +235,14 @@ class NftCreateForm extends Component {
                                     </div>) : (
                                      <ImageUploader
                                          withIcon={true}
-                                         withPreview={true}
+                                         withPreview={this.state.enable_preview}
                                          withLabel={false}
                                          singleImage={true}
                                          buttonText="choose image"
+                                         value={this.state.images}
                                          onChange={this.onChangeFile.bind(this)}
                                          fileContainerStyle={{backgroundColor: 'transparent'}}
+                                         maxFileSize={52428900}
                                          imgExtension={[
                                              '.jpg',
                                              '.jpeg',
@@ -227,8 +257,10 @@ class NftCreateForm extends Component {
                                 <label>name</label>
                                 <Col>
                                     <Form.Control type="text"
+                                                  maxLength={150}
                                                   placeholder="name"
                                                   pattern="^([a-z0-9])$"
+                                                  aria-valuemax={10}
                                                   ref={c => this.name = c}/>
                                 </Col>
                             </Form.Group>
@@ -238,6 +270,7 @@ class NftCreateForm extends Component {
                                 <label>description</label>
                                 <Col>
                                     <Form.Control as="textarea" rows={5}
+                                                  maxLength={800}
                                                   placeholder="description"
                                                   pattern="^([a-z0-9])$"
                                                   ref={c => this.description = c}/>
