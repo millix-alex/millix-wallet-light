@@ -17,9 +17,9 @@ class AssetListView extends Component {
         super(props);
         this.datatable_reload_interval = undefined;
         this.state                     = {
-            asset_list                : [],
-            datatable_loading         : false,
-            nft_asset_list_reload_timestamp   : moment.now(),
+            asset_list                     : [],
+            datatable_loading              : false,
+            nft_asset_list_reload_timestamp: moment.now()
         };
     }
 
@@ -49,9 +49,9 @@ class AssetListView extends Component {
             }, (err, assetList) => {
                 changeLoaderState(false);
                 this.setState({
-                    asset_list                : assetList,
-                    datatable_loading         : false,
-                    nft_asset_list_reload_timestamp : moment.now()
+                    asset_list                     : assetList,
+                    datatable_loading              : false,
+                    nft_asset_list_reload_timestamp: moment.now()
                 });
             });
         });
@@ -105,7 +105,7 @@ class AssetListView extends Component {
                     <div className={'panel-heading bordered'}>asset list
                     </div>
                     <div className={'panel-body'}>
-                        <Row>
+                        <Row className={'align-items-center row'}>
                             <Col md={5}>
                                 <Button variant="outline-primary"
                                         size={'sm'}
@@ -125,11 +125,7 @@ class AssetListView extends Component {
                             </Col>
                         </Row>
                         <Row style={{marginTop: 10}}>
-                            <Col>
-                                <Row>
-                                    {nft_row_list}
-                                </Row>
-                            </Col>
+                            {nft_row_list}
                         </Row>
                     </div>
                 </div>

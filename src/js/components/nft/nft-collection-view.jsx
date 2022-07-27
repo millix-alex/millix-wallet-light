@@ -234,46 +234,42 @@ class NftCollectionView extends Component {
                             </Col>
                         </Row>
                         <Row style={{marginTop: 10}}>
-                            <Col>
-                                <Row>
-                                    {nft_row_list}
-                                </Row>
-                                <ModalView
-                                    show={this.state.modal_show_burn_confirmation}
-                                    size={'lg'}
-                                    heading={'burn nft'}
-                                    on_accept={() => this.doNftBurn()}
-                                    on_close={() => this.cancelNftBurn()}
-                                    body={<div>
-                                        <div className="mb-3">
-                                            you are about to burn your nft {this.getBurnModalNftName()} and
-                                            unlock {format.millix(this.state.nft_selected?.amount)} in your wallet
-                                            balance. you can keep a non-nft copy of this file as an asset.
-                                        </div>
-                                        <div className="mb-3"
-                                             style={{
-                                                 display      : 'flex',
-                                                 flexDirection: 'row'
-                                             }}><Form.Check type="checkbox" label="" checked={this.state.modal_burn_create_asset}
-                                                            onChange={e => this.setState({modal_burn_create_asset: e.target.checked})}/> preserve file as an
-                                            asset
-                                        </div>
+                            {nft_row_list}
+                            <ModalView
+                                show={this.state.modal_show_burn_confirmation}
+                                size={'lg'}
+                                heading={'burn nft'}
+                                on_accept={() => this.doNftBurn()}
+                                on_close={() => this.cancelNftBurn()}
+                                body={<div>
+                                    <div className="mb-3">
+                                        you are about to burn your nft {this.getBurnModalNftName()} and
+                                        unlock {format.millix(this.state.nft_selected?.amount)} in your wallet
+                                        balance. you can keep a non-nft copy of this file as an asset.
+                                    </div>
+                                    <div className="mb-3"
+                                         style={{
+                                             display      : 'flex',
+                                             flexDirection: 'row'
+                                         }}><Form.Check type="checkbox" label="" checked={this.state.modal_burn_create_asset}
+                                                        onChange={e => this.setState({modal_burn_create_asset: e.target.checked})}/> preserve file as an
+                                        asset
+                                    </div>
 
-                                        {text.get_confirmation_modal_question()}
-                                    </div>}/>
-                                <ModalView
-                                    show={this.state.modal_show_burn_result}
-                                    size={'lg'}
-                                    on_close={() => {
-                                        this.setState({modal_show_burn_result: false});
-                                        this.reloadCollection();
-                                    }}
-                                    heading={'burn nft'}
-                                    body={<div>
-                                        your nft {this.getBurnModalNftName()} was burned
-                                        successfully. {this.state.burned_nft_kept_as_asset && 'the file is now available as an asset.'}
-                                    </div>}/>
-                            </Col>
+                                    {text.get_confirmation_modal_question()}
+                                </div>}/>
+                            <ModalView
+                                show={this.state.modal_show_burn_result}
+                                size={'lg'}
+                                on_close={() => {
+                                    this.setState({modal_show_burn_result: false});
+                                    this.reloadCollection();
+                                }}
+                                heading={'burn nft'}
+                                body={<div>
+                                    your nft {this.getBurnModalNftName()} was burned
+                                    successfully. {this.state.burned_nft_kept_as_asset && 'the file is now available as an asset.'}
+                                </div>}/>
                         </Row>
                     </div>
                 </div>
