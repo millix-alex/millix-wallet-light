@@ -257,7 +257,7 @@ class NftCreateForm extends Component {
                                 <label>name</label>
                                 <Col>
                                     <Form.Control type="text"
-                                                  maxLength={150}
+                                                  maxLength={100}
                                                   placeholder="name"
                                                   pattern="^([a-z0-9])$"
                                                   aria-valuemax={10}
@@ -270,7 +270,7 @@ class NftCreateForm extends Component {
                                 <label>description</label>
                                 <Col>
                                     <Form.Control as="textarea" rows={5}
-                                                  maxLength={800}
+                                                  maxLength={1000}
                                                   placeholder="description"
                                                   pattern="^([a-z0-9])$"
                                                   ref={c => this.description = c}/>
