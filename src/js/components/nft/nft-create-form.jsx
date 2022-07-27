@@ -43,7 +43,9 @@ class NftCreateForm extends Component {
             nft_transaction_type    : this.props.nft_transaction_type ?? 'create'
         };
 
-        this.send = this.send.bind(this);
+        this.name        = {value: ''};
+        this.description = {value: ''};
+        this.send        = this.send.bind(this);
     }
 
     componentWillUnmount() {
@@ -54,6 +56,11 @@ class NftCreateForm extends Component {
     }
 
     componentDidMount() {
+        if (this.state.nft_transaction_type !== 'create') {
+            this.setState({
+                destination_address_list: []
+            });
+        }
         this.name.value        = this.state.name;
         this.description.value = this.state.description;
         this.amount            = format.millix(DEFAULT_NFT_CREATE_AMOUNT, false);
@@ -238,28 +245,6 @@ class NftCreateForm extends Component {
             <>
                 <ErrorList error_list={this.state.error_list}/>
                 <Row className={'message_compose'}>
-                    {this.state.nft_transaction_type !== 'create' ?
-                     <Col className={this.getFieldClassname('address')}>
-                         <Form.Group className="form-group" role="form">
-                             <label>recipient</label>
-                             <ReactChipInput
-                                 ref={ref => {
-                                     if (ref && !ref.state.focused && ref.formControlRef.current.value !== '') {
-                                         this.addDestinationAddress(ref.formControlRef.current.value);
-                                         ref.formControlRef.current.value = '';
-                                     }
-                                     if (!this.chipInputAddress) {
-                                         ref.formControlRef.current.placeholder = 'recipient';
-                                         this.chipInputAddress                  = ref;
-                                     }
-                                 }}
-                                 classes="chip_input form-control"
-                                 chips={this.state.destination_address_list}
-                                 onSubmit={value => this.addDestinationAddress(value)}
-                                 onRemove={index => this.removeDestinationAddress(index)}
-                             />
-                         </Form.Group>
-                     </Col> : ''}
                     <Form>
                         <Col>
                             <Form.Group>
@@ -285,41 +270,61 @@ class NftCreateForm extends Component {
                             </Form.Group>
                         </Col>
                         <Col>
-                            <Form.Group className="form-group" as={Row}>
-                                <label>name</label>
-                                <Col>
-                                    <Form.Control type="text"
-                                                  disabled={this.state.nft_transaction_type !== 'create'}
-                                                  placeholder="name"
-                                                  pattern="^([a-z0-9])$"
-                                                  ref={c => this.name = c}/>
-                                </Col>
-                            </Form.Group>
+                            {this.state.nft_transaction_type === 'create' ?
+                             (<Form.Group className="form-group" as={Row}>
+                                 <label>name</label>
+                                 <Col>
+                                     <Form.Control type="text"
+                                                   placeholder="name"
+                                                   pattern="^([a-z0-9])$"
+                                                   ref={c => this.name = c}/>
+                                 </Col>
+                             </Form.Group>) :
+                             (<div><p className={'transfer-subtitle'}>name</p>
+                                 <p>{this.name.value}</p></div>)}
                         </Col>
                         <Col>
-                            <Form.Group className="form-group" as={Row}>
-                                <label>description</label>
-                                <Col>
-                                    <Form.Control type="text"
-                                                  disabled={this.state.nft_transaction_type !== 'create'}
-                                                  as="textarea" rows={5}
-                                                  placeholder="description"
-                                                  pattern="^([a-z0-9])$"
-                                                  ref={c => this.description = c}/>
-                                </Col>
-                            </Form.Group>
+                            {this.state.nft_transaction_type === 'create' ?
+                             (<Form.Group className="form-group" as={Row}>
+                                 <label>description</label>
+                                 <Col>
+                                     <Form.Control type="text"
+                                                   as="textarea" rows={5}
+                                                   placeholder="description"
+                                                   pattern="^([a-z0-9])$"
+                                                   ref={c => this.description = c}/>
+                                 </Col>
+                             </Form.Group>) :
+                             (<div><p className={'transfer-subtitle'}>description</p>
+                                 <p>{this.description.value}</p></div>)}
                         </Col>
                         {this.state.nft_transaction_type !== 'create' ?
                          <Col>
-                             <Form.Group className="form-group" as={Row}>
-                                 <label>amount</label>
-                                 <Col>
-                                     <Form.Control type="text"
-                                                   disabled={true}
-                                                   placeholder="amount"
-                                                   pattern="^([a-z0-9])$"
-                                                   value={format.millix(this.amount)}/>
-                                 </Col>
+                             <div>
+                                 <p className={'transfer-subtitle'}>amount</p>
+                                 <p>{format.millix(this.amount, false)}</p>
+                             </div>
+                         </Col> : ''}
+                        {this.state.nft_transaction_type !== 'create' ?
+                         <Col className={this.getFieldClassname('address')}>
+                             <Form.Group className="form-group" role="form">
+                                 <label>recipient</label>
+                                 <ReactChipInput
+                                     ref={ref => {
+                                         if (ref && !ref.state.focused && ref.formControlRef.current.value !== '') {
+                                             this.addDestinationAddress(ref.formControlRef.current.value);
+                                             ref.formControlRef.current.value = '';
+                                         }
+                                         if (!this.chipInputAddress) {
+                                             ref.formControlRef.current.placeholder = 'recipient';
+                                             this.chipInputAddress                  = ref;
+                                         }
+                                     }}
+                                     classes="chip_input form-control"
+                                     chips={this.state.destination_address_list}
+                                     onSubmit={value => this.addDestinationAddress(value)}
+                                     onRemove={index => this.removeDestinationAddress(index)}
+                                 />
                              </Form.Group>
                          </Col> : ''}
                         <Col className={this.getFieldClassname('verified_sender')}>
@@ -367,15 +372,22 @@ class NftCreateForm extends Component {
                                 show={this.state.modal_show_send_result}
                                 size={'lg'}
                                 on_close={() => this.changeModalShowSendResult(false)}
-                                heading={'create nft'}
-                                body={<div>
+                                heading={`${this.state.nft_transaction_type} nft`}
+                                body={this.state.nft_transaction_type === 'create' ? <div>
                                     <div className="mb-3">
                                         your nft was created successfully with transaction id: {this.state.transaction_id}
                                     </div>
                                     <div>
                                         click <Link to={'/nft-collection'}> here</Link> to view and manage your nft collection
                                     </div>
-                                </div>}/>
+                                </div> : <div>
+                                          <div className="mb-3">
+                                              transaction id: {this.state.transaction_id}
+                                          </div>
+                                          <div>
+                                              you can see your nft collection here <Link to={'/nft-collection'}> here</Link>
+                                          </div>
+                                      </div>}/>
                             <Form.Group as={Row}>
                                 <Button
                                     variant="outline-primary"
