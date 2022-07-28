@@ -55,7 +55,9 @@ import {
     faChainSlash,
     faChainBroken,
     faBomb,
-    faArrowRight
+    faArrowRight,
+    faUpload,
+    faMinusCircle
 } from '@fortawesome/free-solid-svg-icons';
 import './css/bootstrap/bootstrap.scss';
 
@@ -83,7 +85,7 @@ library.add(faArrowCircleLeft, faWallet, faKey, faHome, faFingerprint,
     faPause, faQuestionCircle, faThList, faRedo, faEllipsisV,
     faChainSlash, faChainBroken,
     faRotateLeft, faCodeMerge, faCheckCircle, faReply, faEnvelope, faLink, faBomb,
-    faArrowRight);
+    faArrowRight, faUpload, faMinusCircle);
 
 
 let apiInfo = {

@@ -443,3 +443,34 @@ h4, .h4, h5, .h5, h6, .h6 {
     }
   }
 }
+
+.file-uploader {
+  svg {
+    margin: 1rem;
+  }
+
+  img {
+    max-height: 30rem;
+    max-width: 100%;
+  }
+
+  button {
+    margin-bottom: 1rem;
+  }
+
+  .clear-file-input-icon {
+    position: absolute;
+    top: -2rem;
+    right: -2rem;
+
+    path {
+      fill: $color-primary;
+    }
+  }
+
+  .preview {
+    display: inline-block;
+    position: relative;
+  }
+}
+

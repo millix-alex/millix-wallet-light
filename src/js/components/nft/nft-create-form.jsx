@@ -12,8 +12,8 @@ import ErrorList from './../utils/error-list-view';
 import Transaction from '../../common/transaction';
 import HelpIconView from '../utils/help-icon-view';
 import {changeLoaderState} from '../loader';
-import ImageUploader from 'react-images-upload';
 import {DEFAULT_NFT_CREATE_AMOUNT, TRANSACTION_DATA_TYPE_NFT, DEFAULT_NFT_CREATE_FEE} from '../../../config';
+import FileUpload from '../utils/file-upload';
 
 
 class NftCreateForm extends Component {
@@ -36,11 +36,15 @@ class NftCreateForm extends Component {
             destination_address_list: [`${this.props.wallet.address_public_key}${this.props.wallet.address_key_identifier.startsWith('1') ? '0b0' : 'lb0l'}${this.props.wallet.address_key_identifier}`],
             txid                    : propsState.txid,
             nft_src                 : propsState.src,
-            nft_hash                : propsState.hash,
-            enable_preview          : true
+            nft_hash                : propsState.hash
         };
 
-        this.send = this.send.bind(this);
+        this.send                    = this.send.bind(this);
+        this.onChangeFileUpload      = this.onChangeFileUpload.bind(this);
+        this.onChangeFileUploadError = this.onChangeFileUploadError.bind(this);
+        this.resetNftForm            = this.resetNftForm.bind(this);
+
+        this.fileUploaderRef = React.createRef();
     }
 
     componentWillUnmount() {
@@ -151,7 +155,7 @@ class NftCreateForm extends Component {
 
         return {
             transaction_output_attribute: transaction_output_attribute,
-            transaction_data            : !this.state.txid ? this.state.image : {
+            transaction_data            : !this.state.txid ? this.state.image.file : {
                 file_hash        : this.state.nft_hash,
                 attribute_type_id: 'Adl87cz8kC190Nqc'
             },
@@ -193,8 +197,8 @@ class NftCreateForm extends Component {
     }
 
     resetNftForm() {
-        document.getElementsByClassName('deleteImage')[0].click();
-        this.name.value = '';
+        this.fileUploaderRef.current.clearFileInput();
+        this.name.value        = '';
         this.description.value = '';
     }
 
@@ -202,20 +206,17 @@ class NftCreateForm extends Component {
         return this.props.hidden_field_list?.includes(field) ? 'd-none' : '';
     }
 
-    onChangeFile(file) {
-        let error_list = [];
-        validate.file('nft image', file, error_list);
-        if (error_list.length === 0) {
+    onChangeFileUpload(file) {
+        this.setState({
+            image     : file,
+            error_list: []
+        });
+    }
+
+    onChangeFileUploadError(error_list) {
+        if (error_list.length !== 0) {
             this.setState({
-                image         : file[0],
-                error_list    : [],
-                enable_preview: true
-            });
-        }
-        else {
-            this.setState({
-                error_list    : error_list,
-                enable_preview: false
+                error_list: error_list
             });
         }
     }
@@ -233,21 +234,13 @@ class NftCreateForm extends Component {
                                     <div>
                                         <img src={this.state.nft_src} alt={'nft'}/>
                                     </div>) : (
-                                     <ImageUploader
-                                         withIcon={true}
-                                         withPreview={this.state.enable_preview}
-                                         withLabel={false}
-                                         singleImage={true}
-                                         buttonText="choose image"
-                                         value={this.state.images}
-                                         onChange={this.onChangeFile.bind(this)}
-                                         fileContainerStyle={{backgroundColor: 'transparent'}}
-                                         maxFileSize={52428900}
-                                         imgExtension={[
-                                             '.jpg',
-                                             '.jpeg',
-                                             '.png'
-                                         ]}
+                                     <FileUpload
+                                         ref={this.fileUploaderRef}
+                                         title={'upload image'}
+                                         onFileUpload={this.onChangeFileUpload}
+                                         onFileUploadError={this.onChangeFileUploadError}
+                                         accept={'image/*'}
+                                         extension={[]}
                                      />
                                  )}
                             </Form.Group>

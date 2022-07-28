@@ -253,11 +253,17 @@ export function domain_name(field_name, domain_name, error_list) {
     return domain_name;
 }
 
-export function file(field_name, file, error_list, size = 30) {
-    if (file[0]) {
-        file = file[0];
+export function file(field_name, file, error_list, extension = [], size = 50) {
+    const pattern = '(' + extension.join('|').replace(/\./g, '\\.') + ')$';
+    if (!(new RegExp(pattern, 'i').test(file.file.name))) {
+        error_list.push({
+            name   : get_error_name('file_invalid', field_name),
+            message: `wrong file extension, accepted extensions - ${extension.join('|')}`
+        });
+        return null;
     }
-    if (file.size / 1048576 > size) {
+
+    if (file.file.size / 1048576 > size) {
         error_list.push({
             name   : get_error_name('file_invalid', field_name),
             message: `file size is too big. max file size is ${size} mb`
