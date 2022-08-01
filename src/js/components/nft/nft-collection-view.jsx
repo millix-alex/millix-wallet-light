@@ -233,7 +233,7 @@ class NftCollectionView extends Component {
                                 </span>
                             </Col>
                         </Row>
-                        <Row style={{marginTop: 10}}>
+                        <Row>
                             {nft_row_list}
                             <ModalView
                                 show={this.state.modal_show_burn_confirmation}
