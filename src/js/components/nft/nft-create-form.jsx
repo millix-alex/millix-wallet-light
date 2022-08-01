@@ -76,8 +76,10 @@ class NftCreateForm extends Component {
             });
             return;
         }
+
+        const address_list      = [validate.required('recipient', this.state.destination_address_list[0], error_list)];
         const transaction_param = {
-            address_list: this.state.destination_address_list,
+            address_list: address_list,
             amount      : validate.amount('amount', this.amount, error_list),
             fee         : validate.amount('fee', this.fee, error_list),
             // if this.state.txid is defined we should not verify this.state.image because it is not used. the image is not send back again to the server
@@ -210,6 +212,9 @@ class NftCreateForm extends Component {
         this.setState({
             modal_show_send_result: value
         });
+        if (this.props.nft_transaction_type !== 'create' && !value) {
+            this.props.history.push('/nft-collection');
+        }
     }
 
     addDestinationAddress(value) {
@@ -245,7 +250,7 @@ class NftCreateForm extends Component {
             <>
                 <ErrorList error_list={this.state.error_list}/>
                 <Row className={'message_compose'}>
-                    <Form>
+                    <div>
                         <Col>
                             <Form.Group>
                                 {this.state.nft_src ? (
@@ -302,12 +307,12 @@ class NftCreateForm extends Component {
                          <Col>
                              <div>
                                  <p className={'transfer-subtitle'}>amount</p>
-                                 <p>{format.millix(this.amount, false)}</p>
+                                 <p>{format.millix(this.amount)}</p>
                              </div>
                          </Col> : ''}
                         {this.state.nft_transaction_type !== 'create' ?
                          <Col className={this.getFieldClassname('address')}>
-                             <Form.Group className="form-group" role="form">
+                             <Form.Group className="form-group">
                                  <label>recipient</label>
                                  <ReactChipInput
                                      ref={ref => {
@@ -372,7 +377,7 @@ class NftCreateForm extends Component {
                                 show={this.state.modal_show_send_result}
                                 size={'lg'}
                                 on_close={() => this.changeModalShowSendResult(false)}
-                                heading={`${this.state.nft_transaction_type} nft`}
+                                heading={this.state.nft_transaction_type === 'create' ? `nft created` : `nft transferred`}
                                 body={this.state.nft_transaction_type === 'create' ? <div>
                                     <div className="mb-3">
                                         your nft was created successfully with transaction id: {this.state.transaction_id}
@@ -383,9 +388,6 @@ class NftCreateForm extends Component {
                                 </div> : <div>
                                           <div className="mb-3">
                                               transaction id: {this.state.transaction_id}
-                                          </div>
-                                          <div>
-                                              you can see your nft collection here <Link to={'/nft-collection'}> here</Link>
                                           </div>
                                       </div>}/>
                             <Form.Group as={Row}>
@@ -402,7 +404,7 @@ class NftCreateForm extends Component {
                                 </Button>
                             </Form.Group>
                         </Col>
-                    </Form>
+                    </div>
                 </Row>
             </>
         );
