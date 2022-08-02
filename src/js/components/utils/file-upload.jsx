@@ -42,6 +42,7 @@ class FileUpload extends Component {
         this.setState({
             image_data: null
         });
+        this.props.onFileCancelUpload();
     }
 
     triggerFileUpload(e) {

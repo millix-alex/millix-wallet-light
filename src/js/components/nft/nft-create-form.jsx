@@ -41,6 +41,7 @@ class NftCreateForm extends Component {
 
         this.send                    = this.send.bind(this);
         this.onChangeFileUpload      = this.onChangeFileUpload.bind(this);
+        this.onFileCancelUpload      = this.onFileCancelUpload.bind(this);
         this.onChangeFileUploadError = this.onChangeFileUploadError.bind(this);
         this.resetNftForm            = this.resetNftForm.bind(this);
 
@@ -131,6 +132,7 @@ class NftCreateForm extends Component {
         Transaction.sendTransaction(transaction_output_payload, true, !this.state.txid).then((data) => {
             this.changeModalShowConfirmation(false);
             this.changeModalShowSendResult();
+            delete data.destination_address_list;
             this.setState(data);
             changeLoaderState(false);
         }).catch((error) => {
@@ -213,6 +215,12 @@ class NftCreateForm extends Component {
         });
     }
 
+    onFileCancelUpload() {
+        this.setState({
+            image: undefined
+        });
+    }
+
     onChangeFileUploadError(error_list) {
         if (error_list.length !== 0) {
             this.setState({
@@ -238,6 +246,7 @@ class NftCreateForm extends Component {
                                          ref={this.fileUploaderRef}
                                          title={'upload image'}
                                          onFileUpload={this.onChangeFileUpload}
+                                         onFileCancelUpload={this.onFileCancelUpload}
                                          onFileUploadError={this.onChangeFileUploadError}
                                          accept={'image/*'}
                                          extension={[]}
