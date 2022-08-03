@@ -17,9 +17,9 @@ class AssetListView extends Component {
         super(props);
         this.datatable_reload_interval = undefined;
         this.state                     = {
-            asset_list                     : [],
-            datatable_loading              : false,
-            nft_asset_list_reload_timestamp: moment.now()
+            asset_list                 : [],
+            datatable_loading          : false,
+            asset_list_reload_timestamp: moment.now()
         };
     }
 
@@ -43,37 +43,37 @@ class AssetListView extends Component {
             async.mapLimit(data, 6, (row, callback) => {
                 utils.getImageFromApi(row)
                      .then(image_data => {
-                         image_data.image_details = row.transaction_output_attribute[0];
+                         image_data.result_image_detail = row.transaction_output_attribute[0];
                          callback(null, image_data);
                      });
             }, (err, assetList) => {
                 changeLoaderState(false);
                 this.setState({
-                    asset_list                     : assetList,
-                    datatable_loading              : false,
-                    nft_asset_list_reload_timestamp: moment.now()
+                    asset_list                 : assetList,
+                    datatable_loading          : false,
+                    asset_list_reload_timestamp: moment.now()
                 });
             });
         });
     }
 
-    renderNftImage(nft_list) {
-        let nft_list_formatted = [];
-        for (const image_props of nft_list) {
+    renderAsset(asset_list) {
+        let asset_list_formatted = [];
+        for (const image_props of asset_list) {
             const {
                       src,
                       alt,
-                      image_details
+                      result_image_detail
                   } = image_props;
-            nft_list_formatted.push(
-                <Col xs={12} md={3} className={'mt-3'} key={image_details.transaction_id}>
+            asset_list_formatted.push(
+                <Col xs={12} md={3} className={'mt-3'} key={result_image_detail.transaction_id}>
                     <Card className={'nft-card'}>
                         <div className={'nft-collection-img'}>
                             <img src={src} alt={alt}/>
                         </div>
                         <Card.Body>
-                            <div className={'nft-name page_subtitle'}>{image_details.value.name}</div>
-                            <p className={'nft-description'}>{image_details.value.description}</p>
+                            <div className={'nft-name page_subtitle'}>{result_image_detail.value.name}</div>
+                            <p className={'nft-description'}>{result_image_detail.value.description}</p>
                             <div className={'nft-action-section'}>
 
                             </div>
@@ -82,11 +82,11 @@ class AssetListView extends Component {
                 </Col>
             );
         }
-        return <>{nft_list_formatted}</>;
+        return <>{asset_list_formatted}</>;
     }
 
     render() {
-        const nft_row_list = this.renderNftImage(this.state.asset_list);
+        const asset_list = this.renderAsset(this.state.asset_list);
         return (
             <>
                 <div className={'panel panel-filled'}>
@@ -120,12 +120,12 @@ class AssetListView extends Component {
                             </Col>
                             <Col md={7}>
                                     <span>
-                                        <ReloadTimeTickerView last_update_time={this.state.nft_asset_list_reload_timestamp}/>
+                                        <ReloadTimeTickerView last_update_time={this.state.asset_list_reload_timestamp}/>
                                     </span>
                             </Col>
                         </Row>
                         <Row>
-                            {nft_row_list}
+                            {asset_list}
                         </Row>
                     </div>
                 </div>
@@ -140,4 +140,3 @@ export default connect(
         wallet: state.wallet
     })
 )(withRouter(AssetListView));
-
