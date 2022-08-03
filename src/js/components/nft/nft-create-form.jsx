@@ -218,21 +218,21 @@ class NftCreateForm extends Component {
     }
 
     addDestinationAddress(value) {
-        const chips = this.state.destination_address_list.slice();
-        if (chips.length !== 0) {
+        const result_chip = this.state.destination_address_list.slice();
+        if (result_chip.length !== 0) {
             return;
         }
         const address = value.split(/[\n ]/)[0];
-        chips.push(address.trim());
-        this.setState({destination_address_list: chips});
+        result_chip.push(address.trim());
+        this.setState({destination_address_list: result_chip});
         this.chipInputAddress.formControlRef.current.disabled    = true;
         this.chipInputAddress.formControlRef.current.placeholder = '';
     };
 
     removeDestinationAddress(index) {
-        const chips = this.state.destination_address_list.slice();
-        chips.splice(index, 1);
-        this.setState({destination_address_list: chips});
+        const result_chip = this.state.destination_address_list.slice();
+        result_chip.splice(index, 1);
+        this.setState({destination_address_list: result_chip});
         this.chipInputAddress.formControlRef.current.disabled    = false;
         this.chipInputAddress.formControlRef.current.placeholder = 'recipient';
     };
