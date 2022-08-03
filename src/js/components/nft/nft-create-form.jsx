@@ -377,7 +377,7 @@ class NftCreateForm extends Component {
                                 show={this.state.modal_show_send_result}
                                 size={'lg'}
                                 on_close={() => this.changeModalShowSendResult(false)}
-                                heading={this.state.nft_transaction_type === 'create' ? `nft created` : `nft transferred`}
+                                heading={this.state.nft_transaction_type === 'create' ? `nft created` : `transfer nft`}
                                 body={this.state.nft_transaction_type === 'create' ? <div>
                                     <div className="mb-3">
                                         your nft was created successfully with transaction id: {this.state.transaction_id}
@@ -387,7 +387,7 @@ class NftCreateForm extends Component {
                                     </div>
                                 </div> : <div>
                                           <div className="mb-3">
-                                              transaction id: {this.state.transaction_id}
+                                              your nft was transferred successfully with transaction id: {this.state.transaction_id}
                                           </div>
                                       </div>}/>
                             <Form.Group as={Row}>
