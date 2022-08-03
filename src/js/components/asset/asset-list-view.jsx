@@ -66,7 +66,7 @@ class AssetListView extends Component {
                       image_details
                   } = image_props;
             nft_list_formatted.push(
-                <Col xs={12} md={3} className={'mt-4'} key={image_details.transaction_id}>
+                <Col xs={12} md={3} className={'mt-3'} key={image_details.transaction_id}>
                     <Card className={'nft-card'}>
                         <div className={'nft-collection-img'}>
                             <img src={src} alt={alt}/>
@@ -124,7 +124,7 @@ class AssetListView extends Component {
                                     </span>
                             </Col>
                         </Row>
-                        <Row style={{marginTop: 10}}>
+                        <Row>
                             {nft_row_list}
                         </Row>
                     </div>
