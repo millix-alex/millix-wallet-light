@@ -56,7 +56,7 @@ class NftCollectionView extends Component {
             async.mapLimit(data, 6, (row, callback) => {
                 utils.getImageFromApi(row)
                      .then(image_data => {
-                         image_data.image_details = row.transaction_output_attribute[0];
+                         image_data.result_image_detail = row.transaction_output_attribute[0];
                          callback(null, image_data);
                          changeLoaderState(false);
                      });
@@ -139,18 +139,17 @@ class NftCollectionView extends Component {
             const {
                       src,
                       alt,
-                      image_details
-                  } = image_props;
-
+                      result_image_detail
+                  }                 = image_props;
+            image_props.name        = result_image_detail.value.name;
+            image_props.description = result_image_detail.value.description;
             nft_list_formatted.push(
-                <Col xs={12} md={3} className={'mt-3'} key={image_details.transaction_id}>
+                <Col xs={12} md={3} className={'mt-3'} key={result_image_detail.transaction_id}>
                     <Card className={'nft-card'}>
-                        <div className={'nft-collection-img'}>
-                            <img src={src} alt={alt}/>
-                        </div>
+                        <img src={src} alt={alt} className={'nft-collection-img'}/>
                         <Card.Body>
-                            <div className={'nft-name page_subtitle'}>{image_details.value.name}</div>
-                            <p className={'nft-description'}>{image_details.value.description}</p>
+                            <div className={'nft-name page_subtitle'}>{result_image_detail.value.name}</div>
+                            <p className={'nft-description'}>{result_image_detail.value.description}</p>
                             <div className={'nft-action-section'}>
                                 <Button
                                     variant="outline-default"
@@ -162,11 +161,16 @@ class NftCollectionView extends Component {
                                     <FontAwesomeIcon className="text-warning"
                                                      icon={'bomb'}/>burn
                                 </Button>
+
                                 <Button variant="outline-primary"
                                         size={'sm'}
-                                        onClick={() => this.props.history.push('/nft-transfer', image_props)}>
-                                    <FontAwesomeIcon icon={'arrow-right'} className={'arrow_up_right'}/>send
+                                        className={'preview_link'}>
+                                    <FontAwesomeIcon icon={'eye'}/>preview
                                 </Button>
+
+                                <Button variant="outline-primary"
+                                        size={'sm'}
+                                        onClick={() => this.props.history.push('/nft-transfer', image_props)}>transfer</Button>
                             </div>
                         </Card.Body>
                     </Card>
@@ -178,7 +182,7 @@ class NftCollectionView extends Component {
 
     getBurnModalNftName() {
         let result = '';
-        const name = this.state.nft_selected?.image_details.value.name;
+        const name = this.state.nft_selected?.result_image_detail.value.name;
 
         if (name) {
             result = <b> "{name}"</b>;
@@ -255,7 +259,6 @@ class NftCollectionView extends Component {
                                                         onChange={e => this.setState({modal_burn_create_asset: e.target.checked})}/> preserve file as an
                                         asset
                                     </div>
-
                                     {text.get_confirmation_modal_question()}
                                 </div>}/>
                             <ModalView
