@@ -63,7 +63,9 @@ class FileUpload extends Component {
                 });
             };
 
-            reader.readAsDataURL(file);
+            if(file) {
+                reader.readAsDataURL(file);
+            }
         });
     }
 
