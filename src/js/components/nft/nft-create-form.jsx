@@ -50,9 +50,9 @@ class NftCreateForm extends Component {
         this.resetNftForm            = this.resetNftForm.bind(this);
 
         this.fileUploaderRef = React.createRef();
-        this.name        = {value: ''};
-        this.description = {value: ''};
-        this.send        = this.send.bind(this);
+        this.name            = {value: ''};
+        this.description     = {value: ''};
+        this.send            = this.send.bind(this);
     }
 
     componentWillUnmount() {
@@ -298,9 +298,9 @@ class NftCreateForm extends Component {
                                      <FileUpload
                                          ref={this.fileUploaderRef}
                                          title={'upload image'}
-                                         onFileUpload={this.onChangeFileUpload}
-                                         onFileCancelUpload={this.onFileCancelUpload}
-                                         onFileUploadError={this.onChangeFileUploadError}
+                                         on_file_upload={this.onChangeFileUpload}
+                                         on_file_cancel_upload={this.onFileCancelUpload}
+                                         on_file_upload_error={this.onChangeFileUploadError}
                                          accept={'image/*'}
                                          extension={[]}
                                      />

@@ -8,13 +8,11 @@ class FileUpload extends Component {
     constructor(props) {
         super(props);
 
-        this.state        = {
+        this.state          = {
             image_data: null
         };
-        this.inputFileRef = null;
-
-        this.readFile = this.readFile.bind(this);
-
+        this.input_file_ref = null;
+        this.readFile       = this.readFile.bind(this);
     }
 
     handleFileChange(e) {
@@ -23,13 +21,13 @@ class FileUpload extends Component {
             validate.file('image', data, error_list, this.props.extension, 50);
 
             if (error_list.length !== 0) {
-                this.props.onFileUploadError(error_list);
+                this.props.on_file_upload_error(error_list);
             }
             else {
                 this.setState({
                     image_data: data
                 });
-                this.props.onFileUpload(data);
+                this.props.on_file_upload(data);
             }
         });
     }
@@ -42,12 +40,12 @@ class FileUpload extends Component {
         this.setState({
             image_data: null
         });
-        this.props.onFileCancelUpload();
+        this.props.on_file_cancel_upload();
     }
 
     triggerFileUpload(e) {
         e.preventDefault();
-        this.inputFileRef.click();
+        this.input_file_ref.click();
     }
 
     readFile(file) {
@@ -63,12 +61,11 @@ class FileUpload extends Component {
                 });
             };
 
-            if(file) {
+            if (file) {
                 reader.readAsDataURL(file);
             }
         });
     }
-
 
     render() {
         return (
@@ -88,7 +85,7 @@ class FileUpload extends Component {
                     <input
                         className={'d-none'}
                         type="file"
-                        ref={input => this.inputFileRef = input}
+                        ref={input => this.input_file_ref = input}
                         name={'file_upload'}
                         onChange={event => this.handleFileChange(event)}
                         onClick={() => this.onFileInputClick()}
@@ -108,4 +105,3 @@ class FileUpload extends Component {
 
 
 export default FileUpload;
-
