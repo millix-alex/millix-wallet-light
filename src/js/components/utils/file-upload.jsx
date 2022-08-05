@@ -18,17 +18,22 @@ class FileUpload extends Component {
     handleFileChange(e) {
         this.readFile(e.target.files[0]).then(data => {
             let error_list = [];
-            validate.file('image', data, error_list, this.props.extension, 50);
-
-            if (error_list.length !== 0) {
-                this.props.on_file_upload_error(error_list);
-            }
-            else {
-                this.setState({
-                    image_data: data
-                });
-                this.props.on_file_upload(data);
-            }
+            validate.file('image', data, error_list, this.props.file_type)
+                    .then(_ => {
+                        if (error_list.length !== 0) {
+                            this.props.on_file_upload_error(error_list);
+                        }
+                        else {
+                            this.setState({
+                                image_data: data
+                            });
+                            this.props.on_file_upload(data);
+                        }
+                    })
+                    .catch(error => {
+                        error_list.push(error);
+                        this.props.on_file_upload_error(error_list);
+                    });
         });
     }
 

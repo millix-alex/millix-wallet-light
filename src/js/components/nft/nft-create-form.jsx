@@ -95,10 +95,6 @@ class NftCreateForm extends Component {
             dns  : validate.domain_name('verified sender', this.dns.value, error_list)
         };
 
-        if (this.state.image) {
-            validate.file('nft image', this.state.image, error_list);
-        }
-
         if (error_list.length === 0) {
             validate.verified_sender_domain_name(transaction_param.dns, error_list).then(result => {
                 if (result.valid) {
@@ -233,7 +229,10 @@ class NftCreateForm extends Component {
     }
 
     resetNftForm() {
-        this.fileUploaderRef.current.clearFileInput();
+        if (this.fileUploaderRef.current) {
+            this.fileUploaderRef.current.clearFileInput();
+        }
+
         this.name.value        = '';
         this.description.value = '';
     }
@@ -302,7 +301,7 @@ class NftCreateForm extends Component {
                                          on_file_cancel_upload={this.onFileCancelUpload}
                                          on_file_upload_error={this.onChangeFileUploadError}
                                          accept={'image/*'}
-                                         extension={[]}
+                                         file_type={'image'}
                                      />
                                  )}
                             </Form.Group>
