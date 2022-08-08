@@ -56,7 +56,8 @@ class NftCollectionView extends Component {
             async.mapLimit(data, 6, (row, callback) => {
                 utils.getImageFromApi(row)
                      .then(image_data => {
-                         image_data.result_image_detail = row.transaction_output_attribute[0];
+                         image_data.image_details             = row.transaction_output_attribute[0];
+                         image_data.address_key_identifier_to = row.address_key_identifier_to;
                          callback(null, image_data);
                          changeLoaderState(false);
                      });
@@ -139,19 +140,19 @@ class NftCollectionView extends Component {
             const {
                       src,
                       alt,
-                      result_image_detail
+                      image_details
                   }                 = image_props;
-            image_props.name        = result_image_detail.value.name;
-            image_props.description = result_image_detail.value.description;
+            image_props.name        = image_details.value.name;
+            image_props.description = image_details.value.description;
             nft_list_formatted.push(
-                <Col xs={12} md={3} className={'mt-3'} key={result_image_detail.transaction_id}>
+                <Col xs={12} md={3} className={'mt-3'} key={image_details.transaction_id}>
                     <Card className={'nft-card'}>
                         <div className={'nft-collection-img'}>
                             <img src={src} alt={alt}/>
                         </div>
                         <Card.Body>
-                            <div className={'nft-name page_subtitle'}>{result_image_detail.value.name}</div>
-                            <p className={'nft-description'}>{result_image_detail.value.description}</p>
+                            <div className={'nft-name page_subtitle'}>{image_details.value.name}</div>
+                            <p className={'nft-description'}>{image_details.value.description}</p>
                             <div className={'nft-action-section'}>
                                 <Button
                                     variant="outline-default"
@@ -166,7 +167,8 @@ class NftCollectionView extends Component {
 
                                 <Button variant="outline-primary"
                                         size={'sm'}
-                                        className={'preview_link'}>
+                                        className={'preview_link'}
+                                        onClick={() => this.getPreviewLink(image_props)}>
                                     <FontAwesomeIcon icon={'eye'}/>details
                                 </Button>
 
@@ -180,6 +182,14 @@ class NftCollectionView extends Component {
             );
         }
         return <>{nft_list_formatted}</>;
+    }
+
+    getPreviewLink(nft_data) {
+        API.getNftKey(nft_data).then(({key}) => {
+            const link = `${window.location.origin}/nft-preview/?p0=${nft_data.image_details.transaction_id}&p1=${nft_data.address_key_identifier_to}&p2=${key}&p3=${nft_data.hash}`;
+            navigator.clipboard.writeText(link);
+            this.setState({modal_show_copied_to_clipboard: true});
+        });
     }
 
     getBurnModalNftName() {
@@ -273,6 +283,16 @@ class NftCollectionView extends Component {
                                 body={<div>
                                     your nft {this.getBurnModalNftName()} was burned
                                     successfully. {this.state.burned_nft_kept_as_asset && 'the file is now available as an asset.'}
+                                </div>}/>
+                            <ModalView
+                                show={this.state.modal_show_copied_to_clipboard}
+                                size={'lg'}
+                                on_close={() => {
+                                    this.setState({modal_show_copied_to_clipboard: false});
+                                }}
+                                heading={'copied'}
+                                body={<div>
+                                    nft preview link copied to clipboard
                                 </div>}/>
                         </Row>
                     </div>
