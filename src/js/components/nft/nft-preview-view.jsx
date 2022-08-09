@@ -71,26 +71,30 @@ class NftPreviewView extends Component {
                     <p>
                         {this.state.status}
                     </p>
-                    <div className={'nft-collection-img'}>
-                        <img src={this.state.image_url} alt={'adsas'}/>
-                    </div>
+                    {this.state.status !== 'syncing' ?
+                     <>
+                         <div className={'nft-collection-img'}>
+                             <img src={this.state.image_url} alt={this.state.image_data.name}/>
+                         </div>
+                         <Row className={'nft-preview-description'}>
+                             <Col>
+                                 <div>
+                                     <p className={'transfer-subtitle'}>name</p>
+                                     <p>{this.state.image_data.name}</p>
+                                 </div>
+                                 <div>
+                                     <p className={'transfer-subtitle'}>description</p>
+                                     <p>{this.state.image_data.description}</p>
+                                 </div>
+                                 <div>
+                                     <p className={'transfer-subtitle'}>amount</p>
+                                     <p>{format.millix(this.state.image_data.amount)}</p>
+                                 </div>
+                             </Col>
+                         </Row></>
+                                                     :
+                     <p>sync in process</p>}
 
-                    <Row className={'nft-preview-description'}>
-                        <Col>
-                            <div>
-                                <p className={'transfer-subtitle'}>name</p>
-                                <p>{this.state.image_data.name}</p>
-                            </div>
-                            <div>
-                                <p className={'transfer-subtitle'}>description</p>
-                                <p>{this.state.image_data.description}</p>
-                            </div>
-                            <div>
-                                <p className={'transfer-subtitle'}>amount</p>
-                                <p>{format.millix(this.state.image_data.amount)}</p>
-                            </div>
-                        </Col>
-                    </Row>
                 </div>
             </div>
         );
