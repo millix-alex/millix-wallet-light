@@ -463,13 +463,6 @@ class API {
     }
 
     getNftImageWithHash(data) {
-        console.log({
-            p0: data.transaction_id,
-            p1: data.address_key_identifier_to,
-            p2: 'Adl87cz8kC190Nqc',
-            p3: data.hash,
-            p4: data.key
-        });
         return this.fetchApiMillix('/Mh9QifTIESw5t1fa', {
             p0: data.transaction_id,
             p1: data.address_key_identifier_to,
@@ -486,20 +479,13 @@ class API {
         });
     }
 
-/*
-    const transactionId        = req.query.p0;
-    const addressKeyIdentifier = req.query.p1;
-    const attributeTypeId      = req.query.p2;*/
     getSyncNftTransaction(data) {
-        console.log({
-            p0: data.transaction_id,
-            p1: data.address_key_identifier_to,
-            p2: 'Adl87cz8kC190Nqc',
-        })
         return this.fetchApiMillix('/SLzLU50givH77Rns', {
             p0: data.transaction_id,
             p1: data.address_key_identifier_to,
             p2: 'Adl87cz8kC190Nqc',
+            p3: data.hash,
+            p4: data.key
         });
     }
 }
