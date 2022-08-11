@@ -56,7 +56,7 @@ class NftCollectionView extends Component {
             async.mapLimit(data, 6, (row, callback) => {
                 utils.getImageFromApi(row)
                      .then(image_data => {
-                         image_data.image_details             = row.transaction_output_attribute[0];
+                         image_data.image_detail_list             = row.transaction_output_attribute[0];
                          image_data.address_key_identifier_to = row.address_key_identifier_to;
                          callback(null, image_data);
                          changeLoaderState(false);
@@ -84,8 +84,8 @@ class NftCollectionView extends Component {
     prepareTransactionOutputToBurnNft(nft, keepAsAsset) {
         return {
             transaction_output_attribute: {
-                name                 : nft.image_details.value.name,
-                description          : nft.image_details.value.description,
+                name                 : nft.name,
+                description          : nft.description,
                 parent_transaction_id: nft.txid
             },
             transaction_data            : {
@@ -140,19 +140,19 @@ class NftCollectionView extends Component {
             const {
                       src,
                       alt,
-                      image_details
+                      image_detail_list
                   }                 = image_props;
-            image_props.name        = image_details.value.name;
-            image_props.description = image_details.value.description;
+            image_props.name        = image_detail_list.value.name;
+            image_props.description = image_detail_list.value.description;
             nft_list_formatted.push(
-                <Col xs={12} md={3} className={'mt-3'} key={image_details.transaction_id}>
+                <Col xs={12} md={3} className={'mt-3'} key={image_detail_list.transaction_id}>
                     <Card className={'nft-card'}>
                         <div className={'nft-collection-img'}>
                             <img src={src} alt={alt}/>
                         </div>
                         <Card.Body>
-                            <div className={'nft-name page_subtitle'}>{image_details.value.name}</div>
-                            <p className={'nft-description'}>{image_details.value.description}</p>
+                            <div className={'nft-name page_subtitle'}>{image_detail_list.value.name}</div>
+                            <p className={'nft-description'}>{image_detail_list.value.description}</p>
                             <div className={'nft-action-section'}>
                                 <Button
                                     variant="outline-default"
@@ -167,7 +167,7 @@ class NftCollectionView extends Component {
 
                                 <Button variant="outline-primary"
                                         size={'sm'}
-                                        className={'preview_link'}
+                                        className={'preview_button'}
                                         onClick={() => this.getPreviewLink(image_props)}>
                                     <FontAwesomeIcon icon={'eye'}/>details
                                 </Button>
@@ -186,7 +186,7 @@ class NftCollectionView extends Component {
 
     getPreviewLink(nft_data) {
         API.getNftKey(nft_data).then(({key}) => {
-            const link = `${window.location.origin}/nft-preview/?p0=${nft_data.image_details.transaction_id}&p1=${nft_data.address_key_identifier_to}&p2=${key}&p3=${nft_data.hash}`;
+            const link = `${window.location.origin}/nft-preview/?p0=${nft_data.image_detail_list.transaction_id}&p1=${nft_data.address_key_identifier_to}&p2=${key}&p3=${nft_data.hash}`;
             navigator.clipboard.writeText(link);
             this.setState({modal_show_copied_to_clipboard: true});
         });

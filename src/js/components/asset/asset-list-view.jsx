@@ -43,7 +43,8 @@ class AssetListView extends Component {
             async.mapLimit(data, 6, (row, callback) => {
                 utils.getImageFromApi(row)
                      .then(image_data => {
-                         image_data.result_image_detail = row.transaction_output_attribute[0];
+                         image_data.image_detail_list = row.transaction_output_attribute[0];
+                         image_data.address_key_identifier_to = row.address_key_identifier_to;
                          callback(null, image_data);
                      });
             }, (err, assetList) => {
@@ -57,24 +58,45 @@ class AssetListView extends Component {
         });
     }
 
+    redirectToPreview(nft_data) {
+        API.getNftKey(nft_data).then(({key}) => {
+            const path = `/nft-preview/?p0=${nft_data.image_detail_list.transaction_id}&p1=${nft_data.address_key_identifier_to}&p2=${key}&p3=${nft_data.hash}&type=asset`;
+            this.props.history.push(path)
+        });
+    }
+
     renderAsset(asset_list) {
         let asset_list_formatted = [];
         for (const image_props of asset_list) {
             const {
                       src,
                       alt,
-                      result_image_detail
+                      image_detail_list
                   } = image_props;
             asset_list_formatted.push(
-                <Col xs={12} md={3} className={'mt-3'} key={result_image_detail.transaction_id}>
+                <Col xs={12} md={3} className={'mt-3'} key={image_detail_list.transaction_id}>
                     <Card className={'nft-card'}>
                         <div className={'nft-collection-img'}>
                             <img src={src} alt={alt}/>
                         </div>
                         <Card.Body>
-                            <div className={'nft-name page_subtitle'}>{result_image_detail.value.name}</div>
-                            <p className={'nft-description'}>{result_image_detail.value.description}</p>
+                            <div className={'nft-name page_subtitle'}>{image_detail_list.value.name}</div>
+                            <p className={'nft-description'}>{image_detail_list.value.description}</p>
                             <div className={'nft-action-section'}>
+                                <Button variant="outline-primary"
+                                        size={'sm'}
+                                        className={'preview_button_asset'}
+                                        onClick={() => this.redirectToPreview(image_props)}>
+                                    <FontAwesomeIcon icon={'eye'}/>details
+                                </Button>
+                                <Button variant="outline-primary"
+                                        size={'sm'}
+                                        className={'preview_button_trans'}
+                                        onClick={() => this.props.history.push('/transaction/' + image_props.txid)}
+                                >
+                                    <FontAwesomeIcon icon={'list'} />
+                                    transaction
+                                </Button>
 
                             </div>
                         </Card.Body>

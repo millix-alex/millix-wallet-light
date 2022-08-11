@@ -3,7 +3,7 @@ import {withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
 import API from '../../api';
 import {parse} from 'querystring';
-import {TRANSACTION_DATA_TYPE_NFT} from '../../../config';
+import {TRANSACTION_DATA_TYPE_ASSET, TRANSACTION_DATA_TYPE_NFT} from '../../../config';
 import * as format from '../../helper/format';
 import {Col, Row} from 'react-bootstrap';
 
@@ -30,11 +30,15 @@ class NftPreviewView extends Component {
                     hash                     : params.p3
                 }
         }, () => {
-            this.getNftData();
+            if(params.type){
+                this.setAssetData();
+            } else {
+                this.setNftData();
+            }
         });
     }
 
-    getNftData() {
+    setNftData() {
         API.getSyncNftTransaction(this.state.image_data_parameter_list).then(data => {
             if (data.status === 'syncing') {
                 this.setState({
@@ -42,25 +46,38 @@ class NftPreviewView extends Component {
                 });
             }
             else {
-                API.getNftImageWithHash(this.state.image_data_parameter_list).then(result => {
-                    return result.ok ? result.blob() : undefined;
-                }).then(blob => {
-                    this.setState({
-                        image_url: URL.createObjectURL(blob)
-                    });
-                    API.listTransactionWithDataReceived(this.state.image_data_parameter_list.address_key_identifier_to, TRANSACTION_DATA_TYPE_NFT).then(data => {
-                        this.setState({
-                            image_data: {
-                                name       : data[0].transaction_output_attribute[0].value.name,
-                                description: data[0].transaction_output_attribute[0].value.description,
-                                amount     : data[0].amount
-                            },
-                            status    : data.status
-                        });
-                    });
+                this.getImageDataWithDetails(TRANSACTION_DATA_TYPE_NFT).then(stateData => {
+                    this.setState(stateData);
                 });
             }
         });
+    }
+
+    setAssetData() {
+        this.getImageDataWithDetails(TRANSACTION_DATA_TYPE_ASSET).then(stateData => {
+            this.setState(stateData);
+        });
+    }
+
+    async getImageDataWithDetails(data_type) {
+        return API.getNftImageWithKey(this.state.image_data_parameter_list).then(result => {
+            return result.ok ? result.blob() : undefined;
+        }).then(blob => {
+            this.setState({
+                image_url: URL.createObjectURL(blob)
+            });
+            return API.listTransactionWithDataReceived(this.state.image_data_parameter_list.address_key_identifier_to, data_type).then(data => {
+                return {
+                    image_data: {
+                        name       : data[0].transaction_output_attribute[0].value.name,
+                        description: data[0].transaction_output_attribute[0].value.description,
+                        amount     : data[0].amount
+                    },
+                    status    : data.status
+                };
+            });
+        });
+
     }
 
     render() {

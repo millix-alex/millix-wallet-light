@@ -83,8 +83,12 @@
   flex: 0 1;
   flex-direction: row;
 
-  .preview_link {
+  .preview_button {
     margin-left: auto;
     margin-right: 1rem;
+  }
+
+  .preview_button_trans {
+    margin-left: auto;
   }
 }

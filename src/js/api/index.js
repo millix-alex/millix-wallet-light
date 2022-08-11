@@ -462,7 +462,7 @@ class API {
         }, 'GET', undefined, true);
     }
 
-    getNftImageWithHash(data) {
+    getNftImageWithKey(data) {
         return this.fetchApiMillix('/Mh9QifTIESw5t1fa', {
             p0: data.transaction_id,
             p1: data.address_key_identifier_to,
@@ -474,8 +474,8 @@ class API {
 
     getNftKey(data) {
         return this.fetchApiMillix('/3K2xvNRLMpiEqLo8', {
-            p0: data.image_details.transaction_id,
-            p1: data.image_details.attribute_type_id,
+            p0: data.image_detail_list.transaction_id,
+            p1: data.image_detail_list.attribute_type_id,
             p2: data.hash
         });
     }
