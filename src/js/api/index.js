@@ -467,7 +467,8 @@ class API {
             p0: data.transaction_id,
             p1: data.address_key_identifier_to,
             p2: 'Adl87cz8kC190Nqc',
-            p3: data.hash
+            p3: data.hash,
+            p4: data.key
         }, 'GET', undefined, true);
     }
 
