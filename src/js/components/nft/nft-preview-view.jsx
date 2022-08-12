@@ -48,14 +48,15 @@ class NftPreviewView extends Component {
                     this.setState({
                         image_url: URL.createObjectURL(blob)
                     });
-                    API.listTransactionWithDataReceived(this.state.image_data_parameter_list.address_key_identifier_to, TRANSACTION_DATA_TYPE_NFT).then(data => {
+                    API.listTransactionWithDataReceived(this.state.image_data_parameter_list.address_key_identifier_to, TRANSACTION_DATA_TYPE_NFT).then(data_image => {
                         this.setState({
                             image_data: {
-                                name       : data[0].transaction_output_attribute[0].value.name,
-                                description: data[0].transaction_output_attribute[0].value.description,
-                                amount     : data[0].amount
+                                name       : data_image[0].transaction_output_attribute[0].value.name,
+                                description: data_image[0].transaction_output_attribute[0].value.description,
+                                amount     : data_image[0].amount
                             },
-                            status    : data.status
+                            status    : data_image.status,
+                            ...data
                         });
                     });
                 });
@@ -66,7 +67,7 @@ class NftPreviewView extends Component {
     render() {
         return (
             <div className={'panel panel-filled'}>
-                <div className={'panel-heading bordered'}>syncing</div>
+                <div className={'panel-heading bordered'}>{this.state.status}</div>
                 <div className={'panel-body'}>
                     <p>
                         {this.state.status}
