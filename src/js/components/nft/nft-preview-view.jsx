@@ -12,9 +12,8 @@ class NftPreviewView extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            status                   : [],
+            status                   : '',
             image_data_parameter_list: [],
-            image_url                : '',
             image_data               : {}
         };
     }
@@ -30,9 +29,10 @@ class NftPreviewView extends Component {
                     hash                     : params.p3
                 }
         }, () => {
-            if(params.type){
+            if (params.type) {
                 this.setAssetData();
-            } else {
+            }
+            else {
                 this.setNftData();
             }
         });
@@ -40,12 +40,11 @@ class NftPreviewView extends Component {
 
     setNftData() {
         API.getSyncNftTransaction(this.state.image_data_parameter_list).then(data => {
-            if (data.status === 'syncing') {
-                this.setState({
-                    status: data.status
-                });
-            }
-            else {
+            this.setState({
+                status    : data.status,
+                image_data: data.transaction_output_metadata
+            });
+            if (data.status !== 'syncing') {
                 this.getImageDataWithDetails(TRANSACTION_DATA_TYPE_NFT).then(stateData => {
                     this.setState(stateData);
                 });
@@ -63,17 +62,12 @@ class NftPreviewView extends Component {
         return API.getNftImageWithKey(this.state.image_data_parameter_list).then(result => {
             return result.ok ? result.blob() : undefined;
         }).then(blob => {
-            this.setState({
-                image_url: URL.createObjectURL(blob)
-            });
             return API.listTransactionWithDataReceived(this.state.image_data_parameter_list.address_key_identifier_to, data_type).then(data => {
                 return {
                     image_data: {
-                        name       : data[0].transaction_output_attribute[0].value.name,
-                        description: data[0].transaction_output_attribute[0].value.description,
-                        amount     : data[0].amount
-                    },
-                    status    : data.status
+                        amount   : data[0].amount,
+                        image_url: URL.createObjectURL(blob)
+                    }
                 };
             });
         });
@@ -90,7 +84,7 @@ class NftPreviewView extends Component {
                     {this.state.status !== 'syncing' ?
                      <>
                          <div className={'nft-collection-img'}>
-                             <img src={this.state.image_url} alt={this.state.image_data.name}/>
+                             <img src={this.state.image_data.image_url} alt={this.state.image_data.name}/>
                          </div>
                          <Row className={'nft-preview-description'}>
                              <Col>
