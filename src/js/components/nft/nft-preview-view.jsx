@@ -77,13 +77,12 @@ class NftPreviewView extends Component {
                 };
             });
         });
-
     }
 
     render() {
         return (
             <div className={'panel panel-filled'}>
-                <div className={'panel-heading bordered'}>syncing</div>
+                <div className={'panel-heading bordered'}>{this.state.status}</div>
                 <div className={'panel-body'}>
                     <p>
                         {this.state.status}
