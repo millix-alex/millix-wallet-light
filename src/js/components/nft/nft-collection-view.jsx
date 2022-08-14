@@ -134,6 +134,13 @@ class NftCollectionView extends Component {
         });
     }
 
+    redirectToPreview(nft_data) {
+        API.getNftKey(nft_data).then(({key}) => {
+            const path = `/nft-preview/?p0=${nft_data.image_detail_list.transaction_id}&p1=${nft_data.address_key_identifier_to}&p2=${key}&p3=${nft_data.hash}`;
+            this.props.history.push(path)
+        });
+    }
+
     renderNftImage(nft_list) {
         let nft_list_formatted = [];
         for (const image_props of nft_list) {
@@ -164,14 +171,13 @@ class NftCollectionView extends Component {
                                     <FontAwesomeIcon className="text-warning"
                                                      icon={'bomb'}/>burn
                                 </Button>
-
                                 <Button variant="outline-primary"
                                         size={'sm'}
                                         className={'preview_button'}
-                                        onClick={() => this.getPreviewLink(image_props)}>
+                                        onClick={() => this.redirectToPreview(image_props)}
+                                >
                                     <FontAwesomeIcon icon={'eye'}/>details
                                 </Button>
-
                                 <Button variant="outline-primary"
                                         size={'sm'}
                                         onClick={() => this.props.history.push('/nft-transfer', image_props)}>transfer</Button>
@@ -283,16 +289,6 @@ class NftCollectionView extends Component {
                                 body={<div>
                                     your nft {this.getBurnModalNftName()} was burned
                                     successfully. {this.state.burned_nft_kept_as_asset && 'the file is now available as an asset.'}
-                                </div>}/>
-                            <ModalView
-                                show={this.state.modal_show_copied_to_clipboard}
-                                size={'lg'}
-                                on_close={() => {
-                                    this.setState({modal_show_copied_to_clipboard: false});
-                                }}
-                                heading={'copied'}
-                                body={<div>
-                                    nft preview link copied to clipboard
                                 </div>}/>
                         </Row>
                     </div>
