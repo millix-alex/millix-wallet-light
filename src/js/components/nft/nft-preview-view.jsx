@@ -5,7 +5,7 @@ import API from '../../api';
 import {parse} from 'querystring';
 import {TRANSACTION_DATA_TYPE_ASSET, TRANSACTION_DATA_TYPE_NFT} from '../../../config';
 import * as format from '../../helper/format';
-import {Col, Row} from 'react-bootstrap';
+import {Button, Col, Row} from 'react-bootstrap';
 
 
 class NftPreviewView extends Component {
@@ -14,8 +14,11 @@ class NftPreviewView extends Component {
         this.state = {
             status                   : '',
             image_data_parameter_list: [],
-            image_data               : {}
+            image_data               : {},
+            action                   : 'preview'
         };
+
+        this.timeout_id = null;
     }
 
     componentDidMount() {
@@ -38,6 +41,10 @@ class NftPreviewView extends Component {
         });
     }
 
+    componentWillUnmount() {
+        clearTimeout(this.timeout_id);
+    }
+
     setNftData() {
         API.getSyncNftTransaction(this.state.image_data_parameter_list).then(data => {
             this.setState({
@@ -45,9 +52,12 @@ class NftPreviewView extends Component {
                 image_data: data.transaction_output_metadata
             });
             if (data.status !== 'syncing') {
+                clearTimeout(this.timeout_id);
                 this.getImageDataWithDetails(TRANSACTION_DATA_TYPE_NFT).then(stateData => {
                     this.setState(stateData);
                 });
+            } else {
+                setTimeout(() => this.setNftData(), 5000);
             }
         });
     }
@@ -75,39 +85,52 @@ class NftPreviewView extends Component {
 
     render() {
         return (
-            <div className={'panel panel-filled'}>
-                <div className={'panel-heading bordered'}>{this.state.status}</div>
-                <div className={'panel-body'}>
-                    <p>
-                        {this.state.status}
-                    </p>
-                    {this.state.status !== 'syncing' ?
-                     <>
-                         <div className={'nft-collection-img'}>
-                             <img src={this.state.image_data.image_url} alt={this.state.image_data.name}/>
-                         </div>
-                         <Row className={'nft-preview-description'}>
-                             <Col>
-                                 <div>
-                                     <p className={'transfer-subtitle'}>name</p>
-                                     <p>{this.state.image_data.name}</p>
-                                 </div>
-                                 <div>
-                                     <p className={'transfer-subtitle'}>description</p>
-                                     <p>{this.state.image_data.description}</p>
-                                 </div>
-                                 <div>
-                                     <p className={'transfer-subtitle'}>amount</p>
-                                     <p>{format.millix(this.state.image_data.amount)}</p>
-                                 </div>
-                             </Col>
-                         </Row></>
-                                                     :
-                     <p>sync in process</p>}
+            <>
+                {this.state.action === 'preview' ? <div className={'panel panel-filled'}>
+                    <div className={'panel-heading bordered'}>{this.state.status}</div>
+                    <div className={'panel-body'}>
+                        <p>
+                            {this.state.status}
+                        </p>
+                        {this.state.status !== 'syncing' ?
+                         <>
+                             <div className={'nft-collection-img'}>
+                                 <img src={this.state.image_data.image_url} alt={this.state.image_data.name}/>
+                             </div>
+                             <Row className={'nft-preview-description'}>
+                                 <Col>
+                                     <div>
+                                         <p className={'transfer-subtitle'}>name</p>
+                                         <p>{this.state.image_data.name}</p>
+                                     </div>
+                                     <div>
+                                         <p className={'transfer-subtitle'}>description</p>
+                                         <p>{this.state.image_data.description}</p>
+                                     </div>
+                                     <div>
+                                         <p className={'transfer-subtitle'}>amount</p>
+                                         <p>{format.millix(this.state.image_data.amount)}</p>
+                                     </div>
+                                     {this.getRestoreNftButton()}
+                                 </Col>
+                             </Row>
+                         </>
+                                                         :
+                         <p>sync in process</p>}
 
-                </div>
-            </div>
+                    </div>
+                </div> : ''}
+            </>
         );
+    }
+
+    getRestoreNftButton() {
+        let button = '';
+        if (this.state.status === 'synced') {
+            button = <Button type="outline-primary">revoke</Button>;
+        }
+
+        return button;
     }
 }
 

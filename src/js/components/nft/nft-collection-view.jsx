@@ -194,7 +194,7 @@ class NftCollectionView extends Component {
 
     getBurnModalNftName() {
         let result = '';
-        const name = this.state.nft_selected?.result_image_detail.value.name;
+        const name = this.state.nft_selected?.image_detail_list.value.name;
 
         if (name) {
             result = <b> "{name}"</b>;
