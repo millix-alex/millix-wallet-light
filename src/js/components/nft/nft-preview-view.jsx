@@ -76,7 +76,8 @@ class NftPreviewView extends Component {
                 return {
                     image_data: {
                         amount   : data[0].amount,
-                        image_url: URL.createObjectURL(blob)
+                        image_url: URL.createObjectURL(blob),
+                        ...this.state.image_data
                     }
                 };
             });
