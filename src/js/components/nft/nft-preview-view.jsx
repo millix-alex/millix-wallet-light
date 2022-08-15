@@ -6,13 +6,15 @@ import {parse} from 'querystring';
 import {TRANSACTION_DATA_TYPE_ASSET, TRANSACTION_DATA_TYPE_NFT} from '../../../config';
 import * as format from '../../helper/format';
 import {Button, Col, Row} from 'react-bootstrap';
+import DatatableView from '../utils/datatable-view';
+import Translation from '../../common/translation';
 
 
 class NftPreviewView extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            status                   : '',
+            status                   : 'asset',
             image_data_parameter_list: [],
             image_data               : {},
             action                   : 'preview'
@@ -56,7 +58,8 @@ class NftPreviewView extends Component {
                 this.getImageDataWithDetails(TRANSACTION_DATA_TYPE_NFT).then(stateData => {
                     this.setState(stateData);
                 });
-            } else {
+            }
+            else {
                 setTimeout(() => this.setNftData(), 5000);
             }
         });
@@ -73,62 +76,118 @@ class NftPreviewView extends Component {
             return result.ok ? result.blob() : undefined;
         }).then(blob => {
             return API.listTransactionWithDataReceived(this.state.image_data_parameter_list.address_key_identifier_to, data_type).then(data => {
+                const current_image_data = data.filter((entry) => entry.transaction_id === this.state.image_data_parameter_list.transaction_id)[0];
                 return {
                     image_data: {
-                        amount   : data[0].amount,
+                        amount   : current_image_data.amount,
                         image_url: URL.createObjectURL(blob),
-                        ...this.state.image_data
+                        ...current_image_data.transaction_output_attribute[0].file_data,
+                        current_image_data,
+                        transaction_history_list: this.getTransactionHistoryList(data[0].transaction_output_attribute),
                     }
                 };
             });
         });
     }
 
+    getTransactionHistoryList(data) {
+        return data.map((element) => {
+            return {
+                date: element.create_date,
+                txid: element.transaction_id
+            }
+        })
+    }
+
+    getPreviewLink() {
+        navigator.clipboard.writeText(window.location.href);
+    }
+
     render() {
         return (
-            <>
-                {this.state.action === 'preview' ? <div className={'panel panel-filled'}>
-                    <div className={'panel-heading bordered'}>{this.state.status}</div>
-                    <div className={'panel-body'}>
-                        <p>
-                            {this.state.status}
-                        </p>
-                        {this.state.status !== 'syncing' ?
-                         <>
-                             <div className={'nft-collection-img'}>
-                                 <img src={this.state.image_data.image_url} alt={this.state.image_data.name}/>
-                             </div>
-                             <Row className={'nft-preview-description'}>
-                                 <Col>
-                                     <div>
-                                         <p className={'transfer-subtitle'}>name</p>
-                                         <p>{this.state.image_data.name}</p>
-                                     </div>
-                                     <div>
-                                         <p className={'transfer-subtitle'}>description</p>
-                                         <p>{this.state.image_data.description}</p>
-                                     </div>
-                                     <div>
-                                         <p className={'transfer-subtitle'}>amount</p>
-                                         <p>{format.millix(this.state.image_data.amount)}</p>
-                                     </div>
-                                     {this.getRestoreNftButton()}
-                                 </Col>
-                             </Row>
-                         </>
-                                                         :
-                         <p>sync in process</p>}
+            <div className={'panel panel-filled'}>
+                <div className={'panel-heading bordered'}>{this.state.status}</div>
+                <div className={'panel-body'}>
+                    <Button variant="outline-primary"
+                            size={'sm'}
+                            className={'copy_link_button'}
+                            onClick={() => {
+                                this.getPreviewLink();
+                            }}
+                    >
+                        copy
+                    </Button>
+                    <p>
+                        {this.state.status}
+                    </p>
+                    {this.state.status !== 'syncing' ?
+                     <>
+                         <div className={'nft-collection-img'}>
+                             <img src={this.state.image_data.image_url} alt={this.state.image_data.name}/>
+                         </div>
+                         <Row className={'nft-preview-description'}>
+                             <Col>
+                                 <div>
+                                     <p className={'transfer-subtitle'}>name</p>
+                                     <p>{this.state.image_data.name}</p>
+                                 </div>
+                                 <div>
+                                     <p className={'transfer-subtitle'}>description</p>
+                                     <p>{this.state.image_data.description}</p>
+                                 </div>
+                                 <div>
+                                     <p className={'transfer-subtitle'}>amount</p>
+                                     <p>{format.millix(this.state.image_data.amount)}</p>
+                                 </div>
+                                 {this.getRestoreNftButton()}
+                             </Col>
+                         </Row>
 
-                    </div>
-                </div> : ''}
-            </>
+                         <div className={'panel_transfer panel-filled'}>
+
+                             <Row id={'txhistory'}>
+                                 <DatatableView
+                                     on_global_search_change={false}
+                                     value={this.state.image_data.transaction_history_list}
+                                     resultColumn={[
+                                         {
+                                             field : 'date',
+                                             header: Translation.getPhrase('cd55d1db8'),
+                                             // data: this.transaction_data_type
+
+                                         },
+                                         {
+                                             field : 'txid',
+                                             header: Translation.getPhrase('da26d66d6')
+                                         }
+                                     ]}/>
+                             </Row>
+
+                         </div>
+
+                     </>
+                                                     :
+                     <p>sync in process</p>}
+                </div>
+            </div>
         );
     }
 
     getRestoreNftButton() {
         let button = '';
-        if (this.state.status === 'synced') {
-            button = <Button type="outline-primary">revoke</Button>;
+        if (this.state.status === 'asset') {
+            button = <Button type="outline-primary"
+                             onClick={() => {
+                                 this.props.history.push('/nft-transfer', {
+                                     ...this.state.image_data,
+                                     src                        : this.state.image_data.image_url,
+                                     default_target_address_self: true,
+                                     nft_transaction_type       : 'revoke',
+                                 })
+                             }}
+            >
+                revoke
+            </Button>;
         }
 
         return button;

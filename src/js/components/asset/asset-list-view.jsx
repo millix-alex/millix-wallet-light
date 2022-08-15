@@ -43,7 +43,7 @@ class AssetListView extends Component {
             async.mapLimit(data, 6, (row, callback) => {
                 utils.getImageFromApi(row)
                      .then(image_data => {
-                         image_data.image_detail_list = row.transaction_output_attribute[0];
+                         image_data.image_detail_list         = row.transaction_output_attribute[0];
                          image_data.address_key_identifier_to = row.address_key_identifier_to;
                          callback(null, image_data);
                      });
@@ -61,7 +61,7 @@ class AssetListView extends Component {
     redirectToPreview(nft_data) {
         API.getNftKey(nft_data).then(({key}) => {
             const path = `/nft-preview/?p0=${nft_data.image_detail_list.transaction_id}&p1=${nft_data.address_key_identifier_to}&p2=${key}&p3=${nft_data.hash}&type=asset`;
-            this.props.history.push(path)
+            this.props.history.push(path);
         });
     }
 
@@ -80,8 +80,8 @@ class AssetListView extends Component {
                             <img src={src} alt={alt}/>
                         </div>
                         <Card.Body>
-                            <div className={'nft-name page_subtitle'}>{image_detail_list.value.name}</div>
-                            <p className={'nft-description'}>{image_detail_list.value.description}</p>
+                            <div className={'nft-name page_subtitle'}>{image_detail_list.file_data?.name}</div>
+                            <p className={'nft-description'}>{image_detail_list.file_data?.description}</p>
                             <div className={'nft-action-section'}>
                                 <Button variant="outline-primary"
                                         size={'sm'}
@@ -94,7 +94,7 @@ class AssetListView extends Component {
                                         className={'preview_button_trans'}
                                         onClick={() => this.props.history.push('/transaction/' + image_props.txid)}
                                 >
-                                    <FontAwesomeIcon icon={'list'} />
+                                    <FontAwesomeIcon icon={'list'}/>
                                     transaction
                                 </Button>
 

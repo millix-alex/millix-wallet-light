@@ -56,7 +56,7 @@ class NftCollectionView extends Component {
             async.mapLimit(data, 6, (row, callback) => {
                 utils.getImageFromApi(row)
                      .then(image_data => {
-                         image_data.image_detail_list             = row.transaction_output_attribute[0];
+                         image_data.image_detail_list         = row.transaction_output_attribute[0];
                          image_data.address_key_identifier_to = row.address_key_identifier_to;
                          callback(null, image_data);
                          changeLoaderState(false);
@@ -137,7 +137,7 @@ class NftCollectionView extends Component {
     redirectToPreview(nft_data) {
         API.getNftKey(nft_data).then(({key}) => {
             const path = `/nft-preview/?p0=${nft_data.image_detail_list.transaction_id}&p1=${nft_data.address_key_identifier_to}&p2=${key}&p3=${nft_data.hash}`;
-            this.props.history.push(path)
+            this.props.history.push(path);
         });
     }
 
@@ -148,9 +148,7 @@ class NftCollectionView extends Component {
                       src,
                       alt,
                       image_detail_list
-                  }                 = image_props;
-            image_props.name        = image_detail_list.value.name;
-            image_props.description = image_detail_list.value.description;
+                  } = image_props;
             nft_list_formatted.push(
                 <Col xs={12} md={3} className={'mt-3'} key={image_detail_list.transaction_id}>
                     <Card className={'nft-card'}>
@@ -158,8 +156,8 @@ class NftCollectionView extends Component {
                             <img src={src} alt={alt}/>
                         </div>
                         <Card.Body>
-                            <div className={'nft-name page_subtitle'}>{image_detail_list.value.name}</div>
-                            <p className={'nft-description'}>{image_detail_list.value.description}</p>
+                            <div className={'nft-name page_subtitle'}>{image_detail_list.file_data?.name}</div>
+                            <p className={'nft-description'}>{image_detail_list.file_data?.description}</p>
                             <div className={'nft-action-section'}>
                                 <Button
                                     variant="outline-default"
