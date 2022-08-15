@@ -461,6 +461,34 @@ class API {
             p3: data.transaction_output_attribute[0].value.file_list[0].hash
         }, 'GET', undefined, true);
     }
+
+    getNftImageWithHash(data) {
+        return this.fetchApiMillix('/Mh9QifTIESw5t1fa', {
+            p0: data.transaction_id,
+            p1: data.address_key_identifier_to,
+            p2: 'Adl87cz8kC190Nqc',
+            p3: data.hash,
+            p4: data.key
+        }, 'GET', undefined, true);
+    }
+
+    getNftKey(data) {
+        return this.fetchApiMillix('/3K2xvNRLMpiEqLo8', {
+            p0: data.image_details.transaction_id,
+            p1: data.image_details.attribute_type_id,
+            p2: data.hash
+        });
+    }
+
+    getSyncNftTransaction(data) {
+        return this.fetchApiMillix('/SLzLU50givH77Rns', {
+            p0: data.transaction_id,
+            p1: data.address_key_identifier_to,
+            p2: 'Adl87cz8kC190Nqc',
+            p3: data.hash,
+            p4: data.key
+        });
+    }
 }
 
 
