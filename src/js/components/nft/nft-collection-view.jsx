@@ -188,14 +188,6 @@ class NftCollectionView extends Component {
         return <>{nft_list_formatted}</>;
     }
 
-    getPreviewLink(nft_data) {
-        API.getNftKey(nft_data).then(({key}) => {
-            const link = `${window.location.origin}/nft-preview/?p0=${nft_data.image_detail_list.transaction_id}&p1=${nft_data.address_key_identifier_to}&p2=${key}&p3=${nft_data.hash}`;
-            navigator.clipboard.writeText(link);
-            this.setState({modal_show_copied_to_clipboard: true});
-        });
-    }
-
     getBurnModalNftName() {
         let result = '';
         const name = this.state.nft_selected?.image_detail_list.value.name;

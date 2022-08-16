@@ -71,7 +71,9 @@ class NftCreateForm extends Component {
         }
         if (this.state.nft_transaction_type === 'revoke') {
             this.setState({
-                image: new File([this.state.nft_src], this.state.name)
+                image: {
+                    file: new File([this.state.nft_src], this.state.name)
+                }
             });
         }
         this.name.value        = this.state.name;

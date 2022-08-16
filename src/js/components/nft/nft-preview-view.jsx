@@ -8,6 +8,10 @@ import * as format from '../../helper/format';
 import {Button, Col, Row} from 'react-bootstrap';
 import DatatableView from '../utils/datatable-view';
 import Translation from '../../common/translation';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import ReloadTimeTickerView from '../utils/reload-time-ticker-view';
+import moment from 'moment/moment';
+import ModalView from '../utils/modal-view';
 
 
 class NftPreviewView extends Component {
@@ -17,7 +21,9 @@ class NftPreviewView extends Component {
             status                   : 'asset',
             image_data_parameter_list: [],
             image_data               : {},
-            action                   : 'preview'
+            action                   : 'preview',
+            nft_sync_timestamp       : moment.now(),
+            modal_show_copy_result   : false
         };
 
         this.timeout_id = null;
@@ -50,8 +56,9 @@ class NftPreviewView extends Component {
     setNftData() {
         API.getSyncNftTransaction(this.state.image_data_parameter_list).then(data => {
             this.setState({
-                status    : data.status,
-                image_data: data.transaction_output_metadata
+                status            : data.status,
+                image_data        : data.transaction_output_metadata,
+                nft_sync_timestamp: moment.now()
             });
             if (data.status !== 'syncing') {
                 clearTimeout(this.timeout_id);
@@ -83,7 +90,7 @@ class NftPreviewView extends Component {
                         image_url: URL.createObjectURL(blob),
                         ...current_image_data.transaction_output_attribute[0].file_data,
                         current_image_data,
-                        transaction_history_list: this.getTransactionHistoryList(data[0].transaction_output_attribute),
+                        transaction_history_list: this.getTransactionHistoryList(data[0].transaction_output_attribute)
                     }
                 };
             });
@@ -95,12 +102,15 @@ class NftPreviewView extends Component {
             return {
                 date: element.create_date,
                 txid: element.transaction_id
-            }
-        })
+            };
+        });
     }
 
     getPreviewLink() {
         navigator.clipboard.writeText(window.location.href);
+        this.setState({
+            modal_show_copy_result: true
+        });
     }
 
     render() {
@@ -152,7 +162,7 @@ class NftPreviewView extends Component {
                                      resultColumn={[
                                          {
                                              field : 'date',
-                                             header: Translation.getPhrase('cd55d1db8'),
+                                             header: Translation.getPhrase('cd55d1db8')
                                              // data: this.transaction_data_type
 
                                          },
@@ -167,8 +177,34 @@ class NftPreviewView extends Component {
 
                      </>
                                                      :
-                     <p>sync in process</p>}
+                     <Row className={'align-items-center'}>
+                         <Col md={5}>
+                             <Button variant="outline-primary"
+                                     size={'sm'}
+                                     className={'refresh_button'}
+                                     onClick={() => this.setNftData()}
+                             >
+                                 <FontAwesomeIcon
+                                     icon={'sync'}
+                                     size="1x"/>
+                                 refresh
+                             </Button>
+                         </Col>
+                         <Col md={7}>
+                                <span>
+                                    <ReloadTimeTickerView last_update_time={this.state.nft_sync_timestamp}/>
+                                </span>
+                         </Col>
+                     </Row>}
                 </div>
+                <ModalView
+                    show={this.state.modal_show_copy_result}
+                    size={'lg'}
+                    heading={'nft share link copied'}
+                    on_close={() => this.setState({modal_show_copy_result: false})}
+                    body={<div>
+                        share link has been copied to clipboard
+                    </div>}/>
             </div>
         );
     }
@@ -181,9 +217,11 @@ class NftPreviewView extends Component {
                                  this.props.history.push('/nft-transfer', {
                                      ...this.state.image_data,
                                      src                        : this.state.image_data.image_url,
+                                     txid                       : this.state.image_data.current_image_data.transaction_id,
+                                     hash                       : this.state.image_data_parameter_list.hash,
                                      default_target_address_self: true,
-                                     nft_transaction_type       : 'revoke',
-                                 })
+                                     nft_transaction_type       : 'revoke'
+                                 });
                              }}
             >
                 revoke
