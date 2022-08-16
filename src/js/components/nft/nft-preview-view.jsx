@@ -116,65 +116,98 @@ class NftPreviewView extends Component {
     render() {
         return (
             <div className={'panel panel-filled'}>
-                <div className={'panel-heading bordered'}>{this.state.status}</div>
+                <div className={'panel-heading bordered d-flex'}>
+                    nft details
+
+
+                    <div className={'ms-auto message_subject_action_container'}>
+                        <Button
+                            variant="outline-default"
+                            size={'xs'}
+                            onClick={() => this.setState({
+                                // todo: open popover
+                            })}>
+                            <FontAwesomeIcon icon={'caret-down'}/>actions
+                        </Button>
+                        {/*<Button*/}
+                        {/*    variant="outline-default"*/}
+                        {/*    size={'xs'}*/}
+                        {/*    onClick={() => this.setState({*/}
+                        {/*        // modal_show_burn_confirmation: true,*/}
+                        {/*        // nft_selected                : image_props*/}
+                        {/*    })}>*/}
+                        {/*    <FontAwesomeIcon className="text-warning"*/}
+                        {/*                     icon={'bomb'}/>burn*/}
+                        {/*</Button>*/}
+                        {/*<Button*/}
+                        {/*    variant="outline-default"*/}
+                        {/*    size={'xs'}*/}
+                        {/*    onClick={() => this.setState({*/}
+                        {/*        // modal_show_burn_confirmation: true,*/}
+                        {/*        // nft_selected                : image_props*/}
+                        {/*    })}>*/}
+                        {/*    transfer*/}
+                        {/*</Button>*/}
+
+                        {/*<a href={this.state.image_data.image_url} target={'_blank'} className={'btn btn-outline-default btn-xs'}>*/}
+                        {/*    <FontAwesomeIcon icon={'eye'}/>raw image*/}
+                        {/*</a>*/}
+                    </div>
+
+
+                </div>
                 <div className={'panel-body'}>
-                    <Button variant="outline-primary"
-                            size={'sm'}
-                            className={'copy_link_button'}
-                            onClick={() => {
-                                this.getPreviewLink();
-                            }}
-                    >
-                        copy
-                    </Button>
-                    <p>
-                        {this.state.status}
-                    </p>
+                    {/*<Form.Group className="form-group">*/}
+                    {/*    <label>public preview link</label>*/}
+                    {/*    <Col className={'input-group'}>*/}
+                    {/*        <Form.Control type="text" value={window.location.href} readOnly={true}/>*/}
+                    {/*        <button*/}
+                    {/*            className="btn btn-outline-input-group-addon icon_only"*/}
+                    {/*            type="button"*/}
+                    {/*            onClick={() => this.getPreviewLink()}>*/}
+                    {/*            <FontAwesomeIcon*/}
+                    {/*                icon={'copy'}/>*/}
+                    {/*        </button>*/}
+                    {/*    </Col>*/}
+                    {/*</Form.Group>*/}
+
                     {this.state.status !== 'syncing' ?
                      <>
                          <div className={'nft-collection-img'}>
-                             <img src={this.state.image_data.image_url} alt={this.state.image_data.name}/>
+                             <a href={this.state.image_data.image_url} target={'_blank'} className={'mx-auto'}>
+                                 <img src={this.state.image_data.image_url} alt={this.state.image_data.name}/>
+                             </a>
                          </div>
                          <Row className={'nft-preview-description'}>
                              <Col>
                                  <div>
-                                     <p className={'transfer-subtitle'}>name</p>
-                                     <p>{this.state.image_data.name}</p>
+                                     <p className={'nft-name page_subtitle mb-0'}>{this.state.image_data.name}</p>
+                                     <p className={'nft-description'}>{this.state.image_data.description}</p>
                                  </div>
-                                 <div>
-                                     <p className={'transfer-subtitle'}>description</p>
-                                     <p>{this.state.image_data.description}</p>
-                                 </div>
-                                 <div>
-                                     <p className={'transfer-subtitle'}>amount</p>
-                                     <p>{format.millix(this.state.image_data.amount)}</p>
-                                 </div>
-                                 {this.getRestoreNftButton()}
+                                 {/*{this.getRestoreNftButton()}*/}
                              </Col>
                          </Row>
 
-                         <div className={'panel_transfer panel-filled'}>
+                         <hr/>
 
-                             <Row id={'txhistory'}>
-                                 <DatatableView
-                                     on_global_search_change={false}
-                                     value={this.state.image_data.transaction_history_list}
-                                     resultColumn={[
-                                         {
-                                             field : 'date',
-                                             header: Translation.getPhrase('cd55d1db8')
-                                             // data: this.transaction_data_type
-
-                                         },
-                                         {
-                                             field : 'txid',
-                                             header: Translation.getPhrase('da26d66d6')
-                                         }
-                                     ]}/>
-                             </Row>
-
+                         <div className={'section_subtitle'}>
+                             transfer history
                          </div>
+                         <DatatableView
+                             on_global_search_change={false}
+                             value={this.state.image_data.transaction_history_list}
+                             resultColumn={[
+                                 {
+                                     field : 'date',
+                                     header: Translation.getPhrase('cd55d1db8')
+                                     // data: this.transaction_data_type
 
+                                 },
+                                 {
+                                     field : 'txid',
+                                     header: Translation.getPhrase('da26d66d6')
+                                 }
+                             ]}/>
                      </>
                                                      :
                      <Row className={'align-items-center'}>
@@ -200,10 +233,10 @@ class NftPreviewView extends Component {
                 <ModalView
                     show={this.state.modal_show_copy_result}
                     size={'lg'}
-                    heading={'nft share link copied'}
+                    heading={'nft public preview link copied'}
                     on_close={() => this.setState({modal_show_copy_result: false})}
                     body={<div>
-                        share link has been copied to clipboard
+                        nft public preview link has been copied to clipboard
                     </div>}/>
             </div>
         );

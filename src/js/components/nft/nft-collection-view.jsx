@@ -169,14 +169,14 @@ class NftCollectionView extends Component {
                                     <FontAwesomeIcon className="text-warning"
                                                      icon={'bomb'}/>burn
                                 </Button>
-                                <Button variant="outline-primary"
+                                <Button variant="outline-default"
                                         size={'sm'}
                                         className={'preview_button'}
                                         onClick={() => this.redirectToPreview(image_props)}
                                 >
                                     <FontAwesomeIcon icon={'eye'}/>details
                                 </Button>
-                                <Button variant="outline-primary"
+                                <Button variant="outline-default"
                                         size={'sm'}
                                         onClick={() => this.props.history.push('/nft-transfer', image_props)}>transfer</Button>
                             </div>
