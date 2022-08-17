@@ -13,7 +13,7 @@ class API {
 
         try {
             let environment = require('../../environment');
-            environment = environment.default
+            environment     = environment.default;
 
             this.nodeID        = environment.NODE_ID;
             this.nodeSignature = environment.NODE_SIGNATURE;
@@ -480,12 +480,12 @@ class API {
         });
     }
 
-    getSyncNftTransaction(data) {
+    getSyncNftTransaction(data, metadata = false) {
         return this.fetchApiMillix('/SLzLU50givH77Rns', {
             p0: data.transaction_id,
             p1: data.address_key_identifier_to,
             p2: 'Adl87cz8kC190Nqc',
-            p3: data.hash,
+            p3: metadata ? data.metadata_hash : data.hash,
             p4: data.key
         });
     }
