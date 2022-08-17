@@ -102,7 +102,7 @@ class NftCollectionView extends Component {
 
                                 <Button variant="outline-default"
                                         size={'sm'}
-                                        className={'preview_button'}
+                                        className={'ms-auto'}
                                         onClick={() => {
                                             this.props.history.push(this.getViewLink(image_props));
                                         }}

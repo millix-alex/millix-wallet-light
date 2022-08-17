@@ -78,7 +78,6 @@ class NftActionSummaryView extends Component {
 
     cancelNftBurn() {
         this.setState({
-            nft_data                    : undefined,
             modal_show_burn_confirmation: false,
             modal_burn_create_asset     : true
         });
@@ -217,15 +216,13 @@ class NftActionSummaryView extends Component {
             <>
                 <OverlayTrigger
                     trigger={['click']}
+                    rootClose
                     placement="auto"
                     overlay={popoverFocus}
                 >
                     <Button
                         variant="outline-default"
-                        size={'xs'}
-                        onClick={() => this.setState({
-                            // todo: open popover
-                        })}>
+                        size={'xs'}>
                         <FontAwesomeIcon icon={'caret-down'}/>actions
                     </Button>
                 </OverlayTrigger>
