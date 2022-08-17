@@ -24,7 +24,6 @@ class NftActionSummaryView extends Component {
             modal_burn_create_asset     : true,
             modal_body_burn_result      : [],
             burned_nft_kept_as_asset    : true,
-            view_link                   : props.view_link,
             src                         : props.nft_data.src,
             name                        : props.nft_data.name
         };
@@ -38,12 +37,6 @@ class NftActionSummaryView extends Component {
                 name    : this.props.nft_data?.name
             });
             console.log(this.props.nft_data);
-        }
-
-        if (prevProps.view_link !== this.props.view_link) {
-            this.setState({
-                view_link: this.props.view_link
-            });
         }
     }
 
@@ -120,16 +113,22 @@ class NftActionSummaryView extends Component {
         };
     }
 
-    getViewLink() {
-        return this.state.view_link;
-    }
+    getViewLink(absolute = false) {
+        let origin = '';
+        if (absolute) {
+            origin = window.location.origin;
+        }
 
-    redirectToViewPage(nft_data) {
-        this.props.history.push(this.getViewLink());
+        let url = '';
+        if (this.state.nft_data.transaction) {
+            url = `${origin}/nft-preview/?p0=${this.state.nft_data.transaction.transaction_id}&p1=${this.state.nft_data.transaction.address_key_identifier_to}&p2=${this.state.nft_data.file_key}&p3=${this.state.nft_data.hash}&p4=${this.state.nft_data.metadata_hash}`;
+        }
+
+        return url;
     }
 
     copyViewLink() {
-        navigator.clipboard.writeText(this.getViewLink());
+        navigator.clipboard.writeText(this.getViewLink(true));
         this.setState({
             modal_show_copy_result: true
         });
@@ -148,7 +147,7 @@ class NftActionSummaryView extends Component {
                         <Form.Group className="form-group">
                             <label>public preview link</label>
                             <Col className={'input-group'}>
-                                <Form.Control type="text" value={this.getViewLink()} readOnly={true}/>
+                                <Form.Control type="text" value={this.getViewLink(true)} readOnly={true}/>
                                 <button
                                     className="btn btn-outline-input-group-addon icon_only"
                                     type="button"
@@ -179,10 +178,21 @@ class NftActionSummaryView extends Component {
                             </Button>
                         </div>
 
-                        <div>
+                        <div className="form-group">
                             <a href={this.state.src} target={'_blank'} className={'btn btn-outline-default w-100'}>
-                                <FontAwesomeIcon icon={'eye'}/>raw image
+                                <FontAwesomeIcon icon={'file'}/>raw image
                             </a>
+                        </div>
+
+                        <div>
+                            <Button variant="outline-default"
+                                    className={'w-100'}
+                                    onClick={() => {
+                                        this.props.history.push(this.getViewLink());
+                                    }}
+                            >
+                                <FontAwesomeIcon icon={'eye'}/>details
+                            </Button>
                         </div>
                     </div>
                 </Popover.Body>
@@ -255,7 +265,8 @@ class NftActionSummaryView extends Component {
 
 
 NftActionSummaryView.propTypes = {
-    nft_data: PropTypes.any
+    nft_data: PropTypes.any,
+    src     : PropTypes.string
 };
 
 export default connect(

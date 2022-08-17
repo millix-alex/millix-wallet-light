@@ -453,22 +453,13 @@ class API {
         });
     }
 
-    getNftImage(data) {
+    getTransactionOutputData(data) {
         return this.fetchApiMillix('/Mh9QifTIESw5t1fa', {
             p0: data.transaction_id,
             p1: data.address_key_identifier_to,
             p2: 'Adl87cz8kC190Nqc',
-            p3: data.transaction_output_attribute[0].value.file_list[0].hash
-        }, 'GET', undefined, true);
-    }
-
-    getNftImageWithKey(data) {
-        return this.fetchApiMillix('/Mh9QifTIESw5t1fa', {
-            p0: data.transaction_id,
-            p1: data.address_key_identifier_to,
-            p2: 'Adl87cz8kC190Nqc',
-            p3: data.hash,
-            p4: data.key
+            p3: data.file_hash,
+            p4: data.file_key
         }, 'GET', undefined, true);
     }
 
