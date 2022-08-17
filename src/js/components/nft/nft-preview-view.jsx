@@ -14,7 +14,6 @@ import moment from 'moment/moment';
 import ModalView from '../utils/modal-view';
 import DatatableActionButtonView from '../utils/datatable-action-button-view';
 import {date} from '../../helper/format';
-import utils from '../../helper/utils';
 
 
 class NftPreviewView extends Component {
@@ -111,11 +110,11 @@ class NftPreviewView extends Component {
                 return {
                     image_data: {
                         amount   : current_image_data.amount,
-                        image_url: URL.createObjectURL(blob),
-                        ...current_image_data.transaction_output_attribute[0].value.file_data,
+                        ...current_image_data.transaction_output_attribute[0].value.file_data[this.state.image_data_parameter_list.metadata_hash],
                         current_image_data,
                         transaction_history_list: this.getTransactionHistoryList(data[0].transaction_output_attribute)
-                    }
+                    },
+                    image_url: URL.createObjectURL(blob),
                 };
             });
         });
@@ -244,8 +243,8 @@ class NftPreviewView extends Component {
     }
 
     getRestoreNftButton() {
-        let button = '';
-        /*if (this.state.status === 'asset') {
+        /*let button = '';
+        if (this.state.status === 'asset') {
          button = <Button type="outline-primary"
          onClick={() => {
          this.props.history.push('/nft-transfer', {
@@ -262,7 +261,7 @@ class NftPreviewView extends Component {
          </Button>;
          }*/
 
-        return button;
+        return '';
     }
 }
 

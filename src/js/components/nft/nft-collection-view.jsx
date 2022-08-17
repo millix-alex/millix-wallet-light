@@ -60,7 +60,7 @@ class NftCollectionView extends Component {
                          row.transaction_output_attribute[0].file_data = file_data[Object.keys(file_data)[0]];
                          image_data.image_detail_list                  = row.transaction_output_attribute[0];
                          image_data.address_key_identifier_to          = row.address_key_identifier_to;
-                         image_data.metadata_hash                      = row.transaction_output_attribute[0].value.file_list[1].hash;
+                         image_data.metadata_hash                      = row.transaction_output_attribute[0].value?.file_list[1]?.hash;
                          callback(null, image_data);
                          changeLoaderState(false);
                      });

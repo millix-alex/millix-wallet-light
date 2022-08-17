@@ -47,6 +47,7 @@ class AssetListView extends Component {
                          row.transaction_output_attribute[0].file_data = file_data[Object.keys(file_data)[0]];
                          image_data.image_detail_list         = row.transaction_output_attribute[0];
                          image_data.address_key_identifier_to = row.address_key_identifier_to;
+                         image_data.metadata_hash                      = row.transaction_output_attribute[0].value?.file_list[1]?.hash;
                          callback(null, image_data);
                      });
             }, (err, assetList) => {
@@ -62,7 +63,7 @@ class AssetListView extends Component {
 
     redirectToPreview(nft_data) {
         API.getNftKey(nft_data).then(({key}) => {
-            const path = `/nft-preview/?p0=${nft_data.image_detail_list.transaction_id}&p1=${nft_data.address_key_identifier_to}&p2=${key}&p3=${nft_data.hash}&type=asset`;
+            const path = `/nft-preview/?p0=${nft_data.image_detail_list.transaction_id}&p1=${nft_data.address_key_identifier_to}&p2=${key}&p3=${nft_data.hash}&type=asset&p4=${nft_data.metadata_hash}`;
             this.props.history.push(path);
         });
     }
