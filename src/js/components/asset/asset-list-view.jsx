@@ -41,10 +41,8 @@ class AssetListView extends Component {
 
         return API.listTransactionWithDataReceived(this.props.wallet.address_key_identifier, TRANSACTION_DATA_TYPE_ASSET).then(data => {
             async.mapLimit(data, 6, (transaction, callback) => {
-                console.log(transaction);
                 utils.getImageFromApi(transaction)
                      .then(image_data => {
-                         console.log(image_data);
                          callback(null, image_data);
                          changeLoaderState(false);
                      });

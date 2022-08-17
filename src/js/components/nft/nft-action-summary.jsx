@@ -16,7 +16,7 @@ import API from '../../api';
 class NftActionSummaryView extends Component {
     constructor(props) {
         super(props);
-        console.log(props);
+
         this.state = {
             nft_data                    : props.nft_data,
             modal_show_burn_confirmation: false,
@@ -36,7 +36,6 @@ class NftActionSummaryView extends Component {
                 src     : this.props.nft_data?.src,
                 name    : this.props.nft_data?.name
             });
-            console.log(this.props.nft_data);
         }
     }
 
@@ -134,7 +133,56 @@ class NftActionSummaryView extends Component {
         });
     }
 
+    isOwner() {
+        return this.state.nft_data.transaction?.address_key_identifier_to === this.props.wallet.address_key_identifier;
+    }
+
     render() {
+        let owner_action_list = '';
+        if (this.isOwner()) {
+            owner_action_list = <>
+                <div className={'mt-3'}>
+                    <Button
+                        variant="outline-default"
+                        className={'w-100'}
+                        onClick={() => this.setState({
+                            modal_show_burn_confirmation: true
+                        })}>
+                        <FontAwesomeIcon className="text-warning"
+                                         icon={'bomb'}/>burn
+                    </Button>
+                </div>
+                <div className={'mt-3'}>
+                    <Button
+                        variant="outline-default"
+                        className={'w-100'}
+                        onClick={() => this.props.history.push('/nft-transfer', this.state.nft_data)}>
+                        <FontAwesomeIcon icon={'arrow-right-arrow-left'}/>transfer
+                    </Button>
+                </div>
+
+                <div className={'mt-3'}>
+                    <a href={this.state.src} target={'_blank'} className={'btn btn-outline-default w-100'}>
+                        <FontAwesomeIcon icon={'file'}/>raw image
+                    </a>
+                </div>
+            </>;
+        }
+
+        let detail_link = '';
+        if (!this.props.view_page) {
+            detail_link = <div className={'mt-3'}>
+                <Button variant="outline-default"
+                        className={'w-100'}
+                        onClick={() => {
+                            this.props.history.push(this.getViewLink());
+                        }}
+                >
+                    <FontAwesomeIcon icon={'eye'}/>details
+                </Button>
+            </div>;
+        }
+
         const popoverFocus = (
             <Popover id="popover-basic">
                 <Popover.Header>
@@ -144,7 +192,7 @@ class NftActionSummaryView extends Component {
                 </Popover.Header>
                 <Popover.Body>
                     <div>
-                        <Form.Group className="form-group">
+                        <Form.Group>
                             <label>public preview link</label>
                             <Col className={'input-group'}>
                                 <Form.Control type="text" value={this.getViewLink(true)} readOnly={true}/>
@@ -158,42 +206,8 @@ class NftActionSummaryView extends Component {
                                 </button>
                             </Col>
                         </Form.Group>
-                        <div className="form-group">
-                            <Button
-                                variant="outline-default"
-                                className={'w-100'}
-                                onClick={() => this.setState({
-                                    modal_show_burn_confirmation: true
-                                })}>
-                                <FontAwesomeIcon className="text-warning"
-                                                 icon={'bomb'}/>burn
-                            </Button>
-                        </div>
-                        <div className="form-group">
-                            <Button
-                                variant="outline-default"
-                                className={'w-100'}
-                                onClick={() => this.props.history.push('/nft-transfer', this.state.nft_data)}>
-                                <FontAwesomeIcon icon={'arrow-right-arrow-left'}/>transfer
-                            </Button>
-                        </div>
-
-                        <div className="form-group">
-                            <a href={this.state.src} target={'_blank'} className={'btn btn-outline-default w-100'}>
-                                <FontAwesomeIcon icon={'file'}/>raw image
-                            </a>
-                        </div>
-
-                        <div>
-                            <Button variant="outline-default"
-                                    className={'w-100'}
-                                    onClick={() => {
-                                        this.props.history.push(this.getViewLink());
-                                    }}
-                            >
-                                <FontAwesomeIcon icon={'eye'}/>details
-                            </Button>
-                        </div>
+                        {owner_action_list}
+                        {detail_link}
                     </div>
                 </Popover.Body>
             </Popover>
@@ -265,8 +279,9 @@ class NftActionSummaryView extends Component {
 
 
 NftActionSummaryView.propTypes = {
-    nft_data: PropTypes.any,
-    src     : PropTypes.string
+    nft_data : PropTypes.any,
+    src      : PropTypes.string,
+    view_page: PropTypes.bool
 };
 
 export default connect(

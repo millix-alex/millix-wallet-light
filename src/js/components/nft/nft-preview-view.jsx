@@ -230,7 +230,6 @@ class NftPreviewView extends Component {
             </Row>;
         }
 
-console.log(this.state.image_data);
         return (<div className={'panel panel-filled'}>
             <div className={'panel-heading bordered d-flex'}>
                 nft details
@@ -238,6 +237,7 @@ console.log(this.state.image_data);
                     {this.state.error_list.length === 0 && this.state.status === 'synced' && <NftActionSummaryView
                         nft_data={this.state.image_data}
                         src={this.state.image_data.src}
+                        view_page={true}
                     />}
                 </div>
             </div>
