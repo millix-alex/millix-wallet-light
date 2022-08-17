@@ -43,6 +43,8 @@ class AssetListView extends Component {
             async.mapLimit(data, 6, (row, callback) => {
                 utils.getImageFromApi(row)
                      .then(image_data => {
+                         const file_data = row.transaction_output_attribute[0].value.file_data;
+                         row.transaction_output_attribute[0].file_data = file_data[Object.keys(file_data)[0]];
                          image_data.image_detail_list         = row.transaction_output_attribute[0];
                          image_data.address_key_identifier_to = row.address_key_identifier_to;
                          callback(null, image_data);

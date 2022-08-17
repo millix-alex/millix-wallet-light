@@ -14,6 +14,9 @@ import moment from 'moment/moment';
 import ModalView from '../utils/modal-view';
 import NftActionSummaryView from './nft-action-summary';
 import ErrorList from '../utils/error-list-view';
+import DatatableActionButtonView from '../utils/datatable-action-button-view';
+import {date} from '../../helper/format';
+import utils from '../../helper/utils';
 
 
 class NftPreviewView extends Component {
@@ -23,6 +26,7 @@ class NftPreviewView extends Component {
             status                   : 'asset',
             image_data_parameter_list: [],
             image_data               : {},
+            image_url                : '',
             action                   : 'preview',
             nft_sync_timestamp       : moment.now(),
             modal_show_copy_result   : false,
@@ -40,7 +44,8 @@ class NftPreviewView extends Component {
                     transaction_id           : params.p0,
                     address_key_identifier_to: params.p1,
                     key                      : params.p2,
-                    hash                     : params.p3
+                    hash                     : params.p3,
+                    metadata_hash            : params.p4
                 }
         }, () => {
             if (params.type) {
@@ -56,29 +61,48 @@ class NftPreviewView extends Component {
         clearTimeout(this.timeout_id);
     }
 
-    setNftData() {
-        API.getSyncNftTransaction(this.state.image_data_parameter_list).then(data => {
-            this.setState({
-                status            : data.status,
-                image_data        : data.transaction_output_metadata,
-                nft_sync_timestamp: moment.now()
-            });
-            if (data.status !== 'syncing') {
-                clearTimeout(this.timeout_id);
-                this.getImageDataWithDetails(TRANSACTION_DATA_TYPE_NFT).then(stateData => {
-                    this.setState(stateData);
-                });
-            }
-            else {
-                setTimeout(() => this.setNftData(), 5000);
-            }
+    async setNftData() {
+        const image_sync_result    = await API.getSyncNftTransaction(this.state.image_data_parameter_list);
+        const metadata_sync_result = await API.getSyncNftTransaction(this.state.image_data_parameter_list, true);
+        this.setState({
+            status            : image_sync_result.status,
+            nft_sync_timestamp: moment.now()
         });
+        if (image_sync_result.status !== 'syncing' || metadata_sync_result.status !== 'syncing') {
+            clearTimeout(this.timeout_id);
+            await this.setImageUrl();
+            const transaction_list = await API.listTransactionWithDataReceived(this.state.image_data_parameter_list.address_key_identifier_to, TRANSACTION_DATA_TYPE_NFT);
+            const image_data       = transaction_list.filter((entry) => entry.transaction_id === this.state.image_data_parameter_list.transaction_id)[0];
+            this.setState({
+                image_data: {
+                    ...metadata_sync_result.transaction_output_metadata.file_data[this.state.image_data_parameter_list.metadata_hash],
+                    amount                  : image_data.amount,
+                    transaction_history_list: this.getTransactionHistoryList(image_data.transaction_output_attribute)
+                }
+            });
+        }
+        else {
+            setTimeout(() => this.setNftData(), 30000);
+        }
     }
 
     setAssetData() {
         this.getImageDataWithDetails(TRANSACTION_DATA_TYPE_ASSET).then(stateData => {
             this.setState(stateData);
         });
+    }
+
+    async setImageUrl() {
+        const response_result = await API.getNftImageWithKey(this.state.image_data_parameter_list);
+        if (response_result.ok) {
+            response_result.blob().then(data => {
+                this.setState({
+                    image_url: URL.createObjectURL(data)
+                });
+            });
+
+
+        }
     }
 
     async getImageDataWithDetails(data_type) {
@@ -102,7 +126,7 @@ class NftPreviewView extends Component {
                         image_data: {
                             amount: transaction.amount,
                             src   : URL.createObjectURL(blob),
-                            ...transaction.transaction_output_attribute[0].file_data,
+                            ...transaction.transaction_output_attribute[0].value.file_data,
                             transaction,
                             transaction_history_list: this.getTransactionHistoryList(data)
                         }
@@ -115,8 +139,14 @@ class NftPreviewView extends Component {
     getTransactionHistoryList(data) {
         return data.map((transaction) => {
             return {
-                date: format.date(transaction.transaction_date),
-                txid: transaction.transaction_id
+                date  : format.date(transaction.transaction_date),
+                txid  : transaction.transaction_id,
+                action: <>
+                    <DatatableActionButtonView
+                        history_path={'/transaction/' + encodeURIComponent(transaction.transaction_id)}
+                        history_state={[transaction]}
+                        icon={'eye'}/>
+                </>
             };
         });
     }
@@ -155,12 +185,16 @@ class NftPreviewView extends Component {
                             {
                                 field : 'date',
                                 header: Translation.getPhrase('cd55d1db8')
-                                // data: this.transaction_data_type
-
+                                header: Translation.getPhrase('cd55d1db8')
                             },
                             {
                                 field : 'txid',
                                 header: Translation.getPhrase('da26d66d6')
+                            },
+                            {
+                                field : 'action',
+                                header: Translation.getPhrase('012bb6684')
+
                             }
                         ]}/>
                 </>;
@@ -230,22 +264,22 @@ class NftPreviewView extends Component {
 
     getRestoreNftButton() {
         let button = '';
-        if (this.state.status === 'asset') {
-            button = <Button type="outline-primary"
-                             onClick={() => {
-                                 this.props.history.push('/nft-transfer', {
-                                     ...this.state.image_data,
-                                     src                        : this.state.image_data.src,
-                                     txid                       : this.state.image_data.transaction.transaction_id,
-                                     hash                       : this.state.image_data_parameter_list.hash,
-                                     default_target_address_self: true,
-                                     nft_transaction_type       : 'revoke'
-                                 });
-                             }}
-            >
-                revoke
-            </Button>;
-        }
+        // if (this.state.status === 'asset') {
+        //     button = <Button type="outline-primary"
+        //                      onClick={() => {
+        //                          this.props.history.push('/nft-transfer', {
+        //                              ...this.state.image_data,
+        //                              src                        : this.state.image_data.src,
+        //                              txid                       : this.state.image_data.transaction.transaction_id,
+        //                              hash                       : this.state.image_data_parameter_list.hash,
+        //                              default_target_address_self: true,
+        //                              nft_transaction_type       : 'revoke'
+        //                          });
+        //                      }}
+        //     >
+        //         revoke
+        //     </Button>;
+        // }
 
         return button;
     }
