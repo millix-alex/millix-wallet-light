@@ -474,8 +474,8 @@ class API {
 
     getNftKey(data) {
         return this.fetchApiMillix('/3K2xvNRLMpiEqLo8', {
-            p0: data.image_detail_list.transaction_id,
-            p1: data.image_detail_list.attribute_type_id,
+            p0: data.transaction.transaction_id,
+            p1: data.attribute_type_id,
             p2: data.hash
         });
     }

@@ -343,7 +343,7 @@ class NftCreateForm extends Component {
                                  </Col>
                              </Form.Group>) :
                              (<div><p className={'transfer-subtitle'}>description</p>
-                                 <p>{this.description.value}{this.state.nft_transaction_type}</p></div>)}
+                                 <p>{this.description.value}</p></div>)}
                         </Col>
                         {this.state.nft_transaction_type !== 'create' ?
                          <Col>
