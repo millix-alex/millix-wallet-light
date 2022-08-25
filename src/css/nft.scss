@@ -80,8 +80,12 @@
 }
 
 .nft-preview-img {
-  max-height: 48rem;
   height: auto;
+  text-align: center;
+
+  img {
+    max-height: 48rem;
+  }
 }
 
 .nft-action-section {
