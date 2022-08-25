@@ -16,6 +16,8 @@ import ErrorList from '../utils/error-list-view';
 import DatatableActionButtonView from '../utils/datatable-action-button-view';
 import utils from '../../helper/utils';
 import {changeLoaderState} from '../loader';
+import * as validate from '../../helper/validate';
+import HelpIconView from '../utils/help-icon-view';
 
 
 class NftPreviewView extends Component {
@@ -29,7 +31,9 @@ class NftPreviewView extends Component {
             nft_sync_timestamp      : moment.now(),
             modal_show_copy_result  : false,
             error_list              : [],
-            transaction_history_list: []
+            transaction_history_list: [],
+            dnsValidated            : false,
+            dns                     : ''
         };
 
         this.timeout_id = null;
@@ -97,7 +101,14 @@ class NftPreviewView extends Component {
                                     this.setState({
                                         image_data
                                     });
-                                    changeLoaderState(false);
+
+                                    if (image_data.dns) {
+                                        this.verifyDNS(image_data.dns, this.state.image_data.transaction?.address_key_identifier_to);
+                                        changeLoaderState(false);
+                                    }
+                                    else {
+                                        changeLoaderState(false);
+                                    }
                                 });
                        }
                    });
@@ -162,11 +173,52 @@ class NftPreviewView extends Component {
     //     });
     // }
 
+    verifyDNS(dns, address_key_identifier) {
+        dns = validate.domain_name(Translation.getPhrase('1e0b22770'), dns, []);
+        if (dns === null) {
+            this.setState({
+                dnsValidated: false,
+                dns
+            });
+        }
+        else {
+            API.isDNSVerified(dns, address_key_identifier)
+               .then(data => {
+                   this.setState({
+                       dnsValidated: data.is_address_verified,
+                       dns
+                   });
+               })
+               .catch(() => {
+                   this.setState({
+                       dnsValidated: false,
+                       dns
+                   });
+               });
+        }
+    }
+
     isOwner() {
         return this.state.image_data.transaction?.address_key_identifier_to === this.props.wallet.address_key_identifier;
     }
 
     render() {
+        let sender_verified = '';
+        if (this.state.dns) {
+            let className = '';
+            let icon      = '';
+            if (this.state.dnsValidated) {
+                className       = 'text-success';
+                icon            = 'check-circle';
+                sender_verified = <div className={className + ' labeled form-group'}>
+                    <FontAwesomeIcon
+                        icon={icon}
+                        size="1x"/>
+                    <span>{this.state.dns}</span><HelpIconView help_item_name={'verified_sender'}/>
+                </div>;
+            }
+        }
+
         let nft_body;
         if (this.state.status !== 'syncing') {
             if (this.state.error_list.length === 0) {
@@ -187,6 +239,7 @@ class NftPreviewView extends Component {
                             <div>
                                 <p className={'nft-name page_subtitle mb-0'}>{this.state.image_data.name}</p>
                                 <p className={'nft-description'}>{this.state.image_data.description}</p>
+                                {sender_verified}
                             </div>
                         </Col>
                     </Row>
