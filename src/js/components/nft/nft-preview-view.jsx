@@ -177,7 +177,7 @@ class NftPreviewView extends Component {
                          is through an escrow service or trusted marketplace.
                      </div>
                     }
-                    <div className={'nft-collection-img'}>
+                    <div className={'nft-preview-img'}>
                         <a href={this.state.image_data.src} target={'_blank'} className={'mx-auto d-flex'}>
                             <img src={this.state.image_data.src} alt={this.state.image_data.name}/>
                         </a>
