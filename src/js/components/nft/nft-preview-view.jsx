@@ -224,7 +224,10 @@ class NftPreviewView extends Component {
             if (this.state.error_list.length === 0) {
                 nft_body = <>
                     {!this.isOwner() &&
-                     <div className={'alert alert-warning'}>
+                     <div className={'text-warning labeled'}>
+                         <FontAwesomeIcon
+                             icon={'triangle-exclamation'}
+                             size="1x"/>
                          there is no guarantee that this nft is currently owned by the person that sent you this preview link. the only way to safely buy an nft
                          is through an escrow service or trusted marketplace.
                      </div>
