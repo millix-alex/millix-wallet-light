@@ -25,6 +25,28 @@
   }
 }
 
+.datatable_datepicker {
+  margin: auto;
+  max-width: 9rem;
+
+  input {
+    background-color: $input-background;
+    border: 1px solid $input-border;
+    color: $color-body-font;
+  }
+  .p-datepicker:not(.p-datepicker-inline) .p-datepicker-header {
+    background-color: rebeccapurple !important;
+    background: red !important;
+  }
+  /*.p-datepicker-header {
+    background: red !important;
+  }
+
+  .p-datepicker-calendar-container {
+    background: $input-background !important;
+  }*/
+}
+
 .p-datatable-table {
   margin-bottom: 1rem;
   width: 100%;

@@ -204,6 +204,17 @@ class DatatableView extends Component {
         });
     }
 
+    on_global_date_change(e) {
+        const value                   = format.date(e.target.value);
+        let result_filter             = {...this.state.result_filter};
+        result_filter['global'].value = value;
+
+        this.setState({
+            result_filter,
+            global_date_value: value
+        });
+    }
+
     render() {
         return (
             <>
@@ -212,6 +223,7 @@ class DatatableView extends Component {
                     datatable_reload_timestamp={this.props.datatable_reload_timestamp}
                     action_button={this.props.action_button}
                     on_global_search_change={(e) => this.on_global_search_change(e)}
+                    on_global_date_change={(e) => this.on_global_date_change(e)}
                     datatable_reference={this.datatable_reference}
                     allow_export={this.props.allow_export}
                 />

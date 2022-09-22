@@ -5,6 +5,7 @@ import {withRouter} from 'react-router-dom';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import moment from 'moment';
 import Translation from '../../common/translation';
+import {Calendar} from 'primereact/calendar';
 
 
 class DatatableHeaderView extends Component {
@@ -73,11 +74,11 @@ class DatatableHeaderView extends Component {
                     </>
                 )}
 
-                {(this.props.allow_export || action_button.on_click)  && (
+                {(this.props.allow_export || action_button.on_click) && (
                     <hr/>
                 )}
 
-                <Col xs={12} md={4}>
+                <Col xs={12} md={3}>
                     {typeof (this.props.reload_datatable) === 'function' && (
                         <Button variant="outline-primary"
                                 size={'sm'}
@@ -92,7 +93,7 @@ class DatatableHeaderView extends Component {
                     )}
                 </Col>
 
-                <Col xs={12} md={4} className={'datatable_refresh_ago'}>
+                <Col xs={12} md={3} className={'datatable_refresh_ago'}>
                     {this.props.datatable_reload_timestamp && (
                         <span>
                                 {Translation.getPhrase('06d814962')} {this.props.datatable_reload_timestamp && moment(this.props.datatable_reload_timestamp).fromNow()}
@@ -100,7 +101,13 @@ class DatatableHeaderView extends Component {
                     )}
                 </Col>
 
-                <Col xs={12} md={4}>
+                <Col xs={12} md={3} className={'datatable_datepicker'}>
+                    {typeof (this.props.on_global_date_change) === 'function' && (
+                        <Calendar id="basic" value={new Date()} onChange={this.props.on_global_date_change.bind(this)}/>
+                    )}
+                </Col>
+
+                <Col xs={12} md={3}>
                     {typeof (this.props.on_global_search_change) === 'function' && (
                         <Form.Control
                             type="text"
@@ -120,6 +127,7 @@ DatatableHeaderView.propTypes = {
     action_button             : PropTypes.any,
     reload_datatable          : PropTypes.func,
     on_global_search_change   : PropTypes.func,
+    on_global_date_change     : PropTypes.func,
     datatable_reference       : PropTypes.any,
     allow_export              : PropTypes.bool
 };
