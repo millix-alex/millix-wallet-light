@@ -14,10 +14,13 @@ class TransactionHistoryView extends Component {
     constructor(props) {
         super(props);
         this.updaterHandler = undefined;
+        this.reloadDatatable = this.reloadDatatable.bind(this);
+        this.updateDateRange = this.updateDateRange.bind(this);
         this.state          = {
             transaction_list          : [],
             datatable_reload_timestamp: '',
-            datatable_loading         : false
+            datatable_loading         : false,
+            date_range                : '',
         };
     }
 
@@ -34,7 +37,7 @@ class TransactionHistoryView extends Component {
         this.setState({
             datatable_loading: true
         });
-
+        
         return API.getTransactionHistory(this.props.wallet.address_key_identifier).then(data => {
             const rows = data.map((transaction, idx) => ({
                 idx         : data.length - idx,
@@ -66,6 +69,13 @@ class TransactionHistoryView extends Component {
         });
     }
 
+    updateDateRange(event, date_picker) {
+        let date_range = format.date(date_picker.startDate) + ' - ' + format.date(date_picker.endDate)
+        this.setState({date_range});
+        console.log(this.state.date_range)
+        this.reloadDatatable();
+    }
+
     render() {
         return (
             <div>
@@ -77,6 +87,8 @@ class TransactionHistoryView extends Component {
                             <DatatableView
                                 reload_datatable={() => this.reloadDatatable()}
                                 datatable_reload_timestamp={this.state.datatable_reload_timestamp}
+                                updateDateRange={this.updateDateRange}
+                                showDateRange={true}
 
                                 value={this.state.transaction_list}
                                 sortField={'date'}
