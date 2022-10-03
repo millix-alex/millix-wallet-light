@@ -6,6 +6,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import moment from 'moment';
 import Translation from '../../common/translation';
 import DateRangePicker from 'react-bootstrap-daterangepicker';
+import { ConnectableObservable } from 'rxjs';
 
 
 class DatatableHeaderView extends Component {
@@ -15,6 +16,10 @@ class DatatableHeaderView extends Component {
         // seconds instead of "a few
         // seconds ago"
     }
+
+    removeLetters = (e) => {
+            return e.target.value = e.target.value.replace(/[^0-9, -]+/, '');
+        }
 
     render() {
         let action_button = {
@@ -55,7 +60,8 @@ class DatatableHeaderView extends Component {
                                 }}>
                             <Form.Control
                                 type="text"
-                                className={'datatable_search_input'}      
+                                className={'datatable_search_input'}
+                                onChange={this.removeLetters}
                             />
                         </DateRangePicker>
                     </div>)}
