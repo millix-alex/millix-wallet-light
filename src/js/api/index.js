@@ -211,9 +211,9 @@ class API {
         });
     }
 
-    getStatsTransactionWithDataReceived(address_key_identifier, date_begin, data_type) {
+    getStatsTransactionWithDataReceived(address_key_identifier, data_type, create_date_begin) {
         return this.fetchApiMillix(`/wWo8DCcoXVlpczoP`, {
-            p0 : date_begin,
+            p6 : create_date_begin,
             p9 : address_key_identifier.startsWith('1') ? '0a30' : 'la3l',
             p10: address_key_identifier,
             p11: 'Adl87cz8kC190Nqc',
@@ -227,6 +227,14 @@ class API {
             p10: address_key_identifier,
             p11: 'Adl87cz8kC190Nqc',
             p12: data_type
+        });
+    }
+
+    getTransactionWithDataReceived(transaction_id, data_type) {
+        return this.fetchApiMillix(`/yyCtgjuFu9mx0edg`, {
+            p0: transaction_id,
+            p2: 'Adl87cz8kC190Nqc',
+            p3: data_type
         });
     }
 
@@ -354,6 +362,10 @@ class API {
                            }, 'POST'
                        );
                    });
+    }
+
+    reloadNodeConfigFromDatabase() {
+        return this.fetchApiMillix(`/QgbDSAuy1SYgocs6`);
     }
 
     getNodePublicIP() {
