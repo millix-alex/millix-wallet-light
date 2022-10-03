@@ -13,14 +13,15 @@ import Translation from '../common/translation';
 class TransactionHistoryView extends Component {
     constructor(props) {
         super(props);
-        this.updaterHandler = undefined;
+        this.updaterHandler  = undefined;
         this.reloadDatatable = this.reloadDatatable.bind(this);
         this.updateDateRange = this.updateDateRange.bind(this);
-        this.state          = {
+        this.state           = {
             transaction_list          : [],
             datatable_reload_timestamp: '',
             datatable_loading         : false,
-            date_range                : '',
+            date_begin                : '',
+            date_end                  : ''
         };
     }
 
@@ -37,8 +38,8 @@ class TransactionHistoryView extends Component {
         this.setState({
             datatable_loading: true
         });
-        
-        return API.getTransactionHistory(this.props.wallet.address_key_identifier).then(data => {
+
+        return API.getTransactionHistory(this.props.wallet.address_key_identifier, this.state.date_begin, this.state.date_end).then(data => {
             const rows = data.map((transaction, idx) => ({
                 idx         : data.length - idx,
                 date        : format.date(transaction.transaction_date),
@@ -70,9 +71,10 @@ class TransactionHistoryView extends Component {
     }
 
     updateDateRange(event, date_picker) {
-        let date_range = format.date(date_picker.startDate) + ' - ' + format.date(date_picker.endDate)
-        this.setState({date_range});
-        console.log(this.state.date_range)
+        this.setState({
+            date_begin: date_picker.startDate.format('X'),
+            date_end  : date_picker.endDate.format('X')
+        });
         this.reloadDatatable();
     }
 
