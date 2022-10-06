@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {Button, Col, Form, Row} from 'react-bootstrap';
+import {Button, Col, Form, Row, Container} from 'react-bootstrap';
 import {withRouter} from 'react-router-dom';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import moment from 'moment';
@@ -60,11 +60,11 @@ class DatatableHeaderView extends Component {
 
         return (
             <>
-                
-                <div className={'datatable_action_row'}>
+
+                <div className={'flex-column'}>
+                    {this.props.showDateRange &&<Row><Col xs={2} md={4} lg={6}><label>date</label></Col></Row>}
                     {this.props.showDateRange &&
-                    (<Form.Group className="form-group" as={Row}>
-                        <label>date</label>
+                    (<Row><Col xs={8} md={4} lg={4}><Form.Group className="form-group">
                         <DateRangePicker onCallback={this.setRangeDates}
                             initialSettings={{
                                 minDate: new Date(Date.parse('20 feb 2020 00:00:01 GMT')),
@@ -82,11 +82,12 @@ class DatatableHeaderView extends Component {
                                 onChange={this.removeLetters}
                             />
                         </DateRangePicker>
-                        <Button
-                                    variant="outline-primary"
+                    </Form.Group></Col></Row>)}
+                    {this.props.showDateRange && 
+                    (<Row><Col xs={2} md={4} lg={6}><Button    
+                                    variant="btn btn-outline-primary btn-sm"
                                     onClick={() => this.props.updateDateRange(this.state.startDate, this.state.endDate)}
-                                >{Translation.getPhrase('7e3e02f69')}</Button>
-                    </Form.Group>)}
+                                >apply</Button></Col></Row>)}
                 </div>
 
                 <div className={'datatable_action_row'}>
