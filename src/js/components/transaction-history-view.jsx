@@ -70,12 +70,13 @@ class TransactionHistoryView extends Component {
         });
     }
 
-    updateDateRange(event, date_picker) {
+    updateDateRange(startDate, endDate) {
         this.setState({
-            date_begin: date_picker.startDate.format('X'),
-            date_end  : date_picker.endDate.format('X')
+            date_begin: startDate.format('X'),
+            date_end  : endDate.format('X')
         });
         this.reloadDatatable();
+        console.log(this.state.date_begin)
     }
 
     render() {

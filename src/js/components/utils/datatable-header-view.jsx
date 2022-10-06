@@ -12,6 +12,10 @@ import { ConnectableObservable } from 'rxjs';
 class DatatableHeaderView extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            startDate: '',
+            endDate: ''
+        }
         moment.relativeTimeThreshold('ss', -1); // required to get diff in
         // seconds instead of "a few
         // seconds ago"
@@ -20,6 +24,13 @@ class DatatableHeaderView extends Component {
     removeLetters = (e) => {
             return e.target.value = e.target.value.replace(/[^0-9, -]+/, '');
         }
+
+    setRangeDates = (startDate, endDate) => {
+        this.setState({
+            startDate,
+            endDate
+        })
+    }
 
     render() {
         let action_button = {
@@ -49,22 +60,33 @@ class DatatableHeaderView extends Component {
 
         return (
             <>
+                
                 <div className={'datatable_action_row'}>
                     {this.props.showDateRange &&
-                    (<div>
-                        <DateRangePicker onApply={this.props.updateDateRange}
+                    (<Form.Group className="form-group" as={Row}>
+                        <label>date</label>
+                        <DateRangePicker onCallback={this.setRangeDates}
                             initialSettings={{
+                                minDate: new Date(Date.parse('20 feb 2020 00:00:01 GMT')),
+                                maxDate: new Date,
+                                autoApply: true,
                                 locale: {format: 'YYYY-MM-DD'},
-                                startDate: new Date, 
+                                startDate: new Date(Date.parse('20 feb 2020 00:00:01 GMT')), 
                                 endDate: new Date
-                                }}>
+                                }}
+                                >
                             <Form.Control
+                                name="date-range-picker"
                                 type="text"
                                 className={'datatable_search_input'}
                                 onChange={this.removeLetters}
                             />
                         </DateRangePicker>
-                    </div>)}
+                        <Button
+                                    variant="outline-primary"
+                                    onClick={() => this.props.updateDateRange(this.state.startDate, this.state.endDate)}
+                                >{Translation.getPhrase('7e3e02f69')}</Button>
+                    </Form.Group>)}
                 </div>
 
                 <div className={'datatable_action_row'}>
