@@ -227,10 +227,10 @@ class UnlockWalletView extends Component {
                                                                 {Translation.getPhrase('a1f1962b0')}
                                                             </div>
                                                             <div>
-                                                                {Translation.getPhrase('fb11beec6')}
+                                                                {Translation.getPhrase('afb651675')}
                                                             </div>
                                                             <div>
-                                                                {Translation.getPhrase('afb651675')}
+                                                                {Translation.getPhrase('fb11beec6')}
                                                             </div>
                                                         </div>
                                                         <Button
