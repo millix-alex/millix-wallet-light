@@ -13,7 +13,11 @@ const WalletCreatePasswordView = (props) => {
 
     return (
         <div className={'wallet-create-password'}>
+            <div className="section_subtitle">
+                password
+            </div>
             <div className={'center mb-3'}>{info_label}</div>
+
             <FormControl
                 className={'form-group'}
                 type="password"

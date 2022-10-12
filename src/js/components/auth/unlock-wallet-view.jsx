@@ -7,6 +7,7 @@ import API from '../../api';
 import {unlockWallet, walletReady} from '../../redux/actions';
 import ErrorList from '../utils/error-list-view';
 import Translation from '../../common/translation';
+import NewWalletView from './new-wallet-view';
 
 const styles = {
     centered: {
@@ -108,6 +109,33 @@ class UnlockWalletView extends Component {
             });
         };
 
+        let create_wallet_warning = <>
+            <div className={'form-group'}>
+                <div className="section_subtitle">
+                    {Translation.getPhrase('a1f1962b0')}
+                </div>
+                <div>
+                    {Translation.getPhrase('afb651675')}
+                </div>
+                <div>
+                    {Translation.getPhrase('fb11beec6')}
+                </div>
+            </div>
+        </>;
+
+        let import_wallet_warning = <>
+            <div className="section_subtitle">
+                {Translation.getPhrase('1c92a554a')}
+            </div>
+            <div>
+                {Translation.getPhrase('cb09917c3')}
+            </div>
+            <div>
+                {Translation.getPhrase('a7ec9aaff')}
+            </div>
+        </>;
+
+
         return (
             <Container>
                 <div className="unlock-container">
@@ -186,8 +214,7 @@ class UnlockWalletView extends Component {
                                                                         <div
                                                                             className="form-group">
                                                                             <label
-                                                                                className="control-label"
-                                                                                htmlFor="password">{Translation.getPhrase('95c8aab11')}</label>
+                                                                                className="control-label">{Translation.getPhrase('95c8aab11')}</label>
                                                                             <FormControl
                                                                                 ref={c => {
                                                                                     passphraseRef = c;
@@ -221,22 +248,8 @@ class UnlockWalletView extends Component {
                                                 <div
                                                     className="panel panel-filled">
                                                     <div className="panel-body">
-                                                        <div
-                                                            className={'form-group'}>
-                                                            <div className="section_subtitle">
-                                                                {Translation.getPhrase('a1f1962b0')}
-                                                            </div>
-                                                            <div>
-                                                                {Translation.getPhrase('afb651675')}
-                                                            </div>
-                                                            <div>
-                                                                {Translation.getPhrase('fb11beec6')}
-                                                            </div>
-                                                        </div>
-                                                        <Button
-                                                            className={'w-100'}
-                                                            variant="outline-primary"
-                                                            onClick={() => props.history.push('/new-wallet/')}>{Translation.getPhrase('0b05e60e4')}</Button>
+                                                        {this.state.private_key_exists === true && create_wallet_warning}
+                                                        <NewWalletView/>
                                                     </div>
                                                 </div>
                                             </Tab.Pane>
@@ -246,15 +259,7 @@ class UnlockWalletView extends Component {
                                                     <div className="panel-body">
                                                         <div
                                                             className={'form-group'}>
-                                                            <div className="section_subtitle">
-                                                                {Translation.getPhrase('1c92a554a')}
-                                                            </div>
-                                                            <div>
-                                                                {Translation.getPhrase('a7ec9aaff')}
-                                                            </div>
-                                                            <div>
-                                                                {Translation.getPhrase('cb09917c3')}
-                                                            </div>
+                                                            {this.state.private_key_exists === true && import_wallet_warning}
                                                         </div>
                                                         <Button
                                                             className={'w-100'}
