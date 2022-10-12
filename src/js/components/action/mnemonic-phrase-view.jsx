@@ -4,7 +4,7 @@ import {withRouter} from 'react-router-dom';
 import {Button} from 'react-bootstrap';
 import ModalView from '../utils/modal-view';
 import API from '../../api';
-import MnemonicView from '../utils/mnemonic-view';
+import MnemonicView from '../auth/mnemonic-view';
 import Translation from '../../common/translation';
 
 

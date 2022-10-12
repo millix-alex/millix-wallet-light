@@ -3,10 +3,10 @@ import {connect} from 'react-redux';
 import {Redirect} from 'react-router-dom';
 import {Button, Col, Container, FormControl, Nav, Row, Tab} from 'react-bootstrap';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import API from '../api/index';
-import {unlockWallet, walletReady} from '../redux/actions';
-import ErrorList from './utils/error-list-view';
-import Translation from '../common/translation';
+import API from '../../api';
+import {unlockWallet, walletReady} from '../../redux/actions';
+import ErrorList from '../utils/error-list-view';
+import Translation from '../../common/translation';
 
 const styles = {
     centered: {
