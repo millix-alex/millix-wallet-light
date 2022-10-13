@@ -7,13 +7,6 @@ import WalletCreatePasswordView from './wallet-create-password-view';
 import {unlockWallet} from '../../redux/actions';
 import Translation from '../../common/translation';
 
-const STATUS = {
-    NEW_WALLET_PASSWORD        : 1,
-    NEW_WALLET_MNEMONIC        : 2,
-    NEW_WALLET_CONFIRM_MNEMONIC: 3,
-    NEW_WALLET_CREATED         : 4
-};
-
 
 class NewWalletView extends Component {
     constructor(props) {
@@ -24,15 +17,16 @@ class NewWalletView extends Component {
             password_new         : undefined,
             password_confirm     : undefined,
             password_valid       : false,
-            wallet_info          : undefined,
-            status               : STATUS.NEW_WALLET_PASSWORD
+            wallet_info          : undefined
         };
     }
 
     componentDidMount() {
         API.getRandomMnemonic()
            .then(data => {
-               this.setState({mnemonic: data.mnemonic.split(' ')});
+               this.setState({
+                   mnemonic: data.mnemonic.split(' ')
+               });
            });
     }
 
@@ -53,7 +47,7 @@ class NewWalletView extends Component {
         API.newSessionWithPhrase(this.state.password_confirm, this.state.mnemonic.join(' '))
            .then(data => {
                let wallet_info              = data.wallet;
-               const address_key_identifier = this.props.wallet.address_key_identifier;
+               const address_key_identifier = wallet_info.address_key_identifier;
 
                let backup_reminder = localStorage.getItem('backup_reminder');
                if (!backup_reminder) {
