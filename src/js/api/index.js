@@ -252,9 +252,11 @@ class API {
         });
     }
 
-    getTransactionHistory(address_key_identifier) {
+    getTransactionHistory(address_key_identifier, date_begin, date_end) {
         return this.fetchApiMillix(`/w9UTTA7NXnEDUXhe`, {
-            p0: address_key_identifier
+            p0: address_key_identifier,
+            p1: date_begin,
+            p2: date_end
         });
     }
 
