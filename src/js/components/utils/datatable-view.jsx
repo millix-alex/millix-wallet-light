@@ -214,6 +214,8 @@ class DatatableView extends Component {
                     on_global_search_change={(e) => this.on_global_search_change(e)}
                     datatable_reference={this.datatable_reference}
                     allow_export={this.props.allow_export}
+                    showDateRange={this.props.showDateRange}
+                    updateDateRange={this.props.updateDateRange}
                 />
                 <DataTable value={this.props.value}
                            ref={(el) => {
@@ -258,7 +260,9 @@ DatatableView.propTypes = {
     datatable_reload_timestamp: PropTypes.any,
     reload_datatable          : PropTypes.func,
     action_button             : PropTypes.any,
-    allow_export              : PropTypes.bool
+    allow_export              : PropTypes.bool,
+    updateDateRange           : PropTypes.func,
+    showDateRange             : PropTypes.bool,
 };
 
 

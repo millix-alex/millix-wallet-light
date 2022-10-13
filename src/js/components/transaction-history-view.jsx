@@ -13,11 +13,15 @@ import Translation from '../common/translation';
 class TransactionHistoryView extends Component {
     constructor(props) {
         super(props);
-        this.updaterHandler = undefined;
-        this.state          = {
+        this.updaterHandler  = undefined;
+        this.reloadDatatable = this.reloadDatatable.bind(this);
+        this.updateDateRange = this.updateDateRange.bind(this);
+        this.state           = {
             transaction_list          : [],
             datatable_reload_timestamp: '',
-            datatable_loading         : false
+            datatable_loading         : false,
+            date_begin                : '',
+            date_end                  : ''
         };
     }
 
@@ -35,7 +39,7 @@ class TransactionHistoryView extends Component {
             datatable_loading: true
         });
 
-        return API.getTransactionHistory(this.props.wallet.address_key_identifier).then(data => {
+        return API.getTransactionHistory(this.props.wallet.address_key_identifier, this.state.date_begin, this.state.date_end).then(data => {
             const rows = data.map((transaction, idx) => ({
                 idx         : data.length - idx,
                 date        : format.date(transaction.transaction_date),
@@ -66,6 +70,15 @@ class TransactionHistoryView extends Component {
         });
     }
 
+    updateDateRange(startDate, endDate) {
+        this.setState({
+            date_begin: startDate.format('X'),
+            date_end  : endDate.format('X')
+        });
+        this.reloadDatatable();
+        console.log(this.state.date_begin)
+    }
+
     render() {
         return (
             <div>
@@ -77,6 +90,8 @@ class TransactionHistoryView extends Component {
                             <DatatableView
                                 reload_datatable={() => this.reloadDatatable()}
                                 datatable_reload_timestamp={this.state.datatable_reload_timestamp}
+                                updateDateRange={this.updateDateRange}
+                                showDateRange={true}
 
                                 value={this.state.transaction_list}
                                 sortField={'date'}
