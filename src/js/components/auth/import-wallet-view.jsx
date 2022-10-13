@@ -1,36 +1,26 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import {Redirect} from 'react-router-dom';
-import {Button, Col, Container, Row} from 'react-bootstrap';
+import {Redirect, withRouter} from 'react-router-dom';
+import {Button, Form} from 'react-bootstrap';
 import API from '../../api';
 import WalletCreatePasswordView from './wallet-create-password-view';
-import MnemonicConfirmView from './mnemonic-confirm-view';
-import WalletCreateInfoView from './wallet-create-info-view';
 import {unlockWallet} from '../../redux/actions';
 import Translation from '../../common/translation';
-
-const STATUS = {
-    NEW_WALLET_MNEMONIC: 1,
-    NEW_WALLET_PASSWORD: 2,
-    NEW_WALLET_CREATED : 3
-};
 
 
 class ImportWalletView extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            mnemonic             : undefined,
-            mnemonic_is_confirmed: false,
-            password_new         : undefined,
-            password_confirm     : undefined,
-            password_valid       : false,
-            wallet_info          : undefined,
-            status               : STATUS.NEW_WALLET_MNEMONIC
+            mnemonic         : undefined,
+            mnemonic_is_valid: false,
+            password_new     : undefined,
+            password_confirm : undefined,
+            password_valid   : false,
+            wallet_info      : undefined
         };
-    }
 
-    componentDidMount() {
+        this.validateMnemonicPhrase = this.validateMnemonicPhrase.bind(this);
     }
 
     verifyPassword() {
@@ -46,57 +36,27 @@ class ImportWalletView extends Component {
         this.setState({password_confirm: passwordConfirm}, () => this.verifyPassword());
     }
 
+    validateMnemonicPhrase(event) {
+        let result_new_mnemonic = event.target.value.split(' ');
+        result_new_mnemonic     = result_new_mnemonic.filter(word => word.trim().length > 0);
+        const is_valid          = result_new_mnemonic.length === 24;
+
+        this.setState({
+            mnemonic_is_valid: is_valid,
+            mnemonic         : result_new_mnemonic
+        });
+    }
+
     createNewWallet() {
         API.newSessionWithPhrase(this.state.password_confirm, this.state.mnemonic.join(' '))
            .then(data => {
-               this.setState({wallet_info: data.wallet});
+               this.setState({
+                   wallet_info: data.wallet
+               }, () => {
+                   this.props.unlockWallet(this.state.wallet_info);
+                   this.props.history.push('/');
+               });
            });
-    }
-
-    createWalletNextStep() {
-        switch (this.state.status) {
-            case STATUS.NEW_WALLET_MNEMONIC:
-                this.setState({
-                    status          : STATUS.NEW_WALLET_PASSWORD,
-                    password_confirm: false,
-                    password_new    : undefined,
-                    password_valid  : undefined
-                });
-                break;
-            case STATUS.NEW_WALLET_PASSWORD:
-                this.createNewWallet();
-                this.setState({status: STATUS.NEW_WALLET_CREATED});
-                break;
-            case  STATUS.NEW_WALLET_CREATED:
-                this.props.unlockWallet(this.state.wallet_info);
-                this.props.history.replace('/');
-                break;
-            default:
-        }
-    }
-
-    createWalletPrevStep() {
-        switch (this.state.status) {
-            case STATUS.NEW_WALLET_PASSWORD:
-                this.setState({status: STATUS.NEW_WALLET_MNEMONIC});
-                break;
-        }
-    }
-
-    getStepName() {
-        const result_step = [
-            {
-                label: Translation.getPhrase('3f1cc1619')
-            },
-            {
-                label: Translation.getPhrase('da19aabd1')
-            },
-            {
-                label: Translation.getPhrase('3f1cc1619')
-            }
-        ];
-
-        return result_step[this.state.status - 1].label;
     }
 
     render() {
@@ -104,76 +64,28 @@ class ImportWalletView extends Component {
             return <Redirect to={{pathname: '/'}}/>;
         }
 
-        const next_button_disabled = !this.state.mnemonic_is_confirmed ||
-                                     (this.state.status === STATUS.NEW_WALLET_PASSWORD && !this.state.password_valid);
+        const next_button_disabled = !this.state.mnemonic_is_valid || !this.state.password_valid;
 
-        let back_button = <Button variant="outline-primary" onClick={() => {
-            this.props.history.replace('/unlock-wallet/');
-        }}>
-            back
-        </Button>;
-        if (this.state.status !== STATUS.NEW_WALLET_MNEMONIC &&
-            this.state.status !== STATUS.NEW_WALLET_CREATED) {
-            back_button = <Button
-                variant="outline-primary"
-                onClick={() => this.createWalletPrevStep()}>back</Button>;
-        }
-
-        const {status} = this.state;
-        return (
-            <Container className="import_mnemonic_container">
-                <>
-                    <div className={'panel panel-filled'}>
-                        <div className={'panel-heading bordered'}>
-                            {Translation.getPhrase('e976f2315')}
-                        </div>
-                        <div className={'panel-body'}>
-                            <Row>
-                                <Col>
-                                    <div className={'section_subtitle'}>
-                                        {Translation.getPhrase('432a43d26', {
-                                            status       : this.state.status,
-                                            status_length: Object.keys(STATUS).length
-                                        })} {this.getStepName()}
-                                    </div>
-                                    <div>
-                                        {status === STATUS.NEW_WALLET_MNEMONIC && (
-                                            <MnemonicConfirmView
-                                                processName={'import'}
-                                                mnemonic={new Array(24).fill('')}
-                                                importNew={true}
-                                                onChange={(isConfirmed, mnemonic) => this.setState({
-                                                    mnemonic_is_confirmed: isConfirmed,
-                                                    mnemonic
-                                                })}/>)}
-                                        {this.state.mnemonic_is_confirmed && this.state.status === STATUS.NEW_WALLET_PASSWORD && (
-                                            <WalletCreatePasswordView
-                                                processName={'import'}
-                                                notConfirmed={!this.state.password_valid}
-                                                onPassword={this.onPassword.bind(this)}
-                                                onConfirmPassword={this.onConfirmPassword.bind(this)}/>)}
-                                        {this.state.wallet_info && this.state.status === STATUS.NEW_WALLET_CREATED && (
-                                            <WalletCreateInfoView
-                                                processName={'import'}
-                                                wallet={this.state.wallet_info}/>
-                                        )}
-                                    </div>
-                                    <div
-                                        className={'d-flex justify-content-center'}>
-                                        <div className={'me-2'}>
-                                            {back_button}
-                                        </div>
-                                        <Button variant="outline-primary"
-                                                disabled={next_button_disabled}
-                                                onClick={() => this.createWalletNextStep()}>{Translation.getPhrase('92a871b62')}</Button>
-                                    </div>
-                                </Col>
-                            </Row>
-                        </div>
-                    </div>
-                </>
-            </Container>
-        );
+        return <>
+            <div className={'mnemonic'}>
+                <Form.Group className="form-group">
+                    <label>{Translation.getPhrase('afa9ebab3')}</label>
+                    <Form.Control type="text"
+                                  placeholder={Translation.getPhrase('080d63a14')}
+                                  onChange={this.validateMnemonicPhrase}/>
+                </Form.Group>
+            </div>
+            <WalletCreatePasswordView
+                processName={'create'}
+                notConfirmed={!this.state.password_valid}
+                onPassword={this.onPassword.bind(this)}
+                onConfirmPassword={this.onConfirmPassword.bind(this)}/>
+            <div className={'d-flex justify-content-center'}>
+                <Button variant="outline-primary"
+                        disabled={next_button_disabled}
+                        onClick={() => this.createNewWallet()}>{Translation.getPhrase('92a871b62')}</Button>
+            </div>
+        </>;
     }
 }
 
@@ -183,4 +95,4 @@ export default connect(
         wallet: state.wallet
     }),
     {unlockWallet}
-)(ImportWalletView);
+)(withRouter(ImportWalletView));

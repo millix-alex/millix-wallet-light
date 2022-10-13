@@ -8,6 +8,7 @@ import {unlockWallet, walletReady} from '../../redux/actions';
 import ErrorList from '../utils/error-list-view';
 import Translation from '../../common/translation';
 import NewWalletView from './new-wallet-view';
+import ImportWalletView from './import-wallet-view';
 
 const styles = {
     centered: {
@@ -114,24 +115,48 @@ class UnlockWalletView extends Component {
                 <div className="section_subtitle">
                     {Translation.getPhrase('a1f1962b0')}
                 </div>
-                <div>
-                    {Translation.getPhrase('afb651675')}
-                </div>
-                <div>
-                    {Translation.getPhrase('fb11beec6')}
-                </div>
+                <ul>
+                    <li>
+                        this process will replace existing millix_private_key.json which contains wallet secret phrase
+                    </li>
+                    <li>
+                        secret phrase is required to access wallet. please make sure you saved a reserve copy of millix_private_key.json
+                    </li>
+                    <li>
+                        you cannot reverse this action
+                    </li>
+                    <li>
+                        it is not possible to restore secret phrase using password
+                    </li>
+                    <li>
+                        it is not possible to restore password using secret phrase
+                    </li>
+                </ul>
             </div>
         </>;
 
         let import_wallet_warning = <>
-            <div className="section_subtitle">
-                {Translation.getPhrase('1c92a554a')}
-            </div>
-            <div>
-                {Translation.getPhrase('cb09917c3')}
-            </div>
-            <div>
-                {Translation.getPhrase('a7ec9aaff')}
+            <div className={'form-group'}>
+                <div className="section_subtitle">
+                    {Translation.getPhrase('1c92a554a')}
+                </div>
+                <ul>
+                    <li>
+                        this process will replace existing millix_private_key.json which contains wallet secret phrase
+                    </li>
+                    <li>
+                        secret phrase is required to access wallet. please make sure you saved a reserve copy of millix_private_key.json
+                    </li>
+                    <li>
+                        you cannot reverse this action
+                    </li>
+                    <li>
+                        it is not possible to restore secret phrase using password
+                    </li>
+                    <li>
+                        it is not possible to restore password using secret phrase
+                    </li>
+                </ul>
             </div>
         </>;
 
@@ -257,14 +282,8 @@ class UnlockWalletView extends Component {
                                                 <div
                                                     className="panel panel-filled">
                                                     <div className="panel-body">
-                                                        <div
-                                                            className={'form-group'}>
-                                                            {this.state.private_key_exists === true && import_wallet_warning}
-                                                        </div>
-                                                        <Button
-                                                            className={'w-100'}
-                                                            variant="outline-primary"
-                                                            onClick={() => props.history.push('/import-wallet/')}>{Translation.getPhrase('5c15e1ccd')}</Button>
+                                                        {this.state.private_key_exists === true && import_wallet_warning}
+                                                        <ImportWalletView/>
                                                     </div>
                                                 </div>
                                             </Tab.Pane>

@@ -1,15 +1,11 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {Redirect} from 'react-router-dom';
-import {Button, Col, Container, Row} from 'react-bootstrap';
+import {Button} from 'react-bootstrap';
 import API from '../../api';
 import WalletCreatePasswordView from './wallet-create-password-view';
-import MnemonicView from './mnemonic-view';
-import MnemonicConfirmView from './mnemonic-confirm-view';
-import WalletCreateInfoView from './wallet-create-info-view';
 import {unlockWallet} from '../../redux/actions';
 import Translation from '../../common/translation';
-import moment from 'moment';
 
 const STATUS = {
     NEW_WALLET_PASSWORD        : 1,

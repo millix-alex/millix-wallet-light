@@ -6,18 +6,10 @@ import Translation from '../../common/translation';
 const WalletCreatePasswordView = (props) => {
     let passphraseRef, passphraseConfirmRef;
 
-    let info_label = Translation.getPhrase('b7e9ca83d');
-    if (props.processName === 'import') {
-        info_label = Translation.getPhrase('0b3b5d17b');
-    }
-
     return (
         <div className={'wallet-create-password'}>
-            <div className="section_subtitle">
-                password
-            </div>
-            <div className={'center mb-3'}>{info_label}</div>
 
+            <label>{Translation.getPhrase('43c568626')}</label>
             <FormControl
                 className={'form-group'}
                 type="password"
@@ -29,6 +21,8 @@ const WalletCreatePasswordView = (props) => {
                     props.onPassword(passphraseRef.value);
                 }}
             />
+
+            <label>{Translation.getPhrase('e59f9ba20')}</label>
             <FormControl
                 className={'form-group'}
                 type="password"

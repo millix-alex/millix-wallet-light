@@ -1,10 +1,9 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
-import {Button} from 'react-bootstrap';
+import {Button, Form} from 'react-bootstrap';
 import ModalView from '../utils/modal-view';
 import API from '../../api';
-import MnemonicView from '../auth/mnemonic-view';
 import Translation from '../../common/translation';
 
 
@@ -56,7 +55,18 @@ class BackupBodyView extends Component {
                        heading={Translation.getPhrase('ee9c80bf2')}
                        on_close={() => this.changeModalShowMnemonic(false)}
                        body={
-                           <MnemonicView mnemonic={this.state.mnemonic}/>
+                           <div className={'mnemonic'}>
+                               <div className={'mb-3'}>
+                                   {Translation.getPhrase('6bf163d02')}
+                               </div>
+                               <Form.Group>
+                                   <label>{Translation.getPhrase('01f11055b')}</label>
+                                   <Form.Control type="text"
+                                                 placeholder={Translation.getPhrase('b8b4deaaf')}
+                                                 value={this.state.mnemonic.join(' ')}
+                                                 readOnly={true}/>
+                               </Form.Group>
+                           </div>
                        }/>
 
             <p>{Translation.getPhrase('5e6660d19')}</p>
