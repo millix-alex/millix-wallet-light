@@ -5,6 +5,7 @@ import {Button, Form} from 'react-bootstrap';
 import ModalView from '../utils/modal-view';
 import API from '../../api';
 import Translation from '../../common/translation';
+import {get_mnemonic_phrase_warning} from '../../helper/text';
 
 
 class BackupBodyView extends Component {
@@ -56,9 +57,6 @@ class BackupBodyView extends Component {
                        on_close={() => this.changeModalShowMnemonic(false)}
                        body={
                            <div className={'mnemonic'}>
-                               <div className={'mb-3'}>
-                                   {Translation.getPhrase('6bf163d02')}
-                               </div>
                                <Form.Group>
                                    <label>{Translation.getPhrase('01f11055b')}</label>
                                    <Form.Control type="text"
@@ -69,7 +67,7 @@ class BackupBodyView extends Component {
                            </div>
                        }/>
 
-            <p>{Translation.getPhrase('5e6660d19')}</p>
+            {get_mnemonic_phrase_warning(true)}
             <div className={'text-center form-group'}>
                 <Button variant="outline-primary"
                         className={'btn btn-w-md btn-accent'}

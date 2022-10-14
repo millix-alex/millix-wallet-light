@@ -9,6 +9,7 @@ import ErrorList from '../utils/error-list-view';
 import Translation from '../../common/translation';
 import NewWalletView from './new-wallet-view';
 import ImportWalletView from './import-wallet-view';
+import {get_mnemonic_phrase_warning} from '../../helper/text';
 
 const styles = {
     centered: {
@@ -109,57 +110,6 @@ class UnlockWalletView extends Component {
                 });
             });
         };
-
-        let create_wallet_warning = <>
-            <div className={'form-group'}>
-                <div className="section_subtitle">
-                    {Translation.getPhrase('a1f1962b0')}
-                </div>
-                <ul>
-                    <li>
-                        this process will replace existing millix_private_key.json which contains wallet secret phrase
-                    </li>
-                    <li>
-                        secret phrase is required to access wallet. please make sure you saved a reserve copy of millix_private_key.json
-                    </li>
-                    <li>
-                        you cannot reverse this action
-                    </li>
-                    <li>
-                        it is not possible to restore secret phrase using password
-                    </li>
-                    <li>
-                        it is not possible to restore password using secret phrase
-                    </li>
-                </ul>
-            </div>
-        </>;
-
-        let import_wallet_warning = <>
-            <div className={'form-group'}>
-                <div className="section_subtitle">
-                    {Translation.getPhrase('1c92a554a')}
-                </div>
-                <ul>
-                    <li>
-                        this process will replace existing millix_private_key.json which contains wallet secret phrase
-                    </li>
-                    <li>
-                        secret phrase is required to access wallet. please make sure you saved a reserve copy of millix_private_key.json
-                    </li>
-                    <li>
-                        you cannot reverse this action
-                    </li>
-                    <li>
-                        it is not possible to restore secret phrase using password
-                    </li>
-                    <li>
-                        it is not possible to restore password using secret phrase
-                    </li>
-                </ul>
-            </div>
-        </>;
-
 
         return (
             <Container>
@@ -273,7 +223,7 @@ class UnlockWalletView extends Component {
                                                 <div
                                                     className="panel panel-filled">
                                                     <div className="panel-body">
-                                                        {this.state.private_key_exists === true && create_wallet_warning}
+                                                        {this.state.private_key_exists === true && get_mnemonic_phrase_warning()}
                                                         <NewWalletView/>
                                                     </div>
                                                 </div>
@@ -282,7 +232,7 @@ class UnlockWalletView extends Component {
                                                 <div
                                                     className="panel panel-filled">
                                                     <div className="panel-body">
-                                                        {this.state.private_key_exists === true && import_wallet_warning}
+                                                        {this.state.private_key_exists === true && get_mnemonic_phrase_warning()}
                                                         <ImportWalletView/>
                                                     </div>
                                                 </div>
