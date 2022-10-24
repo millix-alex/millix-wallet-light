@@ -11,7 +11,7 @@ import {TRANSACTION_DATA_TYPE_NFT} from '../../../config';
 import HelpIconView from '../utils/help-icon-view';
 import moment from 'moment';
 import ReloadTimeTickerView from '../utils/reload-time-ticker-view';
-import NftActionSummaryView from './nft-action-summary';
+import NftCard from './nft-card-summary';
 
 
 class NftCollectionView extends Component {
@@ -81,26 +81,7 @@ class NftCollectionView extends Component {
                         <div className={'nft-collection-img'}>
                             {image}
                         </div>
-                        <Card.Body>
-                            <div className={'nft-name page_subtitle'}>{name}</div>
-                            <div className={'nft-description'}>{description}</div>
-                            <div className={'nft-action-section'}>
-                                <NftActionSummaryView
-                                    nft_data={image_props}
-                                    modal_show_burn_result_on_close={() => this.reloadCollection()}
-                                />
-
-                                <Button variant="outline-default"
-                                        size={'sm'}
-                                        className={'ms-auto'}
-                                        onClick={() => {
-                                            this.props.history.push(utils.getNftViewLink(image_props));
-                                        }}
-                                >
-                                    <FontAwesomeIcon icon={'eye'}/>details
-                                </Button>
-                            </div>
-                        </Card.Body>
+                        <NftCard name={name} description={description} image_props={image_props} action_after_burn={() => this.reloadCollection()} preview_type='nft'/>
                     </Card>
                 </Col>
             );
