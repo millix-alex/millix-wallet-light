@@ -37,6 +37,7 @@ import NftCollectionView from './nft/nft-collection-view';
 import NftTransferView from './nft/nft-transfer-view';
 import AssetListView from './asset/asset-list-view';
 import NftPreviewView from './nft/nft-preview-view';
+import AddressBookView from './address-book-view';
 
 
 class AppContainer extends Component {
@@ -107,6 +108,8 @@ class AppContainer extends Component {
                         component={TransactionDetails}/>
                     <UnlockedWalletRequiredRoute path="/address-list"
                                                  component={AddressListView}/>
+                    <UnlockedWalletRequiredRoute path="/address-book"
+                                component={AddressBookView}/>                             
                     <UnlockedWalletRequiredRoute path="/transaction-list"
                                                  component={TransactionHistoryView}/>
                     <UnlockedWalletRequiredRoute path="/faq"
