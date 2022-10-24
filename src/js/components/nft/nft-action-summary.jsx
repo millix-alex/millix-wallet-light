@@ -162,7 +162,7 @@ class NftActionSummaryView extends Component {
     }
 
     isAssetPreviewType(){
-        return this.props.preview_type === 'asset'
+        return this.props.preview_type === 'asset' || this.props.asset_page
     }
 
     getAssetActionList() {
@@ -176,12 +176,17 @@ class NftActionSummaryView extends Component {
                         <FontAwesomeIcon icon={'list'}/>transaction
                     </Button>
                 </div>
+                <div className={'mt-3'}>
+                    <a href={this.state.src} target={'_blank'} className={'btn btn-outline-default w-100'} rel="noreferrer">
+                        <FontAwesomeIcon icon={'file'}/>raw image
+                    </a>
+                </div>
             </>;
         }
     }
 
     getDetailsActionButton() {
-        if (!this.props.view_page && !this.isAssetPreviewType()) {
+        if (!this.props.view_page) {
             return <div className={'mt-3'}>
                 <Button variant="outline-default"
                         className={'w-100'}
