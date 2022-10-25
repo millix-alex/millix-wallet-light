@@ -233,6 +233,7 @@ class DatatableView extends Component {
                            sortField={this.props.sortField}
                            sortOrder={this.props.sortOrder}
                            emptyMessage={Translation.getPhrase('ea4617fde')}
+                           onRowClick={this.props.onRowClick}
 
                            globalFilterFields={this.state.result_global_search_field}
                            filters={this.state.result_filter}
