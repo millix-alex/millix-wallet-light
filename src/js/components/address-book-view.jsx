@@ -22,7 +22,8 @@ class AddressBookView extends Component {
             contacts_list      : [],
             datatable_reload_timestamp: new Date(),
             datatable_loading         : false,
-            error_list                : []
+            error_list                : [],
+            edited_contact_index      : ''
         };
     }
 
@@ -30,44 +31,62 @@ class AddressBookView extends Component {
         this.loadAddressBook();
     }
 
-    changeModalAddContact(value = true) {
+    changeModalAddContact = (value = true) => {
         this.setState({
             modal_show: value,
-            error_list: []
+            error_list: [],
         });
+        if (!this.state.modal_show) {
+            this.state.edited_contact_index = ''
+        }
     }
 
-    addContact() {
+    addContact = () => {
         let contact = {
             name: this.address_book_name.value,
             address: this.address_book_address.value
         }
-        localforage.getItem('contactsList').then(function(contactsList) {
+        localforage.getItem('contactsList').then((contactsList) => {
             if (contactsList === null) {
                 localforage.setItem('contactsList', [])
             }
-            contactsList.push(contact)
+
+            if (this.state.edited_contact_index !== '') {
+                contactsList.forEach(() => {
+                    contactsList[this.state.edited_contact_index] = contact
+                })
+            } else {
+
+            contactsList.push(contact)}
             localforage.setItem('contactsList', contactsList)
             })
             .then(() => this.loadAddressBook());
             this.changeModalAddContact(false)
     }
 
-    removeContactfromAddressBook(removed_contact_index) {
+    getChoosenContactIndex = (choosen_contact) => {
         localforage.getItem('contactsList').then((contactsList) => {
-            contactsList.splice(removed_contact_index, 1)
+            contactsList.forEach((contact, index) => {
+                if (contact.address == choosen_contact.address) {
+                    this.setState({
+                        edited_contact_index: index
+                    })
+                }
+            })
+        })
+    }
+
+    removeAddressBookContact = (choosen_contact) => {
+        this.getChoosenContactIndex(choosen_contact)
+        localforage.getItem('contactsList').then((contactsList) => {
+            contactsList.splice(this.state.edited_contact_index, 1)
             localforage.setItem('contactsList', contactsList)
         }).then(() => this.loadAddressBook())
     }
 
-    getRemovedContactIndex(addressVersion) {
-        localforage.getItem('contactsList').then((contactsList) => {
-            contactsList.findIndex((contact, index) => {
-                if (contact.address == addressVersion.address) {
-                    this.removeContactfromAddressBook(index)
-                }
-            })
-        })
+    editAddressBookContact(choosen_contact){
+        this.getChoosenContactIndex(choosen_contact)
+        this.changeModalAddContact()
     }
 
     loadAddressBook() {
@@ -87,16 +106,31 @@ class AddressBookView extends Component {
             contacts_list             : data.map((input) => ({
                 address: input.address,
                 name   : input.name,
-                action : <DatatableActionButtonView
-                    icon={'trash'}
-                    callback={() => this.getRemovedContactIndex(input)}
-                    callback_args={input}
-                />
+                action : 
+                    <>
+                        <DatatableActionButtonView
+                        icon={'fa-solid fa-pencil'}
+                        callback={() => this.editAddressBookContact(input)}
+                        callback_args={input}
+                        />
+                        <DatatableActionButtonView
+                        icon={'trash'}
+                        callback={() => this.removeAddressBookContact(input)}
+                        callback_args={input}
+                        />
+                    </>
             }))
         });
     }
 
     getAddressBookBody() {
+        let name, address;
+        this.state.contacts_list.forEach((contact, index) => {
+            if (index === this.state.edited_contact_index) {
+            name = contact.name
+            address = contact.address
+            }
+        }) 
         return <div>
             <Col>
                 <ErrorList error_list={this.state.error_list}/>
@@ -108,6 +142,7 @@ class AddressBookView extends Component {
                     <Form.Control
                         type="text"
                         ref={(c) => this.address_book_name = c}
+                        defaultValue={name}
                     />
                 </Form.Group>
             </Col>
@@ -122,6 +157,7 @@ class AddressBookView extends Component {
                             <Form.Control
                                 type="text"
                                 ref={(c) => this.address_book_address = c}
+                                defaultValue={address}
                             />
                         </Col>
                     </Row>
