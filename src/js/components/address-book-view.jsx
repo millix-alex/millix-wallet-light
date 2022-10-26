@@ -35,10 +35,8 @@ class AddressBookView extends Component {
         this.setState({
             modal_show: value,
             error_list: [],
+            edited_contact_index: value ? this.state.edited_contact_index : ''
         });
-        if (!this.state.modal_show) {
-            this.state.edited_contact_index = ''
-        }
     }
 
     addContact = () => {
@@ -51,9 +49,8 @@ class AddressBookView extends Component {
                 localforage.setItem('contactsList', [])
             }
 
-            contactsList.forEach((contact, index) => {
+            contactsList?.forEach((contact, index) => {
                 if (contact.address == new_contact.address) {
-                    console.log(contact.address)
                     this.setState({
                         edited_contact_index: index
                     })
@@ -111,7 +108,7 @@ class AddressBookView extends Component {
         this.setState({
             datatable_reload_timestamp: new Date(),
             datatable_loading         : false,
-            contacts_list             : data.map((input) => ({
+            contacts_list             : data?.map((input) => ({
                 address: input.address,
                 name   : input.name,
                 action : 
@@ -132,9 +129,8 @@ class AddressBookView extends Component {
     }
 
     getAddressBookBody() {
-        let contacts_list = this.state.contacts_list,
-            index = this.state.edited_contact_index
 
+        
         return <div>
             <Col>
                 <ErrorList error_list={this.state.error_list}/>
@@ -146,7 +142,7 @@ class AddressBookView extends Component {
                     <Form.Control
                         type="text"
                         ref={(c) => this.address_book_name = c}
-                        defaultValue={contacts_list[index]?.name}
+                        defaultValue={'name'}
                     />
                 </Form.Group>
             </Col>
@@ -161,7 +157,7 @@ class AddressBookView extends Component {
                             <Form.Control
                                 type="text"
                                 ref={(c) => this.address_book_address = c}
-                                defaultValue={contacts_list[index]?.address}
+                                defaultValue={'address'}
                             />
                         </Col>
                     </Row>

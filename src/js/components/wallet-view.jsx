@@ -150,9 +150,10 @@ class WalletView extends Component {
     loadAddressBook() {
         localforage.getItem('contactsList')
            .then(data => {
+            console.log(data)
                 this.setState({
                     datatable_reload_timestamp: new Date(),
-                    contacts_list             : data.map((input) => ({
+                    contacts_list             : data?.map((input) => ({
                         address: input.address,
                         name   : input.name,
                     }))
