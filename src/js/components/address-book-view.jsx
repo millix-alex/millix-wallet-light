@@ -42,7 +42,7 @@ class AddressBookView extends Component {
     }
 
     addContact = () => {
-        let contact = {
+        let new_contact = {
             name: this.address_book_name.value,
             address: this.address_book_address.value
         }
@@ -51,13 +51,21 @@ class AddressBookView extends Component {
                 localforage.setItem('contactsList', [])
             }
 
+            contactsList.forEach((contact, index) => {
+                if (contact.address == new_contact.address) {
+                    console.log(contact.address)
+                    this.setState({
+                        edited_contact_index: index
+                    })
+                }
+            })
+
             if (this.state.edited_contact_index !== '') {
                 contactsList.forEach(() => {
-                    contactsList[this.state.edited_contact_index] = contact
+                    contactsList[this.state.edited_contact_index] = new_contact
                 })
             } else {
-
-            contactsList.push(contact)}
+                contactsList.push(new_contact)}
             localforage.setItem('contactsList', contactsList)
             })
             .then(() => this.loadAddressBook());
@@ -124,13 +132,9 @@ class AddressBookView extends Component {
     }
 
     getAddressBookBody() {
-        let name, address;
-        this.state.contacts_list.forEach((contact, index) => {
-            if (index === this.state.edited_contact_index) {
-            name = contact.name
-            address = contact.address
-            }
-        }) 
+        let contacts_list = this.state.contacts_list,
+            index = this.state.edited_contact_index
+
         return <div>
             <Col>
                 <ErrorList error_list={this.state.error_list}/>
@@ -142,7 +146,7 @@ class AddressBookView extends Component {
                     <Form.Control
                         type="text"
                         ref={(c) => this.address_book_name = c}
-                        defaultValue={name}
+                        defaultValue={contacts_list[index]?.name}
                     />
                 </Form.Group>
             </Col>
@@ -157,7 +161,7 @@ class AddressBookView extends Component {
                             <Form.Control
                                 type="text"
                                 ref={(c) => this.address_book_address = c}
-                                defaultValue={address}
+                                defaultValue={contacts_list[index]?.address}
                             />
                         </Col>
                     </Row>
