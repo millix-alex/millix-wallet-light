@@ -129,6 +129,15 @@ class AddressBookView extends Component {
     }
 
     getAddressBookBody() {
+        let name, address;
+        if (this.state.edited_contact_index !== '') {
+            this.state.contacts_list.forEach((contact, index) => {
+                if (index === this.state.edited_contact_index) {
+                name = contact.name
+                address = contact.address
+                }
+            }) 
+        }
 
         
         return <div>
@@ -142,7 +151,7 @@ class AddressBookView extends Component {
                     <Form.Control
                         type="text"
                         ref={(c) => this.address_book_name = c}
-                        defaultValue={'name'}
+                        defaultValue={name}
                     />
                 </Form.Group>
             </Col>
@@ -157,7 +166,7 @@ class AddressBookView extends Component {
                             <Form.Control
                                 type="text"
                                 ref={(c) => this.address_book_address = c}
-                                defaultValue={'address'}
+                                defaultValue={address}
                             />
                         </Col>
                     </Row>
