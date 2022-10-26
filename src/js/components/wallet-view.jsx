@@ -13,8 +13,7 @@ import * as text from '../helper/text';
 import Transaction from '../common/transaction';
 import Translation from '../common/translation';
 import BackupReminderView from './education/backup-reminder-view';
-import DatatableView from './utils/datatable-view';
-import localforage from 'localforage';
+import ModalTableView from './utils/modal-table-view'
 
 
 class WalletView extends Component {
@@ -34,7 +33,8 @@ class WalletView extends Component {
             modal_show_address_book: false,
             contacts_list          : [],
             address_from_book      : '',
-            address_confirm        : ''
+            address_confirm        : '',
+            modal_show_address_book: false
         };
 
         this.send = this.send.bind(this);
@@ -144,27 +144,6 @@ class WalletView extends Component {
         this.setState({
             modal_show_address_book: value
         });
-        value && this.loadAddressBook()
-    }
-
-    loadAddressBook() {
-        localforage.getItem('contactsList')
-           .then(data => {
-            console.log(data)
-                this.setState({
-                    datatable_reload_timestamp: new Date(),
-                    contacts_list             : data?.map((input) => ({
-                        address: input.address,
-                        name   : input.name,
-                    }))
-                });
-           });
-    }
-
-    setAddressFromBook(address_from_book) {
-        this.setState({
-            address_from_book: address_from_book
-        })
     }
 
     onChangeAdress(inputValue){
@@ -172,14 +151,7 @@ class WalletView extends Component {
             address_confirm: inputValue
         })
     }
-
-    onConfirmAddressFromBook(){
-        this.setState({
-            address_confirm: this.state.address_from_book
-        })
-        this.changeModalShowAddressBook(false)
-    }
-
+    
     render() {
         return (
             <>
@@ -273,40 +245,9 @@ class WalletView extends Component {
                                         on_close={() => this.changeModalShowSendResult(false)}
                                         heading={Translation.getPhrase('54bb1b342')}
                                         body={this.state.modal_body_send_result}/>
-                                    <ModalView
+                                    <ModalTableView
                                         show={this.state.modal_show_address_book}
-                                        size={'lg'}
-                                        on_accept={() => this.onConfirmAddressFromBook()}
-                                        on_close={() => this.changeModalShowAddressBook(false)}
-                                        body={            
-                                        <Form>
-                                            <div className={'panel panel-filled'}>
-                                                <div className={'panel-heading bordered'}>
-                                                    {'address book'}
-                                                </div>
-                                                <div className={'panel-body'}>
-                                                    <div>
-                                                        <DatatableView
-                                                            reload_datatable={() => this.loadAddressBook()}
-                                                            value={this.state.contacts_list}
-                                                            sortField={'name'}
-                                                            sortOrder={1}
-                                                            showActionColumn={false}
-                                                            onRowClick={(target) => this.setAddressFromBook(target.data.address)}
-                                                            resultColumn={[
-                                                                {
-                                                                    field : 'name',
-                                                                    header: 'name'
-                                                                },
-                                                                {
-                                                                    field : 'address',
-                                                                    header: 'address'
-                                                                }
-                                                            ]}/>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </Form>}/>
+                                    />
                                     <Form.Group as={Row}>
                                         <Button
                                             variant="outline-primary"
@@ -328,7 +269,7 @@ class WalletView extends Component {
             </>
         );
     }
-}
+}   
 
 
 export default connect(

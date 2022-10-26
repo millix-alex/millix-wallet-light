@@ -139,7 +139,6 @@ class AddressBookView extends Component {
             }) 
         }
 
-        
         return <div>
             <Col>
                 <ErrorList error_list={this.state.error_list}/>
