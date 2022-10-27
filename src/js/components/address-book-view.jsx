@@ -19,7 +19,7 @@ class AddressBookView extends Component {
         super(props);
         this.state = {
             modal_show                : false,
-            contacts_list      : [],
+            contacts_list             : [],
             datatable_reload_timestamp: new Date(),
             datatable_loading         : false,
             error_list                : [],
@@ -31,6 +31,7 @@ class AddressBookView extends Component {
         this.loadAddressBook();
     }
 
+
     changeModalAddContact = (value = true) => {
         this.setState({
             modal_show: value,
@@ -40,39 +41,46 @@ class AddressBookView extends Component {
     }
 
     addContact = () => {
+        console.log(this.state.edited_contact_index)
+        let random_id = (function() {
+            return Date.now();
+          })()
+
         let new_contact = {
+            id: random_id,
             name: this.address_book_name.value,
             address: this.address_book_address.value
         }
-        localforage.getItem('contactsList').then((contactsList) => {
-            if (contactsList === null) {
-                localforage.setItem('contactsList', [])
+        
+        localforage.getItem('contacts_list').then((contacts_list) => {
+            console.log(this.state)
+            if (contacts_list === null) {
+                contacts_list = []
+                localforage.setItem('contacts_list', contacts_list)
             }
-
-            contactsList?.forEach((contact, index) => {
-                if (contact.address == new_contact.address) {
-                    this.setState({
-                        edited_contact_index: index
-                    })
-                }
-            })
-
+                return contacts_list
+            }).then((contacts_list) => {
+                console.log(this.state.edited_contact_index)
+                
             if (this.state.edited_contact_index !== '') {
-                contactsList.forEach(() => {
-                    contactsList[this.state.edited_contact_index] = new_contact
+                contacts_list.forEach((contact, index) => {
+                    if (index == this.state.edited_contact_index) {
+                        contact.name = this.address_book_name.value
+                        contact.address = this.address_book_address.value
+                    }
                 })
             } else {
-                contactsList.push(new_contact)}
-            localforage.setItem('contactsList', contactsList)
-            })
-            .then(() => this.loadAddressBook());
-            this.changeModalAddContact(false)
+                
+                contacts_list.push(new_contact)
+            }
+            localforage.setItem('contacts_list', contacts_list)
+            }).then(() => this.loadAddressBook()).then(() => this.changeModalAddContact(false))
     }
-
+        
     getChoosenContactIndex = (choosen_contact) => {
-        localforage.getItem('contactsList').then((contactsList) => {
-            contactsList.forEach((contact, index) => {
-                if (contact.address == choosen_contact.address) {
+        localforage.getItem('contacts_list').then((contacts_list) => {
+            contacts_list.forEach((contact, index) => {
+                if (contact.id == choosen_contact.id) {
                     this.setState({
                         edited_contact_index: index
                     })
@@ -83,10 +91,14 @@ class AddressBookView extends Component {
 
     removeAddressBookContact = (choosen_contact) => {
         this.getChoosenContactIndex(choosen_contact)
-        localforage.getItem('contactsList').then((contactsList) => {
-            contactsList.splice(this.state.edited_contact_index, 1)
-            localforage.setItem('contactsList', contactsList)
-        }).then(() => this.loadAddressBook())
+        localforage.getItem('contacts_list').then((contacts_list) => {
+            contacts_list.splice(this.state.edited_contact_index, 1)
+            localforage.setItem('contacts_list', contacts_list)
+            })
+            .then(() => this.setState({
+                edited_contact_index: ''
+            }))
+            .then(() => this.loadAddressBook())
     }
 
     editAddressBookContact(choosen_contact){
@@ -98,7 +110,7 @@ class AddressBookView extends Component {
         this.setState({
             datatable_loading: true
         });
-        localforage.getItem('contactsList')
+        localforage.getItem('contacts_list')
            .then(data => {
                this.setContactsList(data);
            });
