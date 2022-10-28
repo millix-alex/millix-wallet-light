@@ -34,7 +34,6 @@ class WalletView extends Component {
             contacts_list          : [],
             address_from_book      : '',
             address_confirm        : '',
-            modal_show_address_book: false
         };
 
         this.send = this.send.bind(this);
@@ -151,6 +150,12 @@ class WalletView extends Component {
             address_confirm: inputValue
         })
     }
+
+    setAddressFromAddressBook(address) {
+        this.setState({
+            address_confirm: address
+        })
+    }
     
     render() {
         return (
@@ -182,7 +187,7 @@ class WalletView extends Component {
                                                 type="button"
                                                 onClick={() => this.changeModalShowAddressBook()}>
                                                 <FontAwesomeIcon
-                                                    icon={'book'} //doesn't work if name cotains "-" 
+                                                    icon={'address-book'}
                                                     />
                                             </button>                                                       
                                         </Col>
@@ -247,6 +252,8 @@ class WalletView extends Component {
                                         body={this.state.modal_body_send_result}/>
                                     <ModalTableView
                                         show={this.state.modal_show_address_book}
+                                        on_close={() => this.changeModalShowAddressBook(false)}
+                                        on_accept={(address) => this.setAddressFromAddressBook(address)}
                                     />
                                     <Form.Group as={Row}>
                                         <Button

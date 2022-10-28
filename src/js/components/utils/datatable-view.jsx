@@ -26,7 +26,8 @@ class DatatableView extends Component {
                 }
             },
             result_global_search_field: [],
-            global_search_value       : ''
+            global_search_value       : '',
+            selectedRow               : null
         };
 
         this.onCustomPage       = this.onCustomPage.bind(this);
@@ -239,7 +240,9 @@ class DatatableView extends Component {
                            filters={this.state.result_filter}
                            filterDisplay="menu"
 
-                           responsiveLayout="scroll">
+                           responsiveLayout="scroll"
+                           selectionMode={this.props.selectionMode}
+                           >
                     {this.state.result_column}
                 </DataTable>
             </>
