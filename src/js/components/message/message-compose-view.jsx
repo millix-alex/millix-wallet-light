@@ -18,7 +18,9 @@ class MessageComposeView extends Component {
                                 <p>
                                     {Translation.getPhrase('24861d022')}
                                 </p>
-                                <MessageComposeForm/>
+                                <MessageComposeForm
+                                address_book={true}
+                                />
                             </div>
                         </div>
                     </Col>
