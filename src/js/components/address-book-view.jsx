@@ -41,7 +41,6 @@ class AddressBookView extends Component {
     }
 
     addContact = () => {
-        console.log(this.state.edited_contact_index)
         let random_id = (function() {
             return Date.now();
           })()
@@ -53,22 +52,19 @@ class AddressBookView extends Component {
         }
         
         localforage.getItem('contacts_list').then((contacts_list) => {
-            console.log(this.state)
             if (contacts_list === null) {
                 contacts_list = []
                 localforage.setItem('contacts_list', contacts_list)
             }
                 return contacts_list
             }).then((contacts_list) => {
-                console.log(this.state.edited_contact_index)
-                
-            if (this.state.edited_contact_index !== '') {
-                contacts_list.forEach((contact, index) => {
-                    if (index == this.state.edited_contact_index) {
-                        contact.name = this.address_book_name.value
-                        contact.address = this.address_book_address.value
-                    }
-                })
+                if (this.state.edited_contact_index !== '') {
+                    contacts_list.forEach((contact, index) => {
+                        if (index == this.state.edited_contact_index) {
+                            contact.name = this.address_book_name.value
+                            contact.address = this.address_book_address.value
+                        }
+                    })
             } else {
                 
                 contacts_list.push(new_contact)
@@ -215,7 +211,9 @@ class AddressBookView extends Component {
                                 value={this.state.contacts_list}
                                 sortField={'name'}
                                 sortOrder={1}
-                                showActionColumn={true}
+                                selectionMode={this.props.selectionMode}
+                                onRowClick={this.props.onRowClick}
+                                showActionColumn={this.props.showActionColumn && true}
                                 resultColumn={[
                                     {
                                         field : 'name',
