@@ -30,6 +30,7 @@ class AddressBookView extends Component {
         };
         
         this.importCSV = this.importCSV.bind(this);
+        this.inputRef = React.createRef();
     }
 
     componentDidMount() {
@@ -232,12 +233,35 @@ class AddressBookView extends Component {
                     </div>
                     <div className={'panel-body'}>
                         <div>
-                        <input type="file" name="file" onChange={this.importCSV}></input>
-                        <button 
-                            onChange={this.importCSV}>sdfsefds
-                                
-                            </button>
+{/*                         <input type="file" name="file" onChange={this.importCSV}></input>
+ */}
+
+                 <div>
+                    <Button
+                        variant="outline-primary"
+                        className={'btn_loader'}
+                        type="file"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            this.inputRef.current.click()
+                        }}
+                        size={'sm'}>
+                    <FontAwesomeIcon
+                          size="1x"
+                          icon={'upload'}/>
+                    Upload
+                    </Button>
+                    <input
+                        ref={this.inputRef}
+                        className={'d-none'}
+                        type="file"
+                        name={'file_upload'}
+                        onChange={this.importCSV}
+                    />
+                </div>
+                
                             <DatatableView
+                                allow_export={true}
                                 reload_datatable={() => this.loadAddressBook()}
                                 datatable_reload_timestamp={this.state.datatable_reload_timestamp}
                                 loading={this.state.datatable_loading}
