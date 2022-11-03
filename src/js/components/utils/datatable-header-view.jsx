@@ -61,6 +61,14 @@ class DatatableHeaderView extends Component {
                         <Col>
                             <Button variant="outline-primary"
                                     size={'sm'}
+                                        onChange={this.importCSV}>
+                                <FontAwesomeIcon
+                                    icon={action_button.icon}
+                                    size="1x"/>
+                                {action_button.label}
+                            </Button>
+                            <Button variant="outline-primary"
+                                    size={'sm'}
                                     className={'datatable_action_button'}
                                     onClick={() => action_button.on_click(this.props, action_button.args)}>
                                 <FontAwesomeIcon

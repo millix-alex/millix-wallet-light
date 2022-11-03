@@ -6,12 +6,11 @@ import {removeWalletAddressVersion, walletUpdateConfig} from '../redux/actions';
 import DatatableView from './utils/datatable-view';
 import ModalView from './utils/modal-view';
 import ErrorList from './utils/error-list-view';
-import API from '../api/index';
-import * as validate from '../helper/validate';
-import {bool_label} from '../helper/format';
 import DatatableActionButtonView from './utils/datatable-action-button-view';
 import Translation from '../common/translation';
 import localforage from 'localforage';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {Button} from 'react-bootstrap';
 
 
 class AddressBookView extends Component {
@@ -23,14 +22,19 @@ class AddressBookView extends Component {
             datatable_reload_timestamp: new Date(),
             datatable_loading         : false,
             error_list                : [],
-            edited_contact_index      : ''
+            edited_contact_index      : '',
+                error_list_upload: [],
+                image: undefined,
+                importedData: [],
+                importedCols: [{ field: '', header: 'Header' }]
         };
+        
+        this.importCSV = this.importCSV.bind(this);
     }
 
     componentDidMount() {
         this.loadAddressBook();
     }
-
 
     changeModalAddContact = (value = true) => {
         this.setState({
@@ -40,17 +44,7 @@ class AddressBookView extends Component {
         });
     }
 
-    addContact = () => {
-        let random_id = (function() {
-            return Date.now();
-          })()
-
-        let new_contact = {
-            id: random_id,
-            name: this.address_book_name.value,
-            address: this.address_book_address.value
-        }
-        
+    addContact = () => {    
         localforage.getItem('contacts_list').then((contacts_list) => {
             if (contacts_list === null) {
                 contacts_list = []
@@ -58,19 +52,26 @@ class AddressBookView extends Component {
             }
                 return contacts_list
             }).then((contacts_list) => {
-                if (this.state.edited_contact_index !== '') {
+                if (this.state.importedData.length !== 0) {
+                    contacts_list = contacts_list.concat(this.state.importedData.filter( ({id}) => !contacts_list.find(f => f.id == id)));
+                } else if (this.state.edited_contact_index !== '') {
                     contacts_list.forEach((contact, index) => {
                         if (index == this.state.edited_contact_index) {
                             contact.name = this.address_book_name.value
                             contact.address = this.address_book_address.value
                         }
                     })
-            } else {
-                
-                contacts_list.push(new_contact)
+                } else {
+                    let new_contact = {
+                        id: Date.now(),
+                        name: this.address_book_name?.value,
+                        address: this.address_book_address?.value
+                    }
+                    contacts_list.push(new_contact)
             }
             localforage.setItem('contacts_list', contacts_list)
             }).then(() => this.loadAddressBook()).then(() => this.changeModalAddContact(false))
+            this.setState({importedData: []})
     }
         
     getChoosenContactIndex = (choosen_contact) => {
@@ -182,6 +183,38 @@ class AddressBookView extends Component {
         </div>;
     }
 
+    toCapitalize(s) {
+        return s.charAt(0).toUpperCase() + s.slice(1);
+    }
+
+    importCSV(e) {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const csv = e.target.result;
+            const data = csv.replace('\r', '').split('\n').slice(0, -1);
+            const cols = data[0].replace(/['"]+/g, '').split(',');
+            data.shift();
+            let importedCols = cols.map(col => ({ field: col, header: this.toCapitalize(col.replace(/['"]+/g, '')) }));
+            let importedData = data.map(d => {
+                d = d.split(',');
+                return cols.reduce((obj, c, i) => {
+                    obj[c] = d[i]?.replace(/['"]+/g, '');
+                    return obj;
+                }, {});
+            });
+
+            this.setState({
+                importedCols,
+                importedData
+            });
+        };
+        
+        reader.readAsText(file, 'UTF-8');
+        this.addContact()
+    }
+
+    
     render() {
         return <div>
             <ModalView
@@ -199,6 +232,11 @@ class AddressBookView extends Component {
                     </div>
                     <div className={'panel-body'}>
                         <div>
+                        <input type="file" name="file" onChange={this.importCSV}></input>
+                        <button 
+                            onChange={this.importCSV}>sdfsefds
+                                
+                            </button>
                             <DatatableView
                                 reload_datatable={() => this.loadAddressBook()}
                                 datatable_reload_timestamp={this.state.datatable_reload_timestamp}
@@ -213,7 +251,7 @@ class AddressBookView extends Component {
                                 sortOrder={1}
                                 selectionMode={this.props.selectionMode}
                                 onRowClick={this.props.onRowClick}
-                                showActionColumn={this.props.showActionColumn && true}
+                                showActionColumn={this.props.showActionColumn != null ? this.props.showActionColumn : true}
                                 resultColumn={[
                                     {
                                         field : 'name',

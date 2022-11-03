@@ -296,6 +296,7 @@ class NftCreateForm extends Component {
     }
 
     render() {
+        console.log(this.state.image)
         return (
             <>
                 <ErrorList error_list={this.state.error_list}/>
