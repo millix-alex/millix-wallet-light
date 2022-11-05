@@ -68,6 +68,8 @@ class DatatableView extends Component {
                 field={item.field}
                 header={item.header}
                 className={item.class_name}
+                exportable={item.exportable}
+                hidden={item.hidden}
                 // filter={item.filter}
                 // filterField={item.field}
                 // filterElement={this.filterTemplateMultiSelect}
@@ -83,7 +85,8 @@ class DatatableView extends Component {
                 className={'datatable_action_column'}
                 field={'action'}
                 header={Translation.getPhrase('012bb6684')}
-                sortable={false}/>);
+                sortable={false}
+                exportable={false}/>);
         }
 
         this.setState({
@@ -215,6 +218,8 @@ class DatatableView extends Component {
                     on_global_search_change={(e) => this.on_global_search_change(e)}
                     datatable_reference={this.datatable_reference}
                     allow_export={this.props.allow_export}
+                    allow_import={this.props.allow_import}
+                    onImportFile={this.props.onImportFile}
                 />
                 <DataTable value={this.props.value}
                            ref={(el) => {

@@ -26,11 +26,10 @@ class AddressBookView extends Component {
                 error_list_upload: [],
                 image: undefined,
                 importedData: [],
-                importedCols: [{ field: '', header: 'Header' }]
+                importedCols: []
         };
         
         this.importCSV = this.importCSV.bind(this);
-        this.inputRef = React.createRef();
     }
 
     componentDidMount() {
@@ -53,8 +52,9 @@ class AddressBookView extends Component {
             }
                 return contacts_list
             }).then((contacts_list) => {
+                console.log(this.state.importedData)
                 if (this.state.importedData.length !== 0) {
-                    contacts_list = contacts_list.concat(this.state.importedData.filter( ({id}) => !contacts_list.find(f => f.id == id)));
+                    contacts_list = this.state.importedData.concat(contacts_list.filter( ({id}) => !this.state.importedData.find(f => f.id == id)));
                 } else if (this.state.edited_contact_index !== '') {
                     contacts_list.forEach((contact, index) => {
                         if (index == this.state.edited_contact_index) {
@@ -72,7 +72,10 @@ class AddressBookView extends Component {
             }
             localforage.setItem('contacts_list', contacts_list)
             }).then(() => this.loadAddressBook()).then(() => this.changeModalAddContact(false))
-            this.setState({importedData: []})
+            this.setState({
+                importedData: [],
+                importedCols: []
+            })
     }
         
     getChoosenContactIndex = (choosen_contact) => {
@@ -119,6 +122,7 @@ class AddressBookView extends Component {
             datatable_reload_timestamp: new Date(),
             datatable_loading         : false,
             contacts_list             : data?.map((input) => ({
+                id     : input.id,
                 address: input.address,
                 name   : input.name,
                 action : 
@@ -189,6 +193,7 @@ class AddressBookView extends Component {
     }
 
     importCSV(e) {
+        console.log('imported')
         const file = e.target.files[0];
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -199,23 +204,23 @@ class AddressBookView extends Component {
             let importedCols = cols.map(col => ({ field: col, header: this.toCapitalize(col.replace(/['"]+/g, '')) }));
             let importedData = data.map(d => {
                 d = d.split(',');
+                
                 return cols.reduce((obj, c, i) => {
                     obj[c] = d[i]?.replace(/['"]+/g, '');
                     return obj;
                 }, {});
+                
             });
-
-            this.setState({
+        this.setState({
                 importedCols,
                 importedData
             });
         };
-        
         reader.readAsText(file, 'UTF-8');
         this.addContact()
+        e.target.value = null
     }
 
-    
     render() {
         return <div>
             <ModalView
@@ -233,41 +238,17 @@ class AddressBookView extends Component {
                     </div>
                     <div className={'panel-body'}>
                         <div>
-{/*                         <input type="file" name="file" onChange={this.importCSV}></input>
- */}
-
-                 <div>
-                    <Button
-                        variant="outline-primary"
-                        className={'btn_loader'}
-                        type="file"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            this.inputRef.current.click()
-                        }}
-                        size={'sm'}>
-                    <FontAwesomeIcon
-                          size="1x"
-                          icon={'upload'}/>
-                    Upload
-                    </Button>
-                    <input
-                        ref={this.inputRef}
-                        className={'d-none'}
-                        type="file"
-                        name={'file_upload'}
-                        onChange={this.importCSV}
-                    />
-                </div>
                 
                             <DatatableView
+                                datatable_reference={this.datatable_reference}
                                 allow_export={true}
+                                allow_import={true}
                                 reload_datatable={() => this.loadAddressBook()}
                                 datatable_reload_timestamp={this.state.datatable_reload_timestamp}
                                 loading={this.state.datatable_loading}
                                 action_button_label={Translation.getPhrase('d0db52233')}
                                 action_button={{
-                                    label   : 'add new contact',
+                                    label   : 'add contact',
                                     on_click: () => this.changeModalAddContact()
                                 }}
                                 value={this.state.contacts_list}
@@ -275,15 +256,24 @@ class AddressBookView extends Component {
                                 sortOrder={1}
                                 selectionMode={this.props.selectionMode}
                                 onRowClick={this.props.onRowClick}
+                                onImportFile={(e) => this.importCSV(e)}
                                 showActionColumn={this.props.showActionColumn != null ? this.props.showActionColumn : true}
                                 resultColumn={[
                                     {
                                         field : 'name',
-                                        header: 'name'
+                                        header: 'name',
+                                        exportable: true,
                                     },
                                     {
                                         field : 'address',
-                                        header: 'address'
+                                        header: 'address',
+                                        exportable: true
+                                    },
+                                    {
+                                        field : 'id',
+                                        header: 'id',
+                                        exportable: true,
+                                        hidden: true
                                     }
                                 ]}/>
                         </div>
