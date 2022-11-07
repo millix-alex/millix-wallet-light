@@ -9,8 +9,6 @@ import ErrorList from './utils/error-list-view';
 import DatatableActionButtonView from './utils/datatable-action-button-view';
 import Translation from '../common/translation';
 import localforage from 'localforage';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {Button} from 'react-bootstrap';
 
 
 class AddressBookView extends Component {
@@ -45,14 +43,13 @@ class AddressBookView extends Component {
     }
 
     addContact = () => {    
-        localforage.getItem('contacts_list').then((contacts_list) => {
+        localforage.getItem(this.props.wallet.address_key_identifier).then((contacts_list) => {
             if (contacts_list === null) {
                 contacts_list = []
-                localforage.setItem('contacts_list', contacts_list)
+                localforage.setItem(this.props.wallet.address_key_identifier, contacts_list)
             }
                 return contacts_list
             }).then((contacts_list) => {
-                console.log(this.state.importedData)
                 if (this.state.importedData.length !== 0) {
                     contacts_list = this.state.importedData.concat(contacts_list.filter( ({id}) => !this.state.importedData.find(f => f.id == id)));
                 } else if (this.state.edited_contact_index !== '') {
@@ -64,13 +61,13 @@ class AddressBookView extends Component {
                     })
                 } else {
                     let new_contact = {
-                        id: Date.now(),
+                        id: Date.now().toString(),
                         name: this.address_book_name?.value,
                         address: this.address_book_address?.value
                     }
                     contacts_list.push(new_contact)
             }
-            localforage.setItem('contacts_list', contacts_list)
+            localforage.setItem(this.props.wallet.address_key_identifier, contacts_list)
             }).then(() => this.loadAddressBook()).then(() => this.changeModalAddContact(false))
             this.setState({
                 importedData: [],
@@ -79,7 +76,7 @@ class AddressBookView extends Component {
     }
         
     getChoosenContactIndex = (choosen_contact) => {
-        localforage.getItem('contacts_list').then((contacts_list) => {
+        localforage.getItem(this.props.wallet.address_key_identifier).then((contacts_list) => {
             contacts_list.forEach((contact, index) => {
                 if (contact.id == choosen_contact.id) {
                     this.setState({
@@ -92,9 +89,9 @@ class AddressBookView extends Component {
 
     removeAddressBookContact = (choosen_contact) => {
         this.getChoosenContactIndex(choosen_contact)
-        localforage.getItem('contacts_list').then((contacts_list) => {
+        localforage.getItem(this.props.wallet.address_key_identifier).then((contacts_list) => {
             contacts_list.splice(this.state.edited_contact_index, 1)
-            localforage.setItem('contacts_list', contacts_list)
+            localforage.setItem(this.props.wallet.address_key_identifier, contacts_list)
             })
             .then(() => this.setState({
                 edited_contact_index: ''
@@ -111,7 +108,7 @@ class AddressBookView extends Component {
         this.setState({
             datatable_loading: true
         });
-        localforage.getItem('contacts_list')
+        localforage.getItem(this.props.wallet.address_key_identifier)
            .then(data => {
                this.setContactsList(data);
            });
@@ -193,18 +190,17 @@ class AddressBookView extends Component {
     }
 
     importCSV(e) {
-        console.log('imported')
         const file = e.target.files[0];
         const reader = new FileReader();
         reader.onload = (e) => {
             const csv = e.target.result;
-            const data = csv.replace('\r', '').split('\n').slice(0, -1);
+            const data = csv.split(',\n');
             const cols = data[0].replace(/['"]+/g, '').split(',');
             data.shift();
             let importedCols = cols.map(col => ({ field: col, header: this.toCapitalize(col.replace(/['"]+/g, '')) }));
             let importedData = data.map(d => {
-                d = d.split(',');
-                
+                d = d.slice(1, -1).split(',');
+            
                 return cols.reduce((obj, c, i) => {
                     obj[c] = d[i]?.replace(/['"]+/g, '');
                     return obj;
@@ -260,6 +256,12 @@ class AddressBookView extends Component {
                                 showActionColumn={this.props.showActionColumn != null ? this.props.showActionColumn : true}
                                 resultColumn={[
                                     {
+                                        field : 'id',
+                                        header: 'id',
+                                        exportable: true,
+                                        hidden: true
+                                    },
+                                    {
                                         field : 'name',
                                         header: 'name',
                                         exportable: true,
@@ -268,12 +270,6 @@ class AddressBookView extends Component {
                                         field : 'address',
                                         header: 'address',
                                         exportable: true
-                                    },
-                                    {
-                                        field : 'id',
-                                        header: 'id',
-                                        exportable: true,
-                                        hidden: true
                                     }
                                 ]}/>
                         </div>
