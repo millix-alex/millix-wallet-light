@@ -9,6 +9,7 @@ import ErrorList from './utils/error-list-view';
 import DatatableActionButtonView from './utils/datatable-action-button-view';
 import Translation from '../common/translation';
 import localforage from 'localforage';
+import API from '../api';
 
 
 class AddressBookView extends Component {
@@ -42,14 +43,24 @@ class AddressBookView extends Component {
         });
     }
 
+    getContactsList() {
+        return localforage.getItem(this.props.wallet.address_key_identifier)
+                .then(encrypted_list => {
+                    return API.decryptContactsList(encrypted_list)})
+                .then(decrypted_list => {
+                    return JSON.parse(decrypted_list.result)})
+                .catch(() => [])
+    }
+
+    setContactsList(contacts_list) {
+        API.encryptContactsList(contacts_list)
+            .then(encrypted_list => localforage.setItem(this.props.wallet.address_key_identifier, encrypted_list.result))
+            .then(() => this.loadAddressBook())
+    }
+
     addContact = () => {    
-        localforage.getItem(this.props.wallet.address_key_identifier).then((contacts_list) => {
-            if (contacts_list === null) {
-                contacts_list = []
-                localforage.setItem(this.props.wallet.address_key_identifier, contacts_list)
-            }
-                return contacts_list
-            }).then((contacts_list) => {
+        this.getContactsList()
+            .then((contacts_list) => {
                 if (this.state.importedData.length !== 0) {
                     contacts_list = this.state.importedData.concat(contacts_list.filter( ({id}) => !this.state.importedData.find(f => f.id == id)));
                 } else if (this.state.edited_contact_index !== '') {
@@ -66,36 +77,39 @@ class AddressBookView extends Component {
                         address: this.address_book_address?.value
                     }
                     contacts_list.push(new_contact)
-            }
-            localforage.setItem(this.props.wallet.address_key_identifier, contacts_list)
-            }).then(() => this.loadAddressBook()).then(() => this.changeModalAddContact(false))
-            this.setState({
-                importedData: [],
-                importedCols: []
+                }
+                return contacts_list
             })
+            .then(contacts_list => this.setContactsList(contacts_list))
+            .then(() => this.changeModalAddContact(false))
+        this.setState({
+            importedData: [],
+            importedCols: []
+        })
     }
         
     getChoosenContactIndex = (choosen_contact) => {
-        localforage.getItem(this.props.wallet.address_key_identifier).then((contacts_list) => {
-            contacts_list.forEach((contact, index) => {
-                if (contact.id == choosen_contact.id) {
-                    this.setState({
-                        edited_contact_index: index
-                    })
-                }
+        this.getContactsList()
+            .then((contacts_list) => {
+                contacts_list.forEach((contact, index) => {
+                    if (contact.id == choosen_contact.id) {
+                        this.setState({
+                            edited_contact_index: index
+                        })
+                    }
+                })
             })
-        })
     }
 
     removeAddressBookContact = (choosen_contact) => {
         this.getChoosenContactIndex(choosen_contact)
-        localforage.getItem(this.props.wallet.address_key_identifier).then((contacts_list) => {
-            contacts_list.splice(this.state.edited_contact_index, 1)
-            localforage.setItem(this.props.wallet.address_key_identifier, contacts_list)
-            })
+        this.getContactsList()
+            .then((contacts_list) => {
+                contacts_list.splice(this.state.edited_contact_index, 1)
+                this.setContactsList(contacts_list)})
             .then(() => this.setState({
                 edited_contact_index: ''
-            }))
+                }))
             .then(() => this.loadAddressBook())
     }
 
@@ -108,13 +122,11 @@ class AddressBookView extends Component {
         this.setState({
             datatable_loading: true
         });
-        localforage.getItem(this.props.wallet.address_key_identifier)
-           .then(data => {
-               this.setContactsList(data);
-           });
+        this.getContactsList()
+            .then(data => {this.fillContactsDatatable(data)})
     }
 
-    setContactsList(data) {
+    fillContactsDatatable(data) {
         this.setState({
             datatable_reload_timestamp: new Date(),
             datatable_loading         : false,
