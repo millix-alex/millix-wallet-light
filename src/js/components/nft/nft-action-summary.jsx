@@ -10,7 +10,6 @@ import * as text from '../../helper/text';
 import {changeLoaderState} from '../loader';
 import Transaction from '../../common/transaction';
 import {TRANSACTION_DATA_TYPE_ASSET, TRANSACTION_DATA_TYPE_NFT, TRANSACTION_DATA_TYPE_TRANSACTION} from '../../../config';
-import API from '../../api';
 import utils from '../../helper/utils';
 
 
@@ -130,10 +129,9 @@ class NftActionSummaryView extends Component {
         return this.state.nft_data.transaction?.address_key_identifier_to === this.props.wallet.address_key_identifier;
     }
 
-    render() {
-        let owner_action_list = '';
-        if (this.isOwner()) {
-            owner_action_list = <>
+    getOwnerActionList() {
+        if (this.isOwner() && !this.isAssetPreviewType()) {
+            return <>
                 <div className={'mt-3'}>
                     <Button
                         variant="outline-default"
@@ -155,76 +153,112 @@ class NftActionSummaryView extends Component {
                 </div>
 
                 <div className={'mt-3'}>
-                    <a href={this.state.src} target={'_blank'} className={'btn btn-outline-default w-100'}>
+                    <a href={this.state.src} target={'_blank'} className={'btn btn-outline-default w-100'} rel="noreferrer">
                         <FontAwesomeIcon icon={'file'}/>raw image
                     </a>
                 </div>
             </>;
         }
+    }
 
-        let detail_link = '';
+    isAssetPreviewType(){
+        return this.props.preview_type === 'asset' || this.props.asset_page
+    }
+
+    getAssetActionList() {
+        if (this.isAssetPreviewType()) {
+            return <>
+                <div className={'mt-3'}>
+                    <Button
+                        variant="outline-default"
+                        className={'w-100'}
+                        onClick={() => this.props.history.push('/transaction/' + this.state.nft_data.txid)}>
+                        <FontAwesomeIcon icon={'list'}/>transaction
+                    </Button>
+                </div>
+                <div className={'mt-3'}>
+                    <a href={this.state.src} target={'_blank'} className={'btn btn-outline-default w-100'} rel="noreferrer">
+                        <FontAwesomeIcon icon={'file'}/>raw image
+                    </a>
+                </div>
+            </>;
+        }
+    }
+
+    getDetailsActionButton() {
         if (!this.props.view_page) {
-            detail_link = <div className={'mt-3'}>
+            return <div className={'mt-3'}>
                 <Button variant="outline-default"
                         className={'w-100'}
                         onClick={() => {
                             this.props.history.push(this.getViewLink());
                         }}
                 >
-                    <FontAwesomeIcon icon={'eye'}/>details
+                    <FontAwesomeIcon icon={'eye'}/>detail
                 </Button>
             </div>;
         }
+    }
 
-        const popoverFocus = (
-            <Popover className="nftActionSummaryPopover">
-                <Popover.Header>
-                    <div className={'page_subtitle'}>
-                        nft actions
-                    </div>
-                </Popover.Header>
-                <Popover.Body>
-                    <div>
-                        <Form.Group>
-                            <label>public preview link</label>
-                            <Col className={'input-group'}>
-                                <Form.Control type="text" value={this.getViewLink(true)} readOnly={true}/>
-                                <button
-                                    className="btn btn-outline-input-group-addon icon_only"
-                                    type="button"
-                                    onClick={() => this.copyViewLink()}
-                                >
-                                    <FontAwesomeIcon
-                                        icon={'copy'}/>
-                                </button>
-                            </Col>
-                        </Form.Group>
-                        <div className={'mt-3'}>
-                            <Button
-                                variant="outline-default"
-                                className={'w-100'}
-                                onClick={() => this.props.history.push('/transaction/' + this.state.nft_data.txid)}>
-                                <FontAwesomeIcon icon={'list'}/>transaction
-                            </Button>
-                        </div>
-                        {owner_action_list}
-                        {detail_link}
-                    </div>
-                </Popover.Body>
-            </Popover>
-        );
+    getStandardActionList() {
+        if (!this.isAssetPreviewType()) {
+            return <>
+                <Form.Group>
+                    <label>public preview link</label>
+                    <Col className={'input-group'}>
+                        <Form.Control type="text" value={this.getViewLink(true)} readOnly={true}/>
+                        <button
+                            className="btn btn-outline-input-group-addon icon_only"
+                            type="button"
+                            onClick={() => this.copyViewLink()}
+                        >
+                            <FontAwesomeIcon
+                                icon={'copy'}/>
+                        </button>
+                    </Col>
+                </Form.Group>
+                <div className={'mt-3'}>
+                    <Button
+                        variant="outline-default"
+                        className={'w-100'}
+                        onClick={() => this.props.history.push('/transaction/' + this.state.nft_data.txid)}>
+                        <FontAwesomeIcon icon={'list'}/>transaction
+                    </Button>
+                </div>
+            </>;
+        }
+    }
 
+    getPopover() {
+        return <Popover className="nftActionSummaryPopover">
+            <Popover.Header>
+                <div className={'page_subtitle'}>
+                    {this.props.asset_page ? 'asset' : 'nft'} actions
+                </div>
+            </Popover.Header>
+            <Popover.Body>
+                <div>
+                    {this.getStandardActionList()}
+                    {this.getOwnerActionList()}
+                    {this.getAssetActionList()}
+                    {this.getDetailsActionButton()}
+                </div>
+            </Popover.Body>
+        </Popover>;
+    }
+
+    render() {
         return (
             <>
                 <OverlayTrigger
-                    trigger={['click']}
+                    trigger='click'
                     rootClose
                     placement="auto"
-                    overlay={popoverFocus}
+                    overlay={(() => this.getPopover())()}
                 >
                     <Button
-                        variant="outline-default"
-                        size={'xs'}>
+                        variant='outline-default'
+                        size='xs'>
                         <FontAwesomeIcon icon={'caret-down'}/>actions
                     </Button>
                 </OverlayTrigger>
@@ -287,7 +321,8 @@ NftActionSummaryView.propTypes = {
     nft_data                       : PropTypes.any,
     src                            : PropTypes.string,
     view_page                      : PropTypes.bool,
-    modal_show_burn_result_on_close: PropTypes.any
+    modal_show_burn_result_on_close: PropTypes.any,
+    asset_page                     : PropTypes.bool
 };
 
 export default connect(

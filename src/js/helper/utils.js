@@ -83,7 +83,7 @@ function nftImageData(transaction) {
     };
 }
 
-function getNftViewLink(nft_data, absolute = false) {
+function getNftViewLink(nft_data, absolute = false, preview_type = 'nft') {
     let origin = '';
     if (absolute) {
         origin = window.location.origin;
@@ -98,7 +98,7 @@ function getNftViewLink(nft_data, absolute = false) {
         }
     }
 
-    return `${origin}/nft-preview/?p0=${nft_data.transaction.transaction_id}&p1=${nft_data.transaction.address_key_identifier_to}&p2=${nft_data.file_key}&p3=${nft_data.hash}&p4=${nft_data.metadata_hash}`;
+    return `${origin}/${preview_type}-preview/?p0=${nft_data.transaction.transaction_id}&p1=${nft_data.transaction.address_key_identifier_to}&p2=${nft_data.file_key}&p3=${nft_data.hash}&p4=${nft_data.metadata_hash}`;
 }
 
 function is_main_network_address(address_key_identifier) {

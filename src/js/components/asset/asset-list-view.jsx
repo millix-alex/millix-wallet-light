@@ -10,6 +10,7 @@ import {TRANSACTION_DATA_TYPE_ASSET} from '../../../config';
 import ReloadTimeTickerView from '../utils/reload-time-ticker-view';
 import moment from 'moment';
 import {changeLoaderState} from '../loader';
+import NftCard from '../nft/nft-card-summary';
 
 
 class AssetListView extends Component {
@@ -73,21 +74,7 @@ class AssetListView extends Component {
                         <div className={'nft-collection-img'}>
                             <img src={src} alt={alt}/>
                         </div>
-                        <Card.Body>
-                            <div className={'nft-name page_subtitle'}>{name}</div>
-                            <div className={'nft-description'}>{description}</div>
-                            <div className={'nft-action-section'}>
-                                <Button variant="outline-primary"
-                                        size={'sm'}
-                                        className={'preview_button_trans'}
-                                        onClick={() => this.props.history.push('/transaction/' + image_props.txid)}
-                                >
-                                    <FontAwesomeIcon icon={'list'}/>
-                                    transaction
-                                </Button>
-
-                            </div>
-                        </Card.Body>
+                        <NftCard name={name} description={description} image_props={image_props} action_after_burn={() => this.reloadCollection()} preview_type='asset'/>
                     </Card>
                 </Col>
             );
