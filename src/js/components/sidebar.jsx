@@ -4,11 +4,11 @@ import {connect} from 'react-redux';
 import {lockWallet} from '../redux/actions/index';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import ModalView from './utils/modal-view';
-import * as format from '../helper/format';
 import API from '../api';
 import {Badge} from 'react-bootstrap';
 import {changeLoaderState} from './loader';
 import Translation from '../common/translation';
+import Clock from './clock';
 
 
 class Sidebar extends Component {
@@ -212,7 +212,7 @@ class Sidebar extends Component {
                            }}
                            body={<div>{Translation.getPhrase('9beb3bbfe')}</div>}/>
                 <div className="nav-utc_clock">
-                    <span>{format.date(this.date)} utc</span>
+                    <Clock/>
                 </div>
                 <SideNav.Nav
                     selected={defaultSelected}

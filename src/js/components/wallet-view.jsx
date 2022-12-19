@@ -12,6 +12,8 @@ import * as validate from '../helper/validate';
 import * as text from '../helper/text';
 import Transaction from '../common/transaction';
 import Translation from '../common/translation';
+import * as convert from '../helper/convert';
+import * as svg from '../helper/svg';
 import BackupReminderView from './education/backup-reminder-view';
 
 
@@ -19,16 +21,18 @@ class WalletView extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            fee_input_locked       : true,
-            error_list             : [],
-            modal_show_confirmation: false,
-            modal_show_send_result : false,
-            modal_body_send_result : [],
-            address_base           : '',
-            address_version        : '',
-            address_key_identifier : '',
-            amount                 : '',
-            fee                    : ''
+            fee_input_locked                  : true,
+            error_list                        : [],
+            modal_show_confirmation           : false,
+            modal_show_send_result            : false,
+            modal_body_send_result            : [],
+            address_base                      : '',
+            address_version                   : '',
+            address_key_identifier            : '',
+            amount                            : '',
+            amount_usd                        : '',
+            fee                               : '',
+            is_currency_pair_summary_available: true
         };
 
         this.send = this.send.bind(this);
@@ -37,6 +41,14 @@ class WalletView extends Component {
     componentWillUnmount() {
         if (this.state.sending) {
             API.interruptTransaction().then(_ => _);
+        }
+    }
+
+    componentWillMount() {
+        if (this.props.currency_pair_summary.price === 0) {
+            this.setState({
+                is_currency_pair_summary_available: false
+            });
         }
     }
 
@@ -89,7 +101,10 @@ class WalletView extends Component {
 
     clearSendForm() {
         this.destinationAddress.value = '';
-        this.amount.value             = '';
+        this.setState({
+            amount    : '',
+            amount_usd: ''
+        });
 
         if (this.props.config.TRANSACTION_FEE_DEFAULT !== undefined) {
             this.fee.value = format.millix(this.props.config.TRANSACTION_FEE_DEFAULT, false);
@@ -153,26 +168,82 @@ class WalletView extends Component {
                                 <Col>
                                     <Form.Group className="form-group">
                                         <label>{Translation.getPhrase('c9861d7c2')}</label>
-                                        <Form.Control type="text"
-                                                      placeholder={Translation.getPhrase('c9861d7c2')}
-                                                      ref={c => this.destinationAddress = c}/>
+                                        <div className={'input-group'}>
+                                            <button
+                                                className="btn btn-outline-input-group-addon icon_only"
+                                                type="button">
+                                                <FontAwesomeIcon
+                                                    icon={'fa-solid fa-qrcode'}/>
+                                            </button>
+                                            <Form.Control type="text"
+                                                          placeholder={Translation.getPhrase('c9861d7c2')}
+                                                          ref={c => this.destinationAddress = c}/>
+                                        </div>
                                     </Form.Group>
                                 </Col>
                                 <Col>
-                                    <Form.Group className="form-group">
+                                    <Form.Group className={'form-group'} as={Row}>
                                         <label>{Translation.getPhrase('cdfa46e99')}</label>
-                                        <Form.Control type="text"
-                                                      placeholder={Translation.getPhrase('cdfa46e99')}
-                                                      pattern="[0-9]+([,][0-9]{1,2})?"
-                                                      ref={c => this.amount = c}
-                                                      onChange={validate.handleAmountInputChange.bind(this)}/>
+                                        <Col className={'input-group'}>
+                                            <button
+                                                className="btn btn-outline-input-group-addon icon_only amount-millix-icon-wrapper"
+                                                type="button">
+                                                <div className={'amount-millix-icon'}>
+                                                    {svg.millix_logo('#a9a9a9')}
+                                                </div>
+                                            </button>
+                                            <Form.Control type="text"
+                                                          placeholder={'millix ' + Translation.getPhrase('cdfa46e99')}
+                                                          pattern="[0-9]+([,][0-9]{1,2})?"
+                                                          value={this.state.amount}
+                                                          onChange={(value) => {
+                                                              validate.handleAmountInputChange(value);
+                                                              if (this.state.is_currency_pair_summary_available) {
+                                                                  this.setState({
+                                                                      amount_usd: convert.fiat(value.target.value.replaceAll(',', ''), false)
+                                                                  });
+                                                              }
+                                                              this.setState({
+                                                                  amount: value.target.value
+                                                              });
+                                                          }}
+                                            />
+                                        </Col>
+
+                                        {this.state.is_currency_pair_summary_available &&
+                                         <Col className={'input-group'}>
+                                             <button
+                                                 className="btn btn-outline-input-group-addon icon_only usd-icon"
+                                                 type="button">
+                                                 <FontAwesomeIcon
+                                                     icon={'fa-money-bill'}/>
+                                             </button>
+                                             <Form.Control type="text"
+                                                           placeholder={'usd ' + Translation.getPhrase('cdfa46e99')}
+                                                           pattern="[0-9]+([,][0-9]{1,2})?"
+                                                           value={this.state.amount_usd}
+                                                           onChange={(value) => {
+                                                               validate.handleAmountInputChangeUsd(value);
+                                                               this.setState({
+                                                                   amount    : convert.usd(value.target.value),
+                                                                   amount_usd: value.target.value
+                                                               });
+                                                           }}
+                                             />
+                                         </Col>
+                                        }
                                     </Form.Group>
                                 </Col>
                                 <Col>
-                                    <Form.Group className="form-group"
-                                                as={Row}>
+                                    <Form.Group className="form-group" as={Row}>
                                         <label>{Translation.getPhrase('5d5997bf3')}</label>
                                         <Col className={'input-group'}>
+                                            <button
+                                                className="btn btn-outline-input-group-addon icon_only"
+                                                type="button">
+                                                <FontAwesomeIcon
+                                                    icon={'fa-solid fa-building-columns'}/>
+                                            </button>
                                             <Form.Control type="text"
                                                           placeholder={Translation.getPhrase('5d5997bf3')}
                                                           pattern="[0-9]+([,][0-9]{1,2})?"

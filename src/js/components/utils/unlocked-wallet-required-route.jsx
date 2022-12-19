@@ -140,7 +140,6 @@ const UnlockedWalletRequiredRoute = ({
 
 export default connect(
     state => ({
-        clock                : state.clock,
         wallet               : state.wallet,
         node                 : state.node,
         currency_pair_summary: state.currency_pair_summary

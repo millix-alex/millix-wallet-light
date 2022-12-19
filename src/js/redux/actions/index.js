@@ -7,7 +7,6 @@ import {
     SET_BACKLOG_SIZE,
     SET_LOG_SIZE,
     UNLOCK_WALLET,
-    UPDATE_CLOCK,
     UPDATE_MESSAGE_STAT,
     UPDATE_NETWORK_CONNECTIONS,
     UPDATE_NETWORK_STATE,
@@ -208,13 +207,6 @@ export function walletUpdateBalance(payload) {
     return {
         type: UPDATE_WALLET_BALANCE,
         payload
-    };
-}
-
-export function updateClock(clock) {
-    return {
-        type   : UPDATE_CLOCK,
-        payload: {clock}
     };
 }
 

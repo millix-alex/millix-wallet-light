@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import AppContainer from './js/components/app-container';
 import store from './js/redux/store';
-import {unlockWallet, updateClock, addStorageConfig, addWalletConfig, updateNodeAttribute, updateWalletAddressVersion, updateNotificationVolume} from './js/redux/actions';
+import {unlockWallet, addStorageConfig, addWalletConfig, updateNodeAttribute, updateWalletAddressVersion, updateNotificationVolume} from './js/redux/actions';
 import reportWebVitals from './reportWebVitals';
 import {config as faConfig, library} from '@fortawesome/fontawesome-svg-core';
 import {
@@ -63,7 +63,10 @@ import {
     faCaretDown,
     faArrowRightArrowLeft,
     faFile,
-    faTriangleExclamation
+    faTriangleExclamation,
+    faMoneyBill,
+    faQrcode,
+    faBuildingColumns
 } from '@fortawesome/free-solid-svg-icons';
 import './css/bootstrap/bootstrap.scss';
 
@@ -75,8 +78,6 @@ import '../node_modules/@trendmicro/react-sidenav/dist/react-sidenav.css';
 import '../node_modules/@fortawesome/fontawesome-svg-core/styles.css';
 import './css/app.scss';
 import API from './js/api';
-import ntp from './js/core/ntp';
-import moment from 'moment';
 import localforage from 'localforage';
 import Loader from './js/components/loader';
 
@@ -91,7 +92,8 @@ library.add(faArrowCircleLeft, faWallet, faKey, faHome, faFingerprint,
     faPause, faQuestionCircle, faThList, faRedo, faEllipsisV,
     faChainSlash, faChainBroken,
     faRotateLeft, faCodeMerge, faCheckCircle, faReply, faEnvelope, faLink, faFire, faBomb,
-    faArrowRight, faUpload, faMinusCircle, faCopy, faCaretDown, faArrowRightArrowLeft, faFile, faTriangleExclamation);
+    faArrowRight, faUpload, faMinusCircle, faCopy, faCaretDown, faArrowRightArrowLeft, faFile, faTriangleExclamation,
+    faMoneyBill, faQrcode, faBuildingColumns);
 
 
 let apiInfo = {
@@ -151,16 +153,6 @@ window.addEventListener('message', (e) => {
         e.stopImmediatePropagation();
     }
 });
-
-setInterval(() => {
-    if (!ntp.initialized || !store.getState().wallet.unlocked) {
-        return;
-    }
-
-    let clock = new Date();
-    clock.setUTCMilliseconds(clock.getUTCMilliseconds() + ntp.offset);
-    store.dispatch(updateClock(moment.utc(clock).format('HH:mm:ss')));
-}, 900);
 
 const getNodeAboutAttribute = () => {
     if (!store.getState().node.node_version) {

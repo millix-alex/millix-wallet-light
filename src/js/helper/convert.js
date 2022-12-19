@@ -11,6 +11,11 @@ export function fiat(amount, append_ticker = true) {
     return fiat_value;
 }
 
+export function usd(amount) {
+    let currency_pair_summary = store.getState().currency_pair_summary;
+    return format_fiat(amount / currency_pair_summary.price);
+}
+
 export function is_currency_pair_summary_available() {
     return store.getState().currency_pair_summary.price > 0;
 }
