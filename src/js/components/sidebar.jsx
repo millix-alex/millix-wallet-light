@@ -12,7 +12,7 @@ import Clock from './clock';
 
 
 class Sidebar extends Component {
-    date  = Date.now();
+    date = Date.now();
 
     constructor(props) {
         super(props);
@@ -65,7 +65,7 @@ class Sidebar extends Component {
 
     getAvailableVersionLink() {
         let link = null;
-        if (this.state.node_millix_version && this.state.node_millix_version !== this.state.node_millix_version_available) {
+        if (this.state.node_millix_version && this.state.node_millix_version_available > this.state.node_millix_version) {
             let download_url = 'https://tangled.com/browser/download.php';
             if (this.state.application === 'client') {
                 download_url = 'https://millix.org/client.html';
@@ -99,38 +99,47 @@ class Sidebar extends Component {
         let result = false;
         if (!this.state.ignore_is_expanded || this.state.ignore_is_expanded !== defaultSelected) {
             const section_list = {
-                transaction: [
+                trade        : [],
+                earn         : [],
+                transaction  : [
                     '/transaction-list',
                     '/unspent-transaction-output-list/pending',
                     '/unspent-transaction-output-list/stable'
                 ],
-                status: [
+                status       : [
                     '/status-summary',
                     '/peers',
                     '/backlog'
                 ],
                 advertisement: [
                     '/advertisement-list',
-                    '/advertisement-received-list',
+                    '/advertisement-received-list'
                 ],
-                config: [
+                config       : [
                     '/config/general',
                     '/config/network',
                     '/config/connection',
                     '/config/consensus',
                     '/config/address-version',
-                    '/config/storage',
+                    '/config/storage'
                 ],
-                help: [
+                help         : [
                     '/faq',
                     '/report-issue',
                     '/system-info'
                 ],
-                message: [
+                message      : [
                     '/message-compose',
                     '/message-sent',
-                    '/message-inbox',
+                    '/message-inbox'
                 ],
+                asset        : [
+                    '/asset-list'
+                ],
+                nft          : [
+                    '/nft-create',
+                    '/nft-collection'
+                ]
             };
 
             result = section_list[section].includes(defaultSelected);
@@ -214,10 +223,57 @@ class Sidebar extends Component {
                         </NavText>
                     </NavItem>
 
-                    <NavItem key={'trade'}>
-                        <NavText onClick={() => window.open('https://millix.com', '_blank').focus()}>
-                            {Translation.getPhrase('14539e6a9')}
+
+                    <NavItem
+                        eventKey="trade"
+                        expanded={this.isExpanded('trade', defaultSelected)}
+                        id="trade"
+                        onClick={() => this.toggleParentNavigationItem('trade')}
+                    >
+                        <NavText>
+                            {Translation.getPhrase('14539e6a9')} <FontAwesomeIcon className={'icon'}
+                                                                                  icon="chevron-down"
+                                                                                  size="1x"/>
+                            <FontAwesomeIcon className={'icon hidden'}
+                                             icon="chevron-up"
+                                             size="1x"/>
                         </NavText>
+                        <NavItem key={'swapland_io'} onClick={() => window.open('https://swapland.io', '_blank').focus()}>
+                            <NavText>
+                                swapland.io
+                            </NavText>
+                        </NavItem>
+                        <NavItem key={'millix_com'} onClick={() => window.open('https://millix.com', '_blank').focus()}>
+                            <NavText>
+                                millix.com
+                            </NavText>
+                        </NavItem>
+                    </NavItem>
+
+                    <NavItem
+                        eventKey="earn"
+                        expanded={this.isExpanded('earn', defaultSelected)}
+                        id="trade"
+                        onClick={() => this.toggleParentNavigationItem('earn')}
+                    >
+                        <NavText>
+                            {Translation.getPhrase('gF2RunKcS')} <FontAwesomeIcon className={'icon'}
+                                                                                  icon="chevron-down"
+                                                                                  size="1x"/>
+                            <FontAwesomeIcon className={'icon hidden'}
+                                             icon="chevron-up"
+                                             size="1x"/>
+                        </NavText>
+                        <NavItem key={'cobrahelix_com'} onClick={() => window.open('https://www.cobrahelix.com/', '_blank').focus()}>
+                            <NavText>
+                                cobrahelix.com
+                            </NavText>
+                        </NavItem>
+                        <NavItem key={'tangledtrivia_com'} onClick={() => window.open('https://tangledtrivia.com/', '_blank').focus()}>
+                            <NavText>
+                                tangledtrivia.com
+                            </NavText>
+                        </NavItem>
                     </NavItem>
 
                     <NavItem key={'address-list'} eventKey="/address-list">
@@ -234,8 +290,8 @@ class Sidebar extends Component {
                     >
                         <NavText>
                             {Translation.getPhrase('81af00358')} <FontAwesomeIcon className={'icon'}
-                                                          icon="chevron-down"
-                                                          size="1x"/>
+                                                                                  icon="chevron-down"
+                                                                                  size="1x"/>
                             <FontAwesomeIcon className={'icon hidden'}
                                              icon="chevron-up"
                                              size="1x"/>
@@ -269,8 +325,8 @@ class Sidebar extends Component {
                     >
                         <NavText>
                             {Translation.getPhrase('b4c4bc1af')} <FontAwesomeIcon className={'icon'}
-                                                            icon="chevron-down"
-                                                            size="1x"/>
+                                                                                  icon="chevron-down"
+                                                                                  size="1x"/>
                             <FontAwesomeIcon className={'icon hidden'}
                                              icon="chevron-up"
                                              size="1x"/>
@@ -288,7 +344,56 @@ class Sidebar extends Component {
                             </NavText>
                         </NavItem>
                     </NavItem>
-
+                    <NavItem
+                        eventKey="asset"
+                        expanded={this.isExpanded('asset', defaultSelected)}
+                        className={'assetParent'}
+                        id="asset"
+                        onClick={() => this.toggleParentNavigationItem('asset')}
+                    >
+                        <NavText>
+                            asset <FontAwesomeIcon className={'icon'}
+                                                   icon="chevron-down"
+                                                   size="1x"/>
+                            <FontAwesomeIcon className={'icon hidden'}
+                                             icon="chevron-up"
+                                             size="1x"/>
+                        </NavText>
+                        <NavItem key={'nft-create'}
+                                 eventKey="/asset-list">
+                            <NavText>
+                                list
+                            </NavText>
+                        </NavItem>
+                    </NavItem>
+                    <NavItem
+                        eventKey="nft"
+                        expanded={this.isExpanded('nft', defaultSelected)}
+                        className={'nftParent'}
+                        id="nft"
+                        onClick={() => this.toggleParentNavigationItem('nft')}
+                    >
+                        <NavText>
+                            nft <FontAwesomeIcon className={'icon'}
+                                                 icon="chevron-down"
+                                                 size="1x"/>
+                            <FontAwesomeIcon className={'icon hidden'}
+                                             icon="chevron-up"
+                                             size="1x"/>
+                        </NavText>
+                        <NavItem key={'nft-create'}
+                                 eventKey="/nft-create">
+                            <NavText>
+                                create
+                            </NavText>
+                        </NavItem>
+                        <NavItem key={'nft-collection'}
+                                 eventKey="/nft-collection">
+                            <NavText>
+                                collection
+                            </NavText>
+                        </NavItem>
+                    </NavItem>
                     <NavItem
                         eventKey="message"
                         expanded={this.isExpanded('message', defaultSelected)}
@@ -298,8 +403,8 @@ class Sidebar extends Component {
                     >
                         <NavText>
                             {Translation.getPhrase('f5f535670')}{this.getMessageCountBadge()} <FontAwesomeIcon className={'icon'}
-                                                                                   icon="chevron-down"
-                                                                                   size="1x"/>
+                                                                                                               icon="chevron-down"
+                                                                                                               size="1x"/>
                             <FontAwesomeIcon className={'icon hidden'}
                                              icon="chevron-up"
                                              size="1x"/>
@@ -337,8 +442,8 @@ class Sidebar extends Component {
                     >
                         <NavText>
                             {Translation.getPhrase('657f2e9d7')} <FontAwesomeIcon className={'icon'}
-                                                    icon="chevron-down"
-                                                    size="1x"/>
+                                                                                  icon="chevron-down"
+                                                                                  size="1x"/>
                             <FontAwesomeIcon className={'icon hidden'}
                                              icon="chevron-up"
                                              size="1x"/>
@@ -374,8 +479,8 @@ class Sidebar extends Component {
                     >
                         <NavText>
                             {Translation.getPhrase('508a453d7')} <FontAwesomeIcon className={'icon'}
-                                                      icon="chevron-down"
-                                                      size="1x"/>
+                                                                                  icon="chevron-down"
+                                                                                  size="1x"/>
                             <FontAwesomeIcon className={'icon hidden'}
                                              icon="chevron-up"
                                              size="1x"/>
@@ -416,8 +521,8 @@ class Sidebar extends Component {
                     <NavItem eventKey="help">
                         <NavText>
                             {Translation.getPhrase('b7ae09c4b')} <FontAwesomeIcon className={'icon'}
-                                                  icon="chevron-down"
-                                                  size="1x"/>
+                                                                                  icon="chevron-down"
+                                                                                  size="1x"/>
                             <FontAwesomeIcon className={'icon hidden'}
                                              icon="chevron-up"
                                              size="1x"/>

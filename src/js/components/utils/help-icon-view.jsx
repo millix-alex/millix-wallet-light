@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {Route, withRouter} from 'react-router-dom';
+import {withRouter} from 'react-router-dom';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {OverlayTrigger, Popover} from 'react-bootstrap';
 import {connect} from 'react-redux';
@@ -308,6 +308,70 @@ class HelpIconView extends Component {
                         {Translation.getPhrase('c99fbcfeb')}
                     </li>
                 </ul>
+            },
+            'nft'                         : {
+                'title': 'nft',
+                'body' : <ul>
+                    <li>
+                        be sure to protect your nfts by backing up your millix transaction database: {this.props.config.database_dir}
+                    </li>
+                    <li>
+                        and the nft files: {this.props.config.file_dir}
+                    </li>
+                </ul>
+            }
+            ,
+            'nft_trade': {
+                'title': 'best practices for safely buying nfts',
+                'body' : <ul>
+                    <li>
+                        there is no guarantee that this nft is currently owned by the person that sent you this preview link
+                    </li>
+                    <li>
+                        use a trustworthy marketplace or escrow service
+                    </li>
+                    <li>
+                        if the nft was recently minted continue to reload the page until the transaction is stable
+                    </li>
+                    <li>
+                        if the nft was minted with a verified sender, examine the website to determine if it matches the nft and looks trustworthy
+                    </li>
+                </ul>
+            }
+            ,
+            'auto_aggregation'         : {
+                'title': 'auto-aggregation',
+                'body' : <ul>
+                    <li>
+                        auto-aggregation optimizes the funds in your wallet
+                    </li>
+                    <li>
+                        when enabled, auto-aggregation runs every few minutes
+                    </li>
+                    <li>
+                        you may see a pending balance in your wallet when auto-aggregation runs
+                    </li>
+                    <li>
+                        disable auto-aggregation if you want to preserve the exact amount of payments
+                    </li>
+                </ul>
+            },
+            'contribute_to_translation': {
+                'title': 'contribute to translation',
+                'body' : <ul>
+                    <li>
+                        to contribute to translation in the dropdown below choose "yes" to see unique phrase identifiers
+                    </li>
+                    <li>
+                        copy an identifier of a phrase, put it in a spreadsheet and add a translation that you think is correct next to it
+                    </li>
+                    <li>
+                        send the spreadsheet to us and we will include it in one of next build, so you can enjoy a better interface
+                    </li>
+                    <li>
+                        make sure you let us know which language you contribute to
+                    </li>
+                </ul>
             }
         };
         let help_item     = false;
@@ -360,7 +424,8 @@ HelpIconView.propTypes = {
 
 export default connect(
     state => ({
-        wallet: state.wallet
+        wallet: state.wallet,
+        config: state.config
     }), {
         updateNetworkState
     })(withRouter(HelpIconView));

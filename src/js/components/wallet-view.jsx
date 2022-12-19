@@ -14,6 +14,7 @@ import Transaction from '../common/transaction';
 import Translation from '../common/translation';
 import * as convert from '../helper/convert';
 import * as svg from '../helper/svg';
+import BackupReminderView from './education/backup-reminder-view';
 
 
 class WalletView extends Component {
@@ -62,11 +63,10 @@ class WalletView extends Component {
         }
 
         const transaction_params = {
-            addresses: [validate.required(Translation.getPhrase('c9861d7c2'), this.destinationAddress.value, error_list)],
-            amount   : validate.amount(Translation.getPhrase('cdfa46e99'), this.state.amount, error_list),
-            fee      : validate.amount(Translation.getPhrase('3ae48ceb8'), this.fee.value, error_list)
+            address_list: [validate.required(Translation.getPhrase('c9861d7c2'), this.destinationAddress.value, error_list)],
+            amount      : validate.amount(Translation.getPhrase('cdfa46e99'), this.amount.value, error_list),
+            fee         : validate.amount(Translation.getPhrase('3ae48ceb8'), this.fee.value, error_list)
         };
-
         if (error_list.length === 0) {
             Transaction.verifyAddress(transaction_params).then((data) => {
                 const addressList = data.address_list;
@@ -151,163 +151,160 @@ class WalletView extends Component {
 
     render() {
         return (
-            <div>
-                <Row>
-                    <Col md={12}>
-                        <BalanceView
-                            stable={this.props.wallet.balance_stable}
-                            pending={this.props.wallet.balance_pending}
-                            primary_address={this.props.wallet.address}
-                        />
-                        <div className={'panel panel-filled'}>
-                            <div className={'panel-heading bordered'}>{Translation.getPhrase('2c2a681e8')}</div>
-                            <div className={'panel-body'}>
-                                <ErrorList
-                                    error_list={this.state.error_list}/>
-                                <Row>
-                                    <Form>
-                                        <Col>
-                                            <Form.Group className="form-group">
-                                                <label>{Translation.getPhrase('c9861d7c2')}</label>
-                                                <div className={'input-group'}>
-                                                    <button
-                                                        className="btn btn-outline-input-group-addon icon_only"
-                                                        type="button">
-                                                        <FontAwesomeIcon
-                                                            icon={'fa-solid fa-qrcode'}/>
-                                                    </button>
-                                                    <Form.Control type="text"
-                                                                  placeholder={Translation.getPhrase('c9861d7c2')}
-                                                                  ref={c => this.destinationAddress = c}/>
+            <>
+                <BackupReminderView/>
+                <BalanceView
+                    stable={this.props.wallet.balance_stable}
+                    pending={this.props.wallet.balance_pending}
+                    primary_address={this.props.wallet.address}
+                />
+                <div className={'panel panel-filled'}>
+                    <div className={'panel-heading bordered'}>{Translation.getPhrase('2c2a681e8')}</div>
+                    <div className={'panel-body'}>
+                        <ErrorList
+                            error_list={this.state.error_list}/>
+                        <Row>
+                            <Form>
+                                <Col>
+                                    <Form.Group className="form-group">
+                                        <label>{Translation.getPhrase('c9861d7c2')}</label>
+                                        <div className={'input-group'}>
+                                            <button
+                                                className="btn btn-outline-input-group-addon icon_only"
+                                                type="button">
+                                                <FontAwesomeIcon
+                                                    icon={'fa-solid fa-qrcode'}/>
+                                            </button>
+                                            <Form.Control type="text"
+                                                          placeholder={Translation.getPhrase('c9861d7c2')}
+                                                          ref={c => this.destinationAddress = c}/>
+                                        </div>
+                                    </Form.Group>
+                                </Col>
+                                <Col>
+                                    <Form.Group className={'form-group'} as={Row}>
+                                        <label>{Translation.getPhrase('cdfa46e99')}</label>
+                                        <Col className={'input-group'}>
+                                            <button
+                                                className="btn btn-outline-input-group-addon icon_only amount-millix-icon-wrapper"
+                                                type="button">
+                                                <div className={'amount-millix-icon'}>
+                                                    {svg.millix_logo('#a9a9a9')}
                                                 </div>
-                                            </Form.Group>
+                                            </button>
+                                            <Form.Control type="text"
+                                                          placeholder={'millix ' + Translation.getPhrase('cdfa46e99')}
+                                                          pattern="[0-9]+([,][0-9]{1,2})?"
+                                                          value={this.state.amount}
+                                                          onChange={(value) => {
+                                                              validate.handleAmountInputChange(value);
+                                                              if (this.state.is_currency_pair_summary_available) {
+                                                                  this.setState({
+                                                                      amount_usd: convert.fiat(value.target.value.replaceAll(',', ''), false)
+                                                                  });
+                                                              }
+                                                              this.setState({
+                                                                  amount: value.target.value
+                                                              });
+                                                          }}
+                                            />
                                         </Col>
-                                        <Col>
-                                            <Form.Group className={'form-group'} as={Row}>
-                                                <label>{Translation.getPhrase('cdfa46e99')}</label>
-                                                <Col className={'input-group'}>
-                                                    <button
-                                                        className="btn btn-outline-input-group-addon icon_only amount-millix-icon-wrapper"
-                                                        type="button">
-                                                        <div className={'amount-millix-icon'}>
-                                                            {svg.millix_logo('#a9a9a9')}
-                                                        </div>
-                                                    </button>
-                                                    <Form.Control type="text"
-                                                                  placeholder={'millix ' + Translation.getPhrase('cdfa46e99')}
-                                                                  pattern="[0-9]+([,][0-9]{1,2})?"
-                                                                  value={this.state.amount}
-                                                                  onChange={(value) => {
-                                                                      validate.handleAmountInputChange(value);
-                                                                      if (this.state.is_currency_pair_summary_available) {
-                                                                          this.setState({
-                                                                              amount_usd: convert.fiat(value.target.value.replaceAll(',', ''), false)
-                                                                          });
-                                                                      }
-                                                                      this.setState({
-                                                                          amount: value.target.value
-                                                                      });
-                                                                  }}
-                                                    />
-                                                </Col>
 
-                                                {this.state.is_currency_pair_summary_available &&
-                                                 <Col className={'input-group'}>
-                                                     <button
-                                                         className="btn btn-outline-input-group-addon icon_only usd-icon"
-                                                         type="button">
-                                                         <FontAwesomeIcon
-                                                             icon={'fa-money-bill'}/>
-                                                     </button>
-                                                     <Form.Control type="text"
-                                                                   placeholder={'usd ' + Translation.getPhrase('cdfa46e99')}
-                                                                   pattern="[0-9]+([,][0-9]{1,2})?"
-                                                                   value={this.state.amount_usd}
-                                                                   onChange={(value) => {
-                                                                       validate.handleAmountInputChangeUsd(value);
-                                                                       this.setState({
-                                                                           amount    : convert.usd(value.target.value),
-                                                                           amount_usd: value.target.value
-                                                                       });
-                                                                   }}
-                                                     />
-                                                 </Col>
-                                                }
-                                            </Form.Group>
+                                        {this.state.is_currency_pair_summary_available &&
+                                         <Col className={'input-group'}>
+                                             <button
+                                                 className="btn btn-outline-input-group-addon icon_only usd-icon"
+                                                 type="button">
+                                                 <FontAwesomeIcon
+                                                     icon={'fa-money-bill'}/>
+                                             </button>
+                                             <Form.Control type="text"
+                                                           placeholder={'usd ' + Translation.getPhrase('cdfa46e99')}
+                                                           pattern="[0-9]+([,][0-9]{1,2})?"
+                                                           value={this.state.amount_usd}
+                                                           onChange={(value) => {
+                                                               validate.handleAmountInputChangeUsd(value);
+                                                               this.setState({
+                                                                   amount    : convert.usd(value.target.value),
+                                                                   amount_usd: value.target.value
+                                                               });
+                                                           }}
+                                             />
+                                         </Col>
+                                        }
+                                    </Form.Group>
+                                </Col>
+                                <Col>
+                                    <Form.Group className="form-group" as={Row}>
+                                        <label>{Translation.getPhrase('5d5997bf3')}</label>
+                                        <Col className={'input-group'}>
+                                            <button
+                                                className="btn btn-outline-input-group-addon icon_only"
+                                                type="button">
+                                                <FontAwesomeIcon
+                                                    icon={'fa-solid fa-building-columns'}/>
+                                            </button>
+                                            <Form.Control type="text"
+                                                          placeholder={Translation.getPhrase('5d5997bf3')}
+                                                          pattern="[0-9]+([,][0-9]{1,2})?"
+                                                          ref={c => {
+                                                              this.fee = c;
+                                                              if (this.fee && !this.feeInitialized && this.props.config.TRANSACTION_FEE_DEFAULT !== undefined) {
+                                                                  this.feeInitialized = true;
+                                                                  this.fee.value      = format.millix(this.props.config.TRANSACTION_FEE_DEFAULT, false);
+                                                              }
+                                                          }}
+                                                          onChange={validate.handleAmountInputChange.bind(this)}
+                                                          disabled={this.state.fee_input_locked}/>
+                                            <button
+                                                className="btn btn-outline-input-group-addon icon_only"
+                                                type="button"
+                                                onClick={() => this.setState({fee_input_locked: !this.state.fee_input_locked})}>
+                                                <FontAwesomeIcon
+                                                    icon={this.state.fee_input_locked ? 'lock' : 'lock-open'}/>
+                                            </button>
                                         </Col>
-                                        <Col>
-                                            <Form.Group className="form-group" as={Row}>
-                                                <label>{Translation.getPhrase('5d5997bf3')}</label>
-                                                <Col className={'input-group'}>
-                                                    <button
-                                                        className="btn btn-outline-input-group-addon icon_only"
-                                                        type="button">
-                                                        <FontAwesomeIcon
-                                                            icon={'fa-solid fa-building-columns'}/>
-                                                    </button>
-                                                    <Form.Control type="text"
-                                                                  placeholder={Translation.getPhrase('5d5997bf3')}
-                                                                  pattern="[0-9]+([,][0-9]{1,2})?"
-                                                                  ref={c => {
-                                                                      this.fee = c;
-                                                                      if (this.fee && !this.feeInitialized && this.props.config.TRANSACTION_FEE_DEFAULT !== undefined) {
-                                                                          this.feeInitialized = true;
-                                                                          this.fee.value      = format.millix(this.props.config.TRANSACTION_FEE_DEFAULT, false);
-                                                                      }
-                                                                  }}
-                                                                  onChange={validate.handleAmountInputChange.bind(this)}
-                                                                  disabled={this.state.fee_input_locked}/>
-                                                    <button
-                                                        className="btn btn-outline-input-group-addon icon_only"
-                                                        type="button"
-                                                        onClick={() => this.setState({fee_input_locked: !this.state.fee_input_locked})}>
-                                                        <FontAwesomeIcon
-                                                            icon={this.state.fee_input_locked ? 'lock' : 'lock-open'}/>
-                                                    </button>
-                                                </Col>
-                                            </Form.Group>
-                                        </Col>
-                                        <Col
-                                            className={'d-flex justify-content-center'}>
-                                            <ModalView
-                                                show={this.state.modal_show_confirmation}
-                                                size={'lg'}
-                                                heading={Translation.getPhrase('d469333b4')}
-                                                on_accept={() => this.sendTransaction()}
-                                                on_close={() => this.cancelSendTransaction()}
-                                                body={<div>
-                                                    <div>{Translation.getPhrase('6183562eb', {millix_amount: format.millix(this.state.amount)})}</div>
-                                                    <div>{this.state.address_base}{this.state.address_version}{this.state.address_key_identifier}</div>
-                                                    {text.get_confirmation_modal_question()}
-                                                </div>}/>
+                                    </Form.Group>
+                                </Col>
+                                <Col
+                                    className={'d-flex justify-content-center'}>
+                                    <ModalView
+                                        show={this.state.modal_show_confirmation}
+                                        size={'lg'}
+                                        heading={Translation.getPhrase('d469333b4')}
+                                        on_accept={() => this.sendTransaction()}
+                                        on_close={() => this.cancelSendTransaction()}
+                                        body={<div>
+                                            <div>{Translation.getPhrase('6183562eb', {millix_amount: format.millix(this.state.amount)})}</div>
+                                            <div>{this.state.address_base}{this.state.address_version}{this.state.address_key_identifier}</div>
+                                            {text.get_confirmation_modal_question()}
+                                        </div>}/>
 
-                                            <ModalView
-                                                show={this.state.modal_show_send_result}
-                                                size={'lg'}
-                                                on_close={() => this.changeModalShowSendResult(false)}
-                                                heading={Translation.getPhrase('54bb1b342')}
-                                                body={this.state.modal_body_send_result}/>
-                                            <Form.Group as={Row}>
-                                                <Button
-                                                    variant="outline-primary"
-                                                    className={'btn_loader'}
-                                                    onClick={() => this.send()}
-                                                    disabled={this.state.canceling}>
-                                                    {this.state.sending ?
-                                                     <>
-                                                         <div className="loader-spin"/>
-                                                         {this.state.canceling ? Translation.getPhrase('20b672040') : Translation.getPhrase('607120b8a')}
-                                                     </> : <>{Translation.getPhrase('2c2a681e8')}</>}
-                                                </Button>
-                                            </Form.Group>
-                                        </Col>
-                                    </Form>
-                                </Row>
-                            </div>
-                        </div>
-                    </Col>
-                </Row>
-            </div>
+                                    <ModalView
+                                        show={this.state.modal_show_send_result}
+                                        size={'lg'}
+                                        on_close={() => this.changeModalShowSendResult(false)}
+                                        heading={Translation.getPhrase('54bb1b342')}
+                                        body={this.state.modal_body_send_result}/>
+                                    <Form.Group as={Row}>
+                                        <Button
+                                            variant="outline-primary"
+                                            className={'btn_loader'}
+                                            onClick={() => this.send()}
+                                            disabled={this.state.canceling}>
+                                            {this.state.sending ?
+                                             <>
+                                                 <div className="loader-spin"/>
+                                                 {this.state.canceling ? Translation.getPhrase('20b672040') : Translation.getPhrase('607120b8a')}
+                                             </> : <>{Translation.getPhrase('2c2a681e8')}</>}
+                                        </Button>
+                                    </Form.Group>
+                                </Col>
+                            </Form>
+                        </Row>
+                    </div>
+                </div>
+            </>
         );
     }
 }

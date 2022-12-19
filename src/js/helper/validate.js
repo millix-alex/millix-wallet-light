@@ -1,6 +1,8 @@
 import * as format from './format';
 import _ from 'lodash';
 import Translation from '../common/translation';
+import API from '../api';
+import HelpIconView from '../components/utils/help-icon-view';
 
 export function required(field_name, value, error_list) {
     if (typeof value === 'string') {
@@ -91,6 +93,50 @@ export function ip(field_name, value, error_list) {
     }
 
     return value_escaped.join('.');
+}
+
+export async function verified_sender_domain_name(value, address_identifier) {
+    let error_list = [];
+    if (!value) {
+        return {
+            valid     : true,
+            error_list: error_list
+        };
+    }
+
+    value = domain_name('domain_name', value, error_list);
+    if (value === null) {
+        return {
+            valid     : false,
+            error_list: error_list
+        };
+    }
+    else {
+        return API.isDNSVerified(value, address_identifier)
+                  .then(data => {
+                      if (!data.is_address_verified) {
+                          error_list.push({
+                              name   : 'verified_sender_not_valid',
+                              message: <>domain name verification failed. click<HelpIconView help_item_name={'verified_sender'}/> for instructions</>
+                          });
+                      }
+                      return {
+                          valid     : !!data.is_address_verified,
+                          error_list: error_list
+                      };
+                  })
+                  .catch(() => {
+                      return {
+                          valid     : false,
+                          error_list: [
+                              {
+                                  name   : 'api error',
+                                  message: 'domain name verification failed. please try again later'
+                              }
+                          ]
+                      };
+                  });
+    }
 }
 
 export function string_alphanumeric(field_name, value, error_list, length) {
@@ -191,7 +237,7 @@ export function handleAmountInputChangeUsd(e) {
     handleInputChangeInteger(e, false);
 }
 
-export function handleInputChangeDNSString(e) {
+export function handleDomainNameInputChange(e) {
     if (e.target.value.length === 0) {
         return;
     }
@@ -199,14 +245,105 @@ export function handleInputChangeDNSString(e) {
     e.target.value = e.target.value.replace(/[^a-z0-9\\.-]/g, '');
 }
 
-export function domain_name(field_name, domain_name, error_list) {
+export function domain_name(field_name, value, error_list) {
     const match = new RegExp('^([a-z0-9]+(-[a-z0-9]+)*\\.)+[a-z]{2,}$', 'gi');
-    if (domain_name && !match.test(domain_name)) {
+    if (value && !match.test(value)) {
         error_list.push({
             name   : get_error_name('dns_invalid', field_name),
             message: `${field_name} ${Translation.getPhrase('0ccc5cddf')}`
         });
         return null;
     }
-    return domain_name;
+    return value;
+}
+
+export function file(field_name, file, error_list, file_type = '', allowed_extension_list = [], allowed_mime_type_list = [], allowed_max_file_size = 0) {
+    const result_file_type_config = {
+        image: {
+            allowed_mime_type_list: [
+                'image/png',
+                'image/jpeg',
+                'image/jpg',
+                'image/gif'
+            ],
+            allowed_extension_list: [
+                'png',
+                'jpeg',
+                'jpg',
+                'gif'
+            ],
+            allowed_max_file_size : 50 * 1024 * 1024 // 50mb
+        }
+    };
+
+    let file_type_config = {
+        allowed_mime_type_list: [],
+        allowed_extension_list: [],
+        allowed_max_file_size : 0
+    };
+
+    if (file_type && Object.keys(result_file_type_config).includes(file_type)) {
+        file_type_config = result_file_type_config[file_type];
+    }
+
+    if (allowed_extension_list.length === 0) {
+        allowed_extension_list = file_type_config.allowed_extension_list;
+    }
+
+    if (allowed_mime_type_list.length === 0) {
+        allowed_mime_type_list = file_type_config.allowed_mime_type_list;
+    }
+
+    if (allowed_max_file_size <= 0) {
+        allowed_max_file_size = file_type_config.allowed_max_file_size;
+    }
+
+    const file_extension = file.file.name.split('.').pop().toLowerCase();
+    const file_mime_type = file.file.type;
+
+    return new Promise((resolve, reject) => {
+        if (allowed_extension_list.length > 0 && !allowed_extension_list.includes(file_extension)) {
+            reject({
+                name   : get_error_name('invalid_file_extension', field_name),
+                message: `invalid file extension. allowed extensions are - ${allowed_extension_list.join(', ')}`
+            });
+            return null;
+        }
+
+        if (allowed_mime_type_list.length > 0 && !allowed_mime_type_list.includes(file_mime_type)) {
+            reject({
+                name   : get_error_name('invalid_file_mime_type', field_name),
+                message: `invalid file mime type. allowed mime types are - ${allowed_mime_type_list.join(', ')}`
+            });
+            return null;
+        }
+
+        if (file.file.size > allowed_max_file_size) {
+            reject({
+                name   : get_error_name('file_max_size', field_name),
+                message: `file size is too large. max allowed file size is ${(allowed_max_file_size / (1024 * 1024))}mb`
+            });
+            return null;
+        }
+
+        if (file_type === 'image') {
+            const reader = new FileReader();
+
+            reader.onload = e => {
+                const img   = new Image();
+                img.onload  = () => {
+                    resolve(file);
+                };
+                img.onerror = () => {
+                    reject({
+                        name   : get_error_name('file_content_does_not_match_file_type', field_name),
+                        message: `file is not a valid image.`
+                    });
+                    return false;
+                };
+                img.src     = e.target.result;
+            };
+            reader.readAsDataURL(file.file);
+        }
+    });
 }

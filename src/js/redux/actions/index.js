@@ -1,6 +1,7 @@
 import {
     ADD_LOG_EVENT,
     ADD_WALLET_CONFIG,
+    ADD_STORAGE_CONFIG,
     CLEAR_TRANSACTION_DETAILS,
     LOCK_WALLET,
     SET_BACKLOG_SIZE,
@@ -42,8 +43,8 @@ export function updateWalletNotification(payload) {
     };
 }
 
-export function walletUpdateTransactions(addressKeyIdentifier) {
-    return (dispatch) => API.getTransactionHistory(addressKeyIdentifier)
+export function walletUpdateTransactions(address_key_identifier) {
+    return (dispatch) => API.getTransactionHistory(address_key_identifier)
                             .then(payload => dispatch({
                                 type: UPDATE_WALLET_TRANSACTIONS,
                                 payload
@@ -101,6 +102,13 @@ export function addWalletConfig(payload) {
     };
 }
 
+export function addStorageConfig(payload) {
+    return {
+        type: ADD_STORAGE_CONFIG,
+        payload
+    };
+}
+
 export function walletUpdateConfig(payload) {
     return (dispatch) => {
         return new Promise(resolve => {
@@ -108,11 +116,14 @@ export function walletUpdateConfig(payload) {
                 API.updateNodeConfigValue(key, payload[key])
                    .then(() => callback());
             }, () => {
-                dispatch({
-                    type: UPDATE_WALLET_CONFIG,
-                    payload
-                });
-                resolve();
+                API.reloadNodeConfigFromDatabase()
+                   .then(() => {
+                       dispatch({
+                           type: UPDATE_WALLET_CONFIG,
+                           payload
+                       });
+                       resolve();
+                   });
             });
         });
     };
@@ -199,18 +210,6 @@ export function walletUpdateBalance(payload) {
     };
 }
 
-export function walletUpdateAddresses(walletID) {
-    return {};
-}
-
-export function addNewAddress(walletID) {
-    return {};
-}
-
-export function getNodeAttribute(nodeID) {//removeWalletAddressVersion(payload) {
-    return {};
-}
-
 export function updateCurrencyPairSummary(payload) {
     return {
         type: UPDATE_CURRENCY_PAIR_SUMMARY,
@@ -233,5 +232,5 @@ export function updateMessageStat(payload) {
     return {
         type: UPDATE_MESSAGE_STAT,
         payload
-    }
+    };
 }

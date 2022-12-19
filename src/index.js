@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import AppContainer from './js/components/app-container';
 import store from './js/redux/store';
-import {unlockWallet, addWalletConfig, updateNodeAttribute, updateWalletAddressVersion, updateNotificationVolume} from './js/redux/actions';
+import {unlockWallet, addStorageConfig, addWalletConfig, updateNodeAttribute, updateWalletAddressVersion, updateNotificationVolume} from './js/redux/actions';
 import reportWebVitals from './reportWebVitals';
 import {config as faConfig, library} from '@fortawesome/fontawesome-svg-core';
 import {
@@ -52,6 +52,18 @@ import {
     faReply,
     faEnvelope,
     faLink,
+    faChainSlash,
+    faFire,
+    faChainBroken,
+    faBomb,
+    faArrowRight,
+    faUpload,
+    faMinusCircle,
+    faCopy,
+    faCaretDown,
+    faArrowRightArrowLeft,
+    faFile,
+    faTriangleExclamation,
     faMoneyBill,
     faQrcode,
     faBuildingColumns
@@ -78,7 +90,10 @@ library.add(faArrowCircleLeft, faWallet, faKey, faHome, faFingerprint,
     faLock, faLockOpen, faTimes, faEye, faList, faBars, faSignInAlt, faFileImport,
     faChevronDown, faChevronUp, faPencilAlt, faSync, faPlusCircle, faPlay,
     faPause, faQuestionCircle, faThList, faRedo, faEllipsisV,
-    faRotateLeft, faCodeMerge, faCheckCircle, faReply, faEnvelope, faLink, faMoneyBill, faQrcode, faBuildingColumns);
+    faChainSlash, faChainBroken,
+    faRotateLeft, faCodeMerge, faCheckCircle, faReply, faEnvelope, faLink, faFire, faBomb,
+    faArrowRight, faUpload, faMinusCircle, faCopy, faCaretDown, faArrowRightArrowLeft, faFile, faTriangleExclamation,
+    faMoneyBill, faQrcode, faBuildingColumns);
 
 
 let apiInfo = {
@@ -165,6 +180,20 @@ const getNodeConfig = () => {
     }
 };
 
+const getStorageConfig = () => {
+    API.getStorageConfig()
+       .then(({
+                  database_dir,
+                  file_dir
+              }) => {
+           const storage_config = {
+               database_dir: database_dir,
+               file_dir    : file_dir
+           };
+           store.dispatch(addStorageConfig(storage_config));
+       }).catch(() => setTimeout(getStorageConfig, 20000));
+};
+
 const getWalletAddressVersion = () => {
     if (Object.keys(store.getState().wallet.addresses).length === 0) {
         API.listWalletAddressVersion()
@@ -176,6 +205,7 @@ const getWalletAddressVersion = () => {
 
 getNodeAboutAttribute();
 getNodeConfig();
+getStorageConfig();
 getWalletAddressVersion();
 ReactDOM.render(
     <div>

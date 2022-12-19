@@ -3,8 +3,7 @@ import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
 import {Provider} from 'react-redux';
 import PropTypes from 'prop-types';
 import WalletView from './wallet-view';
-import ImportWalletView from './import-wallet-view';
-import UnlockWalletView from './unlock-wallet-view';
+import UnlockWalletView from './auth/unlock-wallet-view';
 import UnlockedWalletRequiredRoute from './utils/unlocked-wallet-required-route';
 import TransactionHistoryView from './transaction-history-view';
 import UnspentTransactionOutputView from './unspent-transaction-output-view';
@@ -14,8 +13,6 @@ import PeerInfoView from './peer-info-view';
 import AdvertisementFormView from './advertisement/advertisement-form-view';
 import AdvertisementListView from './advertisement/advertisement-list-view';
 import ActionView from './action-view';
-import NewWalletView from './new-wallet-view';
-import ManageWalletView from './manage-wallet-view';
 import StatsView from './stats-view';
 import BacklogView from './backlog-view';
 import ReportIssueView from './help/report-issue-view';
@@ -35,13 +32,14 @@ import ConfigAddressVersion from './config/config-address-version-view';
 import ErrorModalRequestApi from './utils/error-handler-request-api';
 import AdvertisementConsumerSettlementLedgerView from './advertisement/advertisement-consumer-settlement-ledger-view';
 import EventsLogView from './event-log-view';
+import NftCreateView from './nft/nft-create-view';
+import NftCollectionView from './nft/nft-collection-view';
+import NftTransferView from './nft/nft-transfer-view';
+import AssetListView from './asset/asset-list-view';
+import NftPreviewView from './nft/nft-preview-view';
 
 
 class AppContainer extends Component {
-    constructor(props) {
-        super(props);
-    }
-
     componentDidMount() {
     }
 
@@ -51,10 +49,9 @@ class AppContainer extends Component {
                 <ErrorModalRequestApi/>
                 <Switch>
                     <Route path="/unlock/" component={UnlockWalletView}/>
-                    <Route path="/manage-wallet/" component={ManageWalletView}/>
-                    <Route path="/new-wallet/" component={NewWalletView}/>
-                    <Route path="/import-wallet/" component={ImportWalletView}/>
 
+                    <UnlockedWalletRequiredRoute path="/nft-preview/"
+                                                 component={NftPreviewView}/>
                     <UnlockedWalletRequiredRoute path="/advertisement-form"
                                                  component={AdvertisementFormView}/>
                     <UnlockedWalletRequiredRoute path="/advertisement-list"
@@ -67,6 +64,14 @@ class AppContainer extends Component {
                                                  component={EventsLogView}/>
                     <UnlockedWalletRequiredRoute path="/peer/:peer"
                                                  component={PeerInfoView}/>
+                    <UnlockedWalletRequiredRoute path="/asset-list"
+                                                 component={AssetListView}/>
+                    <UnlockedWalletRequiredRoute path="/nft-create"
+                                                 component={NftCreateView}/>
+                    <UnlockedWalletRequiredRoute path="/nft-collection"
+                                                 component={NftCollectionView}/>
+                    <UnlockedWalletRequiredRoute path="/nft-transfer"
+                                                 component={NftTransferView}/>
                     <UnlockedWalletRequiredRoute path="/message-compose"
                                                  component={MessageComposeView}/>
                     <UnlockedWalletRequiredRoute path="/message-view"
