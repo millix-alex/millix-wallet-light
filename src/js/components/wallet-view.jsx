@@ -13,7 +13,7 @@ import * as text from '../helper/text';
 import Transaction from '../common/transaction';
 import Translation from '../common/translation';
 import BackupReminderView from './education/backup-reminder-view';
-import ModalTableView from './utils/modal-table-view'
+import ModalTableView from './utils/modal-table-view';
 
 
 class WalletView extends Component {
@@ -33,7 +33,7 @@ class WalletView extends Component {
             modal_show_address_book: false,
             contacts_list          : [],
             address_from_book      : '',
-            address_confirm        : '',
+            address_confirm        : ''
         };
 
         this.send = this.send.bind(this);
@@ -145,18 +145,18 @@ class WalletView extends Component {
         });
     }
 
-    onChangeAdress(inputValue){
+    onChangeAdress(inputValue) {
         this.setState({
             address_confirm: inputValue
-        })
+        });
     }
 
     setAddressFromAddressBook(address) {
         this.setState({
             address_confirm: address
-        })
+        });
     }
-    
+
     render() {
         return (
             <>
@@ -178,18 +178,18 @@ class WalletView extends Component {
                                         <label>{Translation.getPhrase('c9861d7c2')}</label>
                                         <Col className={'input-group'}>
                                             <Form.Control type="text"
-                                                        value={this.state.address_confirm}
-                                                        onChange={e => this.onChangeAdress(e.target.value)}
-                                                        placeholder={Translation.getPhrase('c9861d7c2')}
-                                                        ref={c => this.destinationAddress = c}/>
+                                                          value={this.state.address_confirm}
+                                                          onChange={e => this.onChangeAdress(e.target.value)}
+                                                          placeholder={Translation.getPhrase('c9861d7c2')}
+                                                          ref={c => this.destinationAddress = c}/>
                                             <button
                                                 className="btn btn-outline-input-group-addon icon_only"
                                                 type="button"
                                                 onClick={() => this.changeModalShowAddressBook()}>
                                                 <FontAwesomeIcon
                                                     icon={'address-book'}
-                                                    />
-                                            </button>                                                       
+                                                />
+                                            </button>
                                         </Col>
                                     </Form.Group>
                                 </Col>
@@ -276,7 +276,7 @@ class WalletView extends Component {
             </>
         );
     }
-}   
+}
 
 
 export default connect(

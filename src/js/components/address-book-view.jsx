@@ -22,12 +22,12 @@ class AddressBookView extends Component {
             datatable_loading         : false,
             error_list                : [],
             edited_contact_index      : '',
-                error_list_upload: [],
-                image: undefined,
-                importedData: [],
-                importedCols: []
+            error_list_upload         : [],
+            image                     : undefined,
+            importedData              : [],
+            importedCols              : []
         };
-        
+
         this.importCSV = this.importCSV.bind(this);
     }
 
@@ -37,57 +37,61 @@ class AddressBookView extends Component {
 
     changeModalAddContact = (value = true) => {
         this.setState({
-            modal_show: value,
-            error_list: [],
+            modal_show          : value,
+            error_list          : [],
             edited_contact_index: value ? this.state.edited_contact_index : ''
         });
-    }
+    };
 
     getContactsList() {
         return localforage.getItem(this.props.wallet.address_key_identifier)
-                .then(encrypted_list => {
-                    return API.decryptContactsList(encrypted_list)})
-                .then(decrypted_list => {
-                    return JSON.parse(decrypted_list.result)})
-                .catch(() => [])
+                          .then(encrypted_list => {
+                              return API.decryptContactsList(encrypted_list);
+                          })
+                          .then(decrypted_list => {
+                              return JSON.parse(decrypted_list.result);
+                          })
+                          .catch(() => []);
     }
 
     setContactsList(contacts_list) {
         API.encryptContactsList(contacts_list)
-            .then(encrypted_list => localforage.setItem(this.props.wallet.address_key_identifier, encrypted_list.result))
-            .then(() => this.loadAddressBook())
+           .then(encrypted_list => localforage.setItem(this.props.wallet.address_key_identifier, encrypted_list.result))
+           .then(() => this.loadAddressBook());
     }
 
-    addContact = () => {    
+    addContact = () => {
         this.getContactsList()
             .then((contacts_list) => {
                 if (this.state.importedData.length !== 0) {
-                    contacts_list = this.state.importedData.concat(contacts_list.filter( ({id}) => !this.state.importedData.find(f => f.id == id)));
-                } else if (this.state.edited_contact_index !== '') {
+                    contacts_list = this.state.importedData.concat(contacts_list.filter(({id}) => !this.state.importedData.find(f => f.id == id)));
+                }
+                else if (this.state.edited_contact_index !== '') {
                     contacts_list.forEach((contact, index) => {
                         if (index == this.state.edited_contact_index) {
-                            contact.name = this.address_book_name.value
-                            contact.address = this.address_book_address.value
+                            contact.name    = this.address_book_name.value;
+                            contact.address = this.address_book_address.value;
                         }
-                    })
-                } else {
-                    let new_contact = {
-                        id: Date.now().toString(),
-                        name: this.address_book_name?.value,
-                        address: this.address_book_address?.value
-                    }
-                    contacts_list.push(new_contact)
+                    });
                 }
-                return contacts_list
+                else {
+                    let new_contact = {
+                        id     : Date.now().toString(),
+                        name   : this.address_book_name?.value,
+                        address: this.address_book_address?.value
+                    };
+                    contacts_list.push(new_contact);
+                }
+                return contacts_list;
             })
             .then(contacts_list => this.setContactsList(contacts_list))
-            .then(() => this.changeModalAddContact(false))
+            .then(() => this.changeModalAddContact(false));
         this.setState({
             importedData: [],
             importedCols: []
-        })
-    }
-        
+        });
+    };
+
     getChoosenContactIndex = (choosen_contact) => {
         this.getContactsList()
             .then((contacts_list) => {
@@ -95,27 +99,28 @@ class AddressBookView extends Component {
                     if (contact.id == choosen_contact.id) {
                         this.setState({
                             edited_contact_index: index
-                        })
+                        });
                     }
-                })
-            })
-    }
+                });
+            });
+    };
 
     removeAddressBookContact = (choosen_contact) => {
-        this.getChoosenContactIndex(choosen_contact)
+        this.getChoosenContactIndex(choosen_contact);
         this.getContactsList()
             .then((contacts_list) => {
-                contacts_list.splice(this.state.edited_contact_index, 1)
-                this.setContactsList(contacts_list)})
+                contacts_list.splice(this.state.edited_contact_index, 1);
+                this.setContactsList(contacts_list);
+            })
             .then(() => this.setState({
                 edited_contact_index: ''
-                }))
-            .then(() => this.loadAddressBook())
-    }
+            }))
+            .then(() => this.loadAddressBook());
+    };
 
-    editAddressBookContact(choosen_contact){
-        this.getChoosenContactIndex(choosen_contact)
-        this.changeModalAddContact()
+    editAddressBookContact(choosen_contact) {
+        this.getChoosenContactIndex(choosen_contact);
+        this.changeModalAddContact();
     }
 
     loadAddressBook() {
@@ -123,7 +128,9 @@ class AddressBookView extends Component {
             datatable_loading: true
         });
         this.getContactsList()
-            .then(data => {this.fillContactsDatatable(data)})
+            .then(data => {
+                this.fillContactsDatatable(data);
+            });
     }
 
     fillContactsDatatable(data) {
@@ -134,17 +141,17 @@ class AddressBookView extends Component {
                 id     : input.id,
                 address: input.address,
                 name   : input.name,
-                action : 
+                action :
                     <>
                         <DatatableActionButtonView
-                        icon={'fa-solid fa-pencil'}
-                        callback={() => this.editAddressBookContact(input)}
-                        callback_args={input}
+                            icon={'fa-solid fa-pencil'}
+                            callback={() => this.editAddressBookContact(input)}
+                            callback_args={input}
                         />
                         <DatatableActionButtonView
-                        icon={'trash'}
-                        callback={() => this.removeAddressBookContact(input)}
-                        callback_args={input}
+                            icon={'trash'}
+                            callback={() => this.removeAddressBookContact(input)}
+                            callback_args={input}
                         />
                     </>
             }))
@@ -156,10 +163,10 @@ class AddressBookView extends Component {
         if (this.state.edited_contact_index !== '') {
             this.state.contacts_list.forEach((contact, index) => {
                 if (index === this.state.edited_contact_index) {
-                name = contact.name
-                address = contact.address
+                    name    = contact.name;
+                    address = contact.address;
                 }
-            }) 
+            });
         }
 
         return <div>
@@ -202,31 +209,34 @@ class AddressBookView extends Component {
     }
 
     importCSV(e) {
-        const file = e.target.files[0];
-        const reader = new FileReader();
+        const file    = e.target.files[0];
+        const reader  = new FileReader();
         reader.onload = (e) => {
-            const csv = e.target.result;
+            const csv  = e.target.result;
             const data = csv.split(',\n');
             const cols = data[0].replace(/['"]+/g, '').split(',');
             data.shift();
-            let importedCols = cols.map(col => ({ field: col, header: this.toCapitalize(col.replace(/['"]+/g, '')) }));
+            let importedCols = cols.map(col => ({
+                field : col,
+                header: this.toCapitalize(col.replace(/['"]+/g, ''))
+            }));
             let importedData = data.map(d => {
                 d = d.slice(1, -1).split(',');
-            
+
                 return cols.reduce((obj, c, i) => {
                     obj[c] = d[i]?.replace(/['"]+/g, '');
                     return obj;
                 }, {});
-                
+
             });
-        this.setState({
+            this.setState({
                 importedCols,
                 importedData
             });
         };
         reader.readAsText(file, 'UTF-8');
-        this.addContact()
-        e.target.value = null
+        this.addContact();
+        e.target.value = null;
     }
 
     render() {
@@ -246,7 +256,7 @@ class AddressBookView extends Component {
                     </div>
                     <div className={'panel-body'}>
                         <div>
-                
+
                             <DatatableView
                                 datatable_reference={this.datatable_reference}
                                 allow_export={true}
@@ -268,19 +278,19 @@ class AddressBookView extends Component {
                                 showActionColumn={this.props.showActionColumn != null ? this.props.showActionColumn : true}
                                 resultColumn={[
                                     {
-                                        field : 'id',
-                                        header: 'id',
+                                        field     : 'id',
+                                        header    : 'id',
                                         exportable: true,
-                                        hidden: true
+                                        hidden    : true
                                     },
                                     {
-                                        field : 'name',
-                                        header: 'name',
-                                        exportable: true,
+                                        field     : 'name',
+                                        header    : 'name',
+                                        exportable: true
                                     },
                                     {
-                                        field : 'address',
-                                        header: 'address',
+                                        field     : 'address',
+                                        header    : 'address',
                                         exportable: true
                                     }
                                 ]}/>

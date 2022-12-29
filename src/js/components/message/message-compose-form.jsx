@@ -17,6 +17,7 @@ import Translation from '../../common/translation';
 import {TRANSACTION_DATA_TYPE_MESSENGER} from '../../../config';
 import ModalTableView from '../../components/utils/modal-table-view';
 
+
 class MessageComposeForm extends Component {
     constructor(props) {
         super(props);
@@ -47,7 +48,7 @@ class MessageComposeForm extends Component {
             subject                 : propsState.subject ? this.getReplySubjectText(propsState.subject) : '',
             message                 : message_body,
             txid                    : propsState.txid,
-            modal_show_address_book: false
+            modal_show_address_book : false
         };
 
         this.send = this.send.bind(this);
@@ -269,15 +270,15 @@ class MessageComposeForm extends Component {
     getAddressBookButton() {
         if (!!this.props.address_book) {
             return <button
-            className="btn btn-outline-input-group-addon icon_only"
-            type="button"
-            onClick={() => this.changeModalShowAddressBook()}>
-            <FontAwesomeIcon
-                icon={'address-book'}
-            />
-            </button> 
+                className="btn btn-outline-input-group-addon icon_only"
+                type="button"
+                onClick={() => this.changeModalShowAddressBook()}>
+                <FontAwesomeIcon
+                    icon={'address-book'}
+                />
+            </button>;
         }
-        return null
+        return null;
     }
 
     changeModalShowAddressBook(value = true) {
@@ -296,24 +297,24 @@ class MessageComposeForm extends Component {
                         <Form.Group className="form-group" role="form">
                             <label>{Translation.getPhrase('6ee1a646f')}</label>
                             <Col className={'input-group'}>
-                            <ReactChipInput
-                                ref={ref => {
-                                    if (ref && !ref.state.focused && ref.formControlRef.current.value !== '') {
-                                        this.addDestinationAddress(ref.formControlRef.current.value);
-                                        ref.formControlRef.current.value = '';
-                                    }
-                                    if (!this.chipInputAddress) {
-                                        ref.formControlRef.current.placeholder = Translation.getPhrase('6ee1a646f');
-                                        this.chipInputAddress                  = ref;
-                                    }
-                                }}
-                                classes="chip_input form-control"
-                                chips={this.state.destination_address_list}
-                                onSubmit={value => this.addDestinationAddress(value)}
-                                onRemove={index => this.removeDestinationAddress(index)}
-                            />
+                                <ReactChipInput
+                                    ref={ref => {
+                                        if (ref && !ref.state.focused && ref.formControlRef.current.value !== '') {
+                                            this.addDestinationAddress(ref.formControlRef.current.value);
+                                            ref.formControlRef.current.value = '';
+                                        }
+                                        if (!this.chipInputAddress) {
+                                            ref.formControlRef.current.placeholder = Translation.getPhrase('6ee1a646f');
+                                            this.chipInputAddress                  = ref;
+                                        }
+                                    }}
+                                    classes="chip_input form-control"
+                                    chips={this.state.destination_address_list}
+                                    onSubmit={value => this.addDestinationAddress(value)}
+                                    onRemove={index => this.removeDestinationAddress(index)}
+                                />
                                 {this.getAddressBookButton()}
-                                </Col>
+                            </Col>
                         </Form.Group>
                     </Col>
                 </Form>

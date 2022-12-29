@@ -117,7 +117,7 @@ class AppContainer extends Component {
                     <UnlockedWalletRequiredRoute path="/address-list"
                                                  component={AddressListView}/>
                     <UnlockedWalletRequiredRoute path="/address-book"
-                                component={AddressBookView}/>
+                                                 component={AddressBookView}/>
                     <UnlockedWalletRequiredRoute path="/transaction-list"
                                                  component={TransactionHistoryView}/>
                     <UnlockedWalletRequiredRoute path="/faq"
