@@ -13,7 +13,7 @@ import * as text from '../helper/text';
 import Transaction from '../common/transaction';
 import Translation from '../common/translation';
 import BackupReminderView from './education/backup-reminder-view';
-import ModalTableView from './utils/modal-table-view';
+import ModalAddressBookView from './utils/modal-address-book-view';
 
 
 class WalletView extends Component {
@@ -250,7 +250,7 @@ class WalletView extends Component {
                                         on_close={() => this.changeModalShowSendResult(false)}
                                         heading={Translation.getPhrase('54bb1b342')}
                                         body={this.state.modal_body_send_result}/>
-                                    <ModalTableView
+                                    <ModalAddressBookView
                                         show={this.state.modal_show_address_book}
                                         on_close={() => this.changeModalShowAddressBook(false)}
                                         on_accept={(address) => this.setAddressFromAddressBook(address)}

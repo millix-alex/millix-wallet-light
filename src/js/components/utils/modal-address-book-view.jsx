@@ -5,7 +5,7 @@ import ModalView from './modal-view';
 import AddressBookView from '../address-book-view';
 
 
-class ModalTableView extends Component {
+class ModalAddressBookView extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -56,7 +56,7 @@ class ModalTableView extends Component {
 }
 
 
-ModalTableView.propTypes = {
+ModalAddressBookView.propTypes = {
     show     : PropTypes.bool,
     on_close : PropTypes.any,
     on_accept: PropTypes.any,
@@ -65,4 +65,4 @@ ModalTableView.propTypes = {
     size     : PropTypes.string
 };
 
-export default withRouter(ModalTableView);
+export default withRouter(ModalAddressBookView);

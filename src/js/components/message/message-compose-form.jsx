@@ -15,7 +15,7 @@ import {changeLoaderState} from '../loader';
 import ReactChipInput from 'react-chip-input';
 import Translation from '../../common/translation';
 import {TRANSACTION_DATA_TYPE_MESSENGER} from '../../../config';
-import ModalTableView from '../../components/utils/modal-table-view';
+import ModalAddressBookView from '../utils/modal-address-book-view';
 
 
 class MessageComposeForm extends Component {
@@ -426,7 +426,7 @@ class MessageComposeForm extends Component {
                             on_close={() => this.changeModalShowSendResult(false)}
                             heading={Translation.getPhrase('3ff3dba19')}
                             body={this.state.modal_body_send_result}/>
-                        <ModalTableView
+                        <ModalAddressBookView
                             show={this.state.modal_show_address_book}
                             on_close={() => this.changeModalShowAddressBook(false)}
                             on_accept={(address) => this.addDestinationAddress(address)}

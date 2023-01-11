@@ -17,7 +17,7 @@ class AddressBookView extends Component {
         super(props);
         this.state = {
             modal_show                : false,
-            contacts_list             : [],
+            contact_list              : [],
             datatable_reload_timestamp: new Date(),
             datatable_loading         : false,
             error_list                : [],
@@ -43,10 +43,10 @@ class AddressBookView extends Component {
         });
     };
 
-    getContactsList() {
+    getContactList() {
         return localforage.getItem(this.props.wallet.address_key_identifier)
                           .then(encrypted_list => {
-                              return API.decryptContactsList(encrypted_list);
+                              return API.decryptContactList(encrypted_list);
                           })
                           .then(decrypted_list => {
                               return JSON.parse(decrypted_list.result);
@@ -54,21 +54,21 @@ class AddressBookView extends Component {
                           .catch(() => []);
     }
 
-    setContactsList(contacts_list) {
-        API.encryptContactsList(contacts_list)
+    setContactList(contact_list) {
+        API.encryptContactList(contact_list)
            .then(encrypted_list => localforage.setItem(this.props.wallet.address_key_identifier, encrypted_list.result))
            .then(() => this.loadAddressBook());
     }
 
     addContact = () => {
-        this.getContactsList()
-            .then((contacts_list) => {
+        this.getContactList()
+            .then((contact_list) => {
                 if (this.state.importedData.length !== 0) {
-                    contacts_list = this.state.importedData.concat(contacts_list.filter(({id}) => !this.state.importedData.find(f => f.id == id)));
+                    contact_list = this.state.importedData.concat(contact_list.filter(({id}) => !this.state.importedData.find(f => f.id == id)));
                 }
                 else if (this.state.edited_contact_index !== '') {
-                    contacts_list.forEach((contact, index) => {
-                        if (index == this.state.edited_contact_index) {
+                    contact_list.forEach((contact, index) => {
+                        if (index === this.state.edited_contact_index) {
                             contact.name    = this.address_book_name.value;
                             contact.address = this.address_book_address.value;
                         }
@@ -80,11 +80,11 @@ class AddressBookView extends Component {
                         name   : this.address_book_name?.value,
                         address: this.address_book_address?.value
                     };
-                    contacts_list.push(new_contact);
+                    contact_list.push(new_contact);
                 }
-                return contacts_list;
+                return contact_list;
             })
-            .then(contacts_list => this.setContactsList(contacts_list))
+            .then(contact_list => this.setContactList(contact_list))
             .then(() => this.changeModalAddContact(false));
         this.setState({
             importedData: [],
@@ -92,11 +92,11 @@ class AddressBookView extends Component {
         });
     };
 
-    getChoosenContactIndex = (choosen_contact) => {
-        this.getContactsList()
-            .then((contacts_list) => {
-                contacts_list.forEach((contact, index) => {
-                    if (contact.id == choosen_contact.id) {
+    getSelectedContactIndex = (contact_selected) => {
+        this.getContactList()
+            .then((contact_list) => {
+                contact_list.forEach((contact, index) => {
+                    if (contact.id === contact_selected.id) {
                         this.setState({
                             edited_contact_index: index
                         });
@@ -105,12 +105,12 @@ class AddressBookView extends Component {
             });
     };
 
-    removeAddressBookContact = (choosen_contact) => {
-        this.getChoosenContactIndex(choosen_contact);
-        this.getContactsList()
-            .then((contacts_list) => {
-                contacts_list.splice(this.state.edited_contact_index, 1);
-                this.setContactsList(contacts_list);
+    removeAddressBookContact = (contact_selected) => {
+        this.getSelectedContactIndex(contact_selected);
+        this.getContactList()
+            .then((contact_list) => {
+                contact_list.splice(this.state.edited_contact_index, 1);
+                this.setContactList(contact_list);
             })
             .then(() => this.setState({
                 edited_contact_index: ''
@@ -118,8 +118,8 @@ class AddressBookView extends Component {
             .then(() => this.loadAddressBook());
     };
 
-    editAddressBookContact(choosen_contact) {
-        this.getChoosenContactIndex(choosen_contact);
+    editAddressBookContact(contact_selected) {
+        this.getSelectedContactIndex(contact_selected);
         this.changeModalAddContact();
     }
 
@@ -127,7 +127,7 @@ class AddressBookView extends Component {
         this.setState({
             datatable_loading: true
         });
-        this.getContactsList()
+        this.getContactList()
             .then(data => {
                 this.fillContactsDatatable(data);
             });
@@ -137,7 +137,7 @@ class AddressBookView extends Component {
         this.setState({
             datatable_reload_timestamp: new Date(),
             datatable_loading         : false,
-            contacts_list             : data?.map((input) => ({
+            contact_list              : data?.map((input) => ({
                 id     : input.id,
                 address: input.address,
                 name   : input.name,
@@ -161,7 +161,7 @@ class AddressBookView extends Component {
     getAddressBookBody() {
         let name, address;
         if (this.state.edited_contact_index !== '') {
-            this.state.contacts_list.forEach((contact, index) => {
+            this.state.contact_list.forEach((contact, index) => {
                 if (index === this.state.edited_contact_index) {
                     name    = contact.name;
                     address = contact.address;
@@ -269,7 +269,7 @@ class AddressBookView extends Component {
                                     label   : 'add contact',
                                     on_click: () => this.changeModalAddContact()
                                 }}
-                                value={this.state.contacts_list}
+                                value={this.state.contact_list}
                                 sortField={'name'}
                                 sortOrder={1}
                                 selectionMode={this.props.selectionMode}

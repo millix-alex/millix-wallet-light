@@ -490,15 +490,15 @@ class API {
             p4: data.key
         });
     }
-    
-    encryptContactsList(contacts_list) {
+
+    encryptContactList(contacts_list) {
         return this.fetchApiMillix(`/ZXJ3DqyLslyQETkX`, {
             p0: 'encrypt',
             p1: contacts_list
-        })
+        });
     }
 
-    decryptContactsList(contacts_list) {
+    decryptContactList(contacts_list) {
         return this.fetchApiMillix(`/ZXJ3DqyLslyQETkX`, {
             p0: 'decrypt',
             p1: contacts_list
