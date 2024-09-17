@@ -60,7 +60,19 @@
   min-height: 1.5rem;
 }
 
+.nft-name-preview {
+  overflow: hidden;
+  width: 100%;
+  min-height: 1.5rem;
+}
+
 .nft-description {
+  overflow: hidden;
+  width: 100%;
+  min-height: 1.5rem;
+}
+
+.nft-description-preview {
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
